@@ -1,0 +1,5 @@
+#!/bin/sh
+
+cd /usr/local/emulators/dingux-szx81
+
+./sz81 

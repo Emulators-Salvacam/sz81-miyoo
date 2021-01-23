@@ -1,0 +1,33 @@
+# You won't need to alter these
+TARGET=$(shell cat TARGET)
+SOURCES=sdl_main.c common.c sound.c z80.c sdl_engine.c sdl_hotspots.c \
+	sdl_input.c sdl_loadsave.c sdl_resources.c sdl_sound.c sdl_video.c
+OBJECTS=$(patsubst %.c, %.o, $(SOURCES))
+VERSION=$(shell cat VERSION)
+export PACKAGE_DATA_DIR=./data
+export TOOLCHAIN=mipsel-linux-uclibc
+
+DEVPREFIX=/opt/mipsel-linux-uclibc
+CC=$(DEVPREFIX)/usr/bin/mipsel-linux-uclibc-gcc
+CFLAGS=-O3 -Wall -I$(DEVPREFIX)/usr/include \
+       `$(DEVPREFIX)/usr/bin/sdl-config --prefix=$(DEVPREFIX) --cflags` \
+	-DPLATFORM_DINGUX_A320 -DINDIVIDUAL_SETTINGS -DVERSION=\"$(VERSION)\" -DPACKAGE_DATA_DIR=\"$(PACKAGE_DATA_DIR)\" \
+	-DOSS_SOUND_SUPPORT -DSZ81
+LINK=$(CC)
+LDFLAGS=-L$(DEVPREFIX)/lib 
+LIBS=`$(DEVPREFIX)/usr/bin/sdl-config --prefix=$(DEVPREFIX) --libs`
+
+# You won't need to alter anything below
+all: $(SOURCES) $(TARGET)
+
+$(TARGET): $(OBJECTS)
+	$(LINK) $(LDFLAGS) $(OBJECTS) $(LIBS) -o $@
+	dingux-a320/build-$(TARGET)
+
+%.o: %.c 
+	$(CC) $(CFLAGS) -c $< -o $@
+	
+.PHONY: all clean
+
+clean:
+	rm -f *.o

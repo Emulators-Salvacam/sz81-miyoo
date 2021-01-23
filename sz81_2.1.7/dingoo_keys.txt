@@ -1,0 +1,39 @@
+Teclas de acesso continual sendo:
+
+SELECT+L - Entra no menu de hardware (na tels 4/4 pode-se mapear as teclas do dingoo)
+SELECT+R - Entra no teclado virtual
+SELECT+X - Sai do emulador
+SELECT+B - Load state
+SELECT+A - Save state
+SELECT+START - Load File (Lê programas para o emulador)
+
+Mapeamento default no emulador:
+L - 1
+R - 2
+SELECT - 3
+START - 4
+LEFT - 5
+DOWN - 6
+UP - 7
+RIGHT - 8
+B - 9 
+A - 0
+Y -Y
+X - NEWLINE 
+Este mapeamento pod ser totalmente mudado presionando-se SELECT+L e navegando até a tela de menu 4/4. 
+Use o START para selecionar as opções no menu.
+
+No Teclado Virtual:
+
+Dpad - Move o cursir verde sobre o teclado virtual
+B - Pressiona a tecla selecionada pelo cursor verde / ativa  a opção selecionada no menu de icones.
+L - Pressiona a tecla SHIFT
+R - RUBOUT (SHIFT+0)
+START - NEWLINE
+X - SPACE
+Y - move para trás (SHIFT+5)
+A - Move para frente (SHIFT+8)
+SELECT - Sai do teclado virtual
+
+
+

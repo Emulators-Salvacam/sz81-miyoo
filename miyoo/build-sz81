@@ -1,0 +1,23 @@
+#!/bin/sh
+
+# This creates a binary tarball for Miyoo.
+# NOTE: This is run when executing 
+# make -f Makefile.miyoo
+echo "Building Miyoo binary tarball..."
+	
+mkdir -p sz81_2.1.7/${PACKAGE_DATA_DIR}
+mkdir -p sz81_2.1.7/games
+
+cp data/* sz81_2.1.7/${PACKAGE_DATA_DIR}
+cp games-etc/*.p games-etc/*.txt sz81_2.1.7/games
+cp games-etc/pipepanic/pipepanic.p games-etc/pipepanic/pipepanic.txt \
+	sz81_2.1.7/games
+
+cp icon-sz81-32.png sz81_2.1.7/sz81.png
+cp sz81 sz81_2.1.7/sz81
+cp dingoo_keys.txt sz81_2.1.7/dingoo_keys.txt
+
+cp README sz81_2.1.7/readme.txt
+cp ChangeLog NEWS sz81_2.1.7/COPYING 
+			
+echo "All done."

@@ -1,0 +1,53 @@
+#!/bin/sh
+
+# This creates a binary tarball for the GP2X/Wiz.
+# NOTE: This is run when executing 
+# make -f Makefile.{gp2x|open2x|openwiz|dingux-a320}
+# It also expects PACKAGE_DATA_DIR and TOOLCHAIN to have been exported.
+
+# if test -a VERSION ; then
+# 	VERSION="$(cat VERSION)"
+# 	if test -a TARGET ; then
+# 		TARGET="$(cat TARGET)"
+# 		if [ -n "$PACKAGE_DATA_DIR" ] ; then
+# 			if [ -n "$TOOLCHAIN" ] ; then
+#-------------------------------------------------------------
+				echo "Building GP2X/Wiz binary tarball..."
+				
+				mkdir -p Miyoo_2.1.7_MIP/${PACKAGE_DATA_DIR}
+				mkdir -p Miyoo_2.1.7_MIP/games
+
+				cp data/* Miyoo_2.1.7_MIP/${PACKAGE_DATA_DIR}
+				cp games-etc/*.p games-etc/*.txt Miyoo_2.1.7_MIP/games
+				cp games-etc/pipepanic/pipepanic.p games-etc/pipepanic/pipepanic.txt \
+					Miyoo_2.1.7_MIP/games
+
+				cp icon-Miyoo-32.png Miyoo_2.1.7_MIP/Miyoo.png
+				cp Miyoo dingux-a320/Miyoo.gpe Miyoo_2.1.7_MIP
+
+				# The openwiz build requires libiconv.
+				if [[ "MIP" == "openwiz" ]] ; then
+					cp dingux-a320/*libiconv* Miyoo_2.1.7_MIP
+				fi
+
+				cp README Miyoo_2.1.7_MIP/readme.txt
+				cp ChangeLog NEWS COPYING Miyoo_2.1.7_MIP
+				
+				#tar czvf Miyoo_2.1.7_MIP.tar.gz Miyoo_2.1.7_MIP
+				
+				#rm -rf Miyoo_2.1.7_MIP
+				
+				echo "All done."
+#-------------------------------------------------------------
+# 			else
+# 				echo "ERROR: Variable \"TOOLCHAIN\" has not been set/exported."
+# 			fi
+# 		else
+# 			echo "ERROR: Variable \"PACKAGE_DATA_DIR\" has not been set/exported."
+# 		fi
+# 	else
+# 		echo "ERROR: File \"TARGET\" not found. This is a text file with the project name inside it."
+# 	fi
+# else
+# 	echo "ERROR: File \"VERSION\" not found. This is a text file with the version number inside it."
+# fi
