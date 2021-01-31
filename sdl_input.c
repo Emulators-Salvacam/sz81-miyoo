@@ -60,10 +60,10 @@
 #define DINGOO_DOWN  SDLK_DOWN 
 #define DINGOO_LEFT   SDLK_LEFT 
 #define DINGOO_RIGHT  SDLK_RIGHT
-#define DINGOO_A      SDLK_LALT
-#define DINGOO_B      SDLK_LCTRL
-#define DINGOO_X      SDLK_LSHIFT
-#define DINGOO_Y      SDLK_SPACE
+#define DINGOO_A      SDLK_LCTRL
+#define DINGOO_B      SDLK_LALT
+#define DINGOO_X      SDLK_SPACE
+#define DINGOO_Y      SDLK_LSHIFT
 #define DINGOO_L      SDLK_TAB
 #define DINGOO_R      SDLK_BACKSPACE
 #define DINGOO_SELECT SDLK_ESCAPE
@@ -2305,6 +2305,21 @@ void manage_all_input(void) {
 				}
 			}
 		}
+		#endif
+
+		#if defined(PLATFORM_MIYOO)
+		if ( keystate[DINGOO_START] ) {
+			if (state == SDL_PRESSED) {
+				if (keystate[DINGOO_X] ) {
+					toggle_vkeyb_state();
+				} else if (keystate[DINGOO_Y] ) {
+					toggle_runopts_state();
+				}
+			}
+		} else if ( keystate[DINGOO_POWER] ) {
+			toggle_runopts_state();
+		}
+
 		#endif
 		if (id == SDLK_F1) {
 			/* Toggle the virtual keyboard */

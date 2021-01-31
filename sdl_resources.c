@@ -173,7 +173,7 @@ void sdl_rcfile_read(void) {
 	strcatdelimiter(rcfile.filename);
 	strcat(rcfile.filename, RESOURCE_FILE);
 
-	fprintf(stdout, "Reading from %s\n", rcfile.filename);
+	//fprintf(stdout, "Reading from %s\n", rcfile.filename);
 	if ((fp = fopen(rcfile.filename, "r")) == NULL) {
 		fprintf(stderr, "%s: Cannot read from %s\n", __func__, rcfile.filename);
 		/* Schedule a new rcfile */

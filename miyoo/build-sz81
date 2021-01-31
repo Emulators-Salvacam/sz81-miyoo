@@ -15,9 +15,10 @@ cp games-etc/pipepanic/pipepanic.p games-etc/pipepanic/pipepanic.txt \
 
 cp icon-sz81-32.png sz81_2.1.7/sz81.png
 cp sz81 sz81_2.1.7/sz81
-cp dingoo_keys.txt sz81_2.1.7/dingoo_keys.txt
+cp miyoo_keys.txt sz81_2.1.7/miyoo_keys.txt
 
 cp README sz81_2.1.7/readme.txt
-cp ChangeLog NEWS sz81_2.1.7/COPYING 
+cp ChangeLog sz81_2.1.7/ChangeLog 
+cp NEWS sz81_2.1.7/NEWS 
 			
 echo "All done."
