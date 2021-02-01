@@ -60,10 +60,10 @@
 #define DINGOO_DOWN  SDLK_DOWN 
 #define DINGOO_LEFT   SDLK_LEFT 
 #define DINGOO_RIGHT  SDLK_RIGHT
-#define DINGOO_A      SDLK_LCTRL
-#define DINGOO_B      SDLK_LALT
-#define DINGOO_X      SDLK_SPACE
-#define DINGOO_Y      SDLK_LSHIFT
+#define DINGOO_A      SDLK_LALT
+#define DINGOO_B      SDLK_LCTRL
+#define DINGOO_X      SDLK_LSHIFT
+#define DINGOO_Y      SDLK_SPACE
 #define DINGOO_L      SDLK_TAB
 #define DINGOO_R      SDLK_BACKSPACE
 #define DINGOO_SELECT SDLK_ESCAPE
@@ -1452,6 +1452,9 @@ int keyboard_update(void) {
 void manage_cursor_input(void) {
 	int hs_currently_selected = 0;
 	
+
+	//fprintf(stderr,"video.scale: `%i'.\n",video.scale);
+
 	if (device == DEVICE_CURSOR) {
 		/* Locate currently selected hotspot for active component (there can be only one) */
 		if (get_active_component() == COMP_DIALOG) {

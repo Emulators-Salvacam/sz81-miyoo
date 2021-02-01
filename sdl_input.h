@@ -76,10 +76,10 @@
 	#define DINGOO_REMAP_DOWN 1 
 	#define DINGOO_REMAP_LEFT 2
 	#define DINGOO_REMAP_RIGHT 3
-	#define DINGOO_REMAP_A 4
-	#define DINGOO_REMAP_B 5
-	#define DINGOO_REMAP_X 6
-	#define DINGOO_REMAP_Y 7
+	#define DINGOO_REMAP_A 5
+	#define DINGOO_REMAP_B 4
+	#define DINGOO_REMAP_X 7
+	#define DINGOO_REMAP_Y 6
 	#define DINGOO_REMAP_L 8
 	#define DINGOO_REMAP_R 9
 	#define DINGOO_REMAP_SELECT 10

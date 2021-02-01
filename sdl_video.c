@@ -112,7 +112,34 @@ char *runtime_options_text2[24] = {
 	"\x90\x2<\x2\x85" "Back   Save    Exit   Next\x90\x2>\x2\x85"
 };
 
-#if defined(PLATFORM_DINGUX_A320)
+#if defined(PLATFORM_MIYOO)
+char *runtime_options_text3[24] = {
+	"\x2 Miyoo button mapper        4/4 \x2",
+	"",
+	"   \x87\x83\x83\x83\x83\x83\x83""MIYOO BUTTONS\x83\x83\x83\x83\x83\x2\x84\x2",
+	"    \x2 L \x2                  \x2 R \x2    ",
+	"\x87\x83\x83\x83\x83\x83\x83\x83\x83\x83\x83\x83\x83\x83\x83\x83\x83\x83\x83\x83\x83\x83\x83\x83\x83\x83\x83\x83\x83\x83\x83\x2\x84\x2",
+	"\x85         \x87\x83\x83\x83\x83\x83\x83\x83\x83\x83\x83\x2\x84\x2         \x90",
+	"\x85    \x2 \x2    \x85\x88\x88\x88\x88\x88\x88\x88\x88\x88\x88\x90    \x2X\x2    \x90",
+	"\x85   \x2   \x2   \x85\x88\x88\x88\x88\x88\x88\x88\x88\x88\x88\x90  \x2Y\x2   \x2""A\x2  \x90",
+	"\x85    \x2 \x2    \x85\x88\x88\x88\x88\x88\x88\x88\x88\x88\x88\x90    \x2""B\x2    \x90", 
+	"\x85         \x85\x88\x88\x88\x88\x88\x88\x88\x88\x88\x88\x90         \x90",
+	"\x85   \x2SEL\x2   \x2\x82\x83\x83\x83\x83\x83\x83\x83\x83\x83\x83\x81\x2   \x2STR\x2   \x90",
+	"\x2\x82\x83\x83\x83\x83\x83\x83\x83\x83\x83\x83\x83\x83\x83\x83\x83\x83\x83\x83\x83\x83\x83\x83\x83\x83\x83\x83\x83\x83\x83\x83\x81\x2", 
+	"",
+	"   \x87\x83\x83\x83\x83\x83 ZX KEYBOARD \x83\x83\x83\x83\x83\x83\x2\x84\x2",
+	"      \x2""1""\x2 \x2""2""\x2 \x2""3""\x2 \x2""4""\x2 \x2""5""\x2 \x2""6""\x2 \x2""7""\x2 \x2""8""\x2 \x2""9""\x2 \x2""0""\x2",
+    	"      \x2""Q""\x2 \x2""W""\x2 \x2""E""\x2 \x2""R""\x2 \x2""T""\x2 \x2""Y""\x2 \x2""U""\x2 \x2""I""\x2 \x2""O""\x2 \x2""P""\x2",
+    	"      \x2""A""\x2 \x2""S""\x2 \x2""D""\x2 \x2""F""\x2 \x2""G""\x2 \x2""H""\x2 \x2""J""\x2 \x2""K""\x2 \x2""L""\x2 \x2[NEWLN]\x2",
+	"\x2[SHIFT]\x2 \x2""Z""\x2 \x2""X""\x2 \x2""C""\x2 \x2""V""\x2 \x2""B""\x2 \x2""N""\x2 \x2""M""\x2 \x2"".""\x2 \x2[SPACE]\x2",
+	"",
+	"\x1",
+	"\x1",
+	"\x1",
+	"\x1",
+	"\x90\x2<\x2\x85" "Back   Save    Exit          "
+};
+#elif defined(PLATFORM_DINGUX_A320)
 char *runtime_options_text3[24] = {
 	"\x2 Dingoo A320 button mapper  4/4 \x2",
 	"",
@@ -889,6 +916,17 @@ void sdl_video_update(void) {
 						if (count == 0) {
 							if(key_map_status==STATUS_KEY_MAP_NULL){
 							//strcpy(text, "*LINHA 0");
+							#if defined(PLATFORM_MIYOO)
+							snprintf(text, sizeof text, "B=%.1s A=%.1s Y=%.1s X=%.1s L=%.1s R=%.1s SEL=%.1s",
+									keycode_to_keysym(ctrl_remaps[DINGOO_REMAP_B].remap_id)+5,
+									keycode_to_keysym(ctrl_remaps[DINGOO_REMAP_A].remap_id)+5,
+									keycode_to_keysym(ctrl_remaps[DINGOO_REMAP_Y].remap_id)+5,
+									keycode_to_keysym(ctrl_remaps[DINGOO_REMAP_X].remap_id)+5,
+									keycode_to_keysym(ctrl_remaps[DINGOO_REMAP_L].remap_id)+5,
+									keycode_to_keysym(ctrl_remaps[DINGOO_REMAP_R].remap_id)+5,
+									keycode_to_keysym(ctrl_remaps[DINGOO_REMAP_SELECT].remap_id)+5
+									);
+							#else
 							snprintf(text, sizeof text, "A=%.1s B=%.1s X=%.1s Y=%.1s L=%.1s R=%.1s SEL=%.1s",
 									keycode_to_keysym(ctrl_remaps[DINGOO_REMAP_A].remap_id)+5,
 									keycode_to_keysym(ctrl_remaps[DINGOO_REMAP_B].remap_id)+5,
@@ -898,6 +936,7 @@ void sdl_video_update(void) {
 									keycode_to_keysym(ctrl_remaps[DINGOO_REMAP_R].remap_id)+5,
 									keycode_to_keysym(ctrl_remaps[DINGOO_REMAP_SELECT].remap_id)+5
 									);
+							#endif
 							}
 						}else if(count == 1){
 							if(key_map_status==STATUS_KEY_MAP_NULL){
@@ -910,7 +949,11 @@ void sdl_video_update(void) {
 									keycode_to_keysym(ctrl_remaps[DINGOO_REMAP_START].remap_id)+5
 									);
 							}else if (key_map_status==STATUS_KEY_MAP_ZX){
+								#if defined(PLATFORM_MIYOO)
+								strcpy(text,"   Select a button on Miyoo");
+								#else
 								strcpy(text,"   Select a button on Dingoo");
+								#endif
 							}else if (key_map_status==STATUS_KEY_MAP_DINGOO){
 								strcpy(text,"  Select a Key on ZX keyboard");
 
