@@ -2516,6 +2516,27 @@ void manage_vkeyb_input(void) {
 
 	/* Note that I'm currently ignoring modifier states */
 	if (device == DEVICE_KEYBOARD) {
+
+		#ifdef PLATFORM_MIYOO
+		/* 
+			Change button L for X and R for B. 
+		   	Because there are no buttons L and R on the Bittboy
+		*/
+		if (id == 304) {			
+			id = 53;  // L - X
+			mod_id = 304;
+		} else if (id == 53) {
+			id = 304; // X - L
+			mod_id = -1;
+		} else if (id == 48) {			
+			id = 56;  // R - B
+			mod_id = 304;
+		} else if (id == 56) {
+			id = 48;  // B - R
+			mod_id = 304;
+		}
+		#endif
+
 		if (id == SDLK_F6) {
 			/* Toggle the vkeyb autohide state */
 			if (state == SDL_PRESSED) {
