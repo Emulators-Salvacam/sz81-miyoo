@@ -269,6 +269,9 @@ void sdl_hotspots_init(void) {
 	hotspots[HS_RUNOPTS3_JOY_CFG_X].remap_id = SDLK_l;
 	hotspots[HS_RUNOPTS3_BACK].remap_id = SDLK_PAGEUP;
 	hotspots[HS_RUNOPTS3_SAVE].remap_id = SDLK_ACCEPT;
+    #if defined(PLATFORM_MIYOO)
+	hotspots[HS_RUNOPTS3_SAVE_GAME].remap_id = SDLK_F6;
+	#endif
 	hotspots[HS_RUNOPTS3_EXIT].remap_id = SDLK_F2;
 
 /*	
@@ -334,6 +337,9 @@ void sdl_hotspots_init(void) {
 	hotspots[HS_RUNOPTS3_JOY_CFG_X].remap_id = SDLK_l;
 	hotspots[HS_RUNOPTS3_BACK].remap_id = SDLK_PAGEUP;
 	hotspots[HS_RUNOPTS3_SAVE].remap_id = SDLK_ACCEPT;
+    #if defined(PLATFORM_MIYOO)
+	hotspots[HS_RUNOPTS3_SAVE_GAME].remap_id = SDLK_F6;
+	#endif
 	hotspots[HS_RUNOPTS3_EXIT].remap_id = SDLK_F2;
 	#endif
 
@@ -1144,7 +1150,16 @@ void hotspots_resize(int gid) {
 		hotspots[HS_RUNOPTS3_SAVE].hit_y += 22.5 * 8 * video.scale;
 		hotspots[HS_RUNOPTS3_SAVE].hit_w = 4 * 8 * video.scale;
 
+		#if defined (PLATFORM_MIYOO)
+
+		hotspots[HS_RUNOPTS3_SAVE_GAME].hit_x += 16 * 8 * video.scale;
+		hotspots[HS_RUNOPTS3_SAVE_GAME].hit_y += 22.5 * 8 * video.scale;
+		hotspots[HS_RUNOPTS3_SAVE_GAME].hit_w = 9 * 8 * video.scale;
+
+		hotspots[HS_RUNOPTS3_EXIT].hit_x += 28 * 8 * video.scale;
+		#else
 		hotspots[HS_RUNOPTS3_EXIT].hit_x += 18 * 8 * video.scale;
+		#endif
 		hotspots[HS_RUNOPTS3_EXIT].hit_y += 22.5 * 8 * video.scale;
 		hotspots[HS_RUNOPTS3_EXIT].hit_w = 4 * 8 * video.scale;
 
@@ -1246,7 +1261,18 @@ void hotspots_resize(int gid) {
 		hotspots[HS_RUNOPTS3_SAVE].hit_x += 10 * 8 * video.scale;
 		hotspots[HS_RUNOPTS3_SAVE].hit_y += 22.5 * 8 * video.scale;
 		hotspots[HS_RUNOPTS3_SAVE].hit_w = 4 * 8 * video.scale;
+
+
+		#if defined (PLATFORM_MIYOO)
+
+		hotspots[HS_RUNOPTS3_SAVE_GAME].hit_x += 16 * 8 * video.scale;
+		hotspots[HS_RUNOPTS3_SAVE_GAME].hit_y += 22.5 * 8 * video.scale;
+		hotspots[HS_RUNOPTS3_SAVE_GAME].hit_w = 9 * 8 * video.scale;
+
+		hotspots[HS_RUNOPTS3_EXIT].hit_x += 23 * 8 * video.scale;
+		#else
 		hotspots[HS_RUNOPTS3_EXIT].hit_x += 18 * 8 * video.scale;
+		#endif
 		hotspots[HS_RUNOPTS3_EXIT].hit_y += 22.5 * 8 * video.scale;
 		hotspots[HS_RUNOPTS3_EXIT].hit_w = 4 * 8 * video.scale;
 		/* Set-up hit_w/h */

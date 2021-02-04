@@ -1684,6 +1684,10 @@ void manage_cursor_input(void) {
 						hotspots[hs_currently_selected-10].flags |= HS_PROP_SELECTED;
 					} else if (hs_currently_selected == HS_RUNOPTS3_SAVE) {
 						hotspots[HS_RUNOPTS3_KEY_X].flags |= HS_PROP_SELECTED;
+					#if defined(PLATFORM_MIYOO)
+					}else if (hs_currently_selected == HS_RUNOPTS3_SAVE_GAME) {
+						hotspots[HS_RUNOPTS3_KEY_X].flags |= HS_PROP_SELECTED;
+					#endif
 					}
 					#else
 					if (hs_currently_selected == HS_RUNOPTS3_JDEADZ_DN) {
@@ -1694,6 +1698,12 @@ void manage_cursor_input(void) {
 						hotspots[HS_RUNOPTS3_JOY_CFG_DOWN].flags |= HS_PROP_SELECTED;
 					} else if (hs_currently_selected == HS_RUNOPTS3_SAVE) {
 						hotspots[HS_RUNOPTS3_JOY_CFG_START].flags |= HS_PROP_SELECTED;
+
+					#if defined(PLATFORM_MIYOO)
+					}else if (hs_currently_selected == HS_RUNOPTS3_SAVE_GAME) {
+						hotspots[HS_RUNOPTS3_KEY_X].flags |= HS_PROP_SELECTED;
+					#endif
+
 					} else if (hs_currently_selected == HS_RUNOPTS3_EXIT) {
 						hotspots[HS_RUNOPTS3_JOY_CFG_X].flags |= HS_PROP_SELECTED;
 					} else if (hs_currently_selected == HS_RUNOPTS3_JOY_CFG_DOWN ||
@@ -1821,6 +1831,11 @@ void manage_cursor_input(void) {
 						hs_currently_selected == HS_RUNOPTS3_SAVE) {
 						hotspots[HS_RUNOPTS3_JOY_CFG_LTRIG].flags |= HS_PROP_SELECTED;
 
+					#if defined (PLATFORM_MIYOO)
+					} else if (hs_currently_selected == HS_RUNOPTS3_SAVE_GAME) {
+						hotspots[HS_RUNOPTS3_JOY_CFG_RTRIG].flags |= HS_PROP_SELECTED;
+					#endif
+
 					} else if (hs_currently_selected == HS_RUNOPTS3_EXIT) {
 						hotspots[HS_RUNOPTS3_JOY_CFG_RTRIG].flags |= HS_PROP_SELECTED;
 
@@ -1831,10 +1846,20 @@ void manage_cursor_input(void) {
 					} else if ((hs_currently_selected >= HS_RUNOPTS3_KEY_X) &&
 						   (hs_currently_selected <= HS_RUNOPTS3_KEY_V)) {
 						hotspots[HS_RUNOPTS3_SAVE].flags |= HS_PROP_SELECTED;
+					#if defined (PLATFORM_MIYOO)
+					} else if ((hs_currently_selected >= HS_RUNOPTS3_KEY_B) &&
+						   (hs_currently_selected <= HS_RUNOPTS3_KEY_N)) {
+						hotspots[HS_RUNOPTS3_SAVE_GAME].flags |= HS_PROP_SELECTED;
 
+					} else if ((hs_currently_selected >= HS_RUNOPTS3_KEY_M) &&
+						   (hs_currently_selected <= HS_RUNOPTS3_KEY_SPACE)) {
+						hotspots[HS_RUNOPTS3_EXIT].flags |= HS_PROP_SELECTED;
+
+					#else
 					} else if ((hs_currently_selected >= HS_RUNOPTS3_KEY_B) &&
 						   (hs_currently_selected <= HS_RUNOPTS3_KEY_SPACE)) {
 						hotspots[HS_RUNOPTS3_EXIT].flags |= HS_PROP_SELECTED;
+					#endif
 
 					} else if ((hs_currently_selected >= HS_RUNOPTS3_KEY_1) &&
 						   (hs_currently_selected <= HS_RUNOPTS3_KEY_NEWLINE)) {
@@ -1889,11 +1914,18 @@ void manage_cursor_input(void) {
 					} else if (hs_currently_selected == HS_RUNOPTS3_JOY_CFG_A ||
 						hs_currently_selected == HS_RUNOPTS3_JOY_CFG_B) {
 						hotspots[HS_RUNOPTS3_JOY_CFG_X].flags |= HS_PROP_SELECTED;
+
 					} else if (hs_currently_selected == HS_RUNOPTS3_JOY_CFG_DOWN) {
 						hotspots[HS_RUNOPTS3_BACK].flags |= HS_PROP_SELECTED;
+
 					} else if (hs_currently_selected == HS_RUNOPTS3_JOY_CFG_SELECT ||
 						hs_currently_selected == HS_RUNOPTS3_JOY_CFG_START) {
 						hotspots[HS_RUNOPTS3_SAVE].flags |= HS_PROP_SELECTED;
+
+					// } else if (hs_currently_selected == HS_RUNOPTS3_JOY_CFG_SELECT ||
+					// 	hs_currently_selected == HS_RUNOPTS3_JOY_CFG_START) {
+					// 	hotspots[HS_RUNOPTS3_SAVE_GAME].flags |= HS_PROP_SELECTED;
+
 					} else if (hs_currently_selected == HS_RUNOPTS3_JOY_CFG_X) {
 						hotspots[HS_RUNOPTS3_EXIT].flags |= HS_PROP_SELECTED;
 					}
@@ -2007,6 +2039,9 @@ void manage_cursor_input(void) {
 						hotspots[hs_currently_selected-1].flags |= HS_PROP_SELECTED;
 
 					} else if((hs_currently_selected == HS_RUNOPTS3_SAVE)||
+							#if defined (PLATFORM_MIYOO)
+					          (hs_currently_selected == HS_RUNOPTS3_SAVE_GAME) ||
+					        #endif
 					          (hs_currently_selected == HS_RUNOPTS3_EXIT)){
 							hotspots[hs_currently_selected-1].flags |= HS_PROP_SELECTED;
 
@@ -2213,9 +2248,18 @@ void manage_cursor_input(void) {
 						hotspots[HS_RUNOPTS3_JOY_CFG_A].flags |= HS_PROP_SELECTED;
 					}else if(hs_currently_selected == HS_RUNOPTS3_JOY_CFG_A){
 						hotspots[HS_RUNOPTS3_JOY_CFG_LEFT].flags |= HS_PROP_SELECTED;
+
 					}else if(hs_currently_selected == HS_RUNOPTS3_BACK){
 						hotspots[HS_RUNOPTS3_SAVE].flags |= HS_PROP_SELECTED;
+
+					#if defined (PLATFORM_MIYOO)
 					}else if(hs_currently_selected == HS_RUNOPTS3_SAVE){
+						hotspots[HS_RUNOPTS3_SAVE_GAME].flags |= HS_PROP_SELECTED;
+
+					}else if(hs_currently_selected == HS_RUNOPTS3_SAVE_GAME){
+					#else
+					}else if(hs_currently_selected == HS_RUNOPTS3_SAVE){
+					#endif
 						hotspots[HS_RUNOPTS3_EXIT].flags |= HS_PROP_SELECTED;
 					}else if(hs_currently_selected == HS_RUNOPTS3_EXIT){
 						hotspots[HS_RUNOPTS3_BACK].flags |= HS_PROP_SELECTED;
@@ -2350,6 +2394,9 @@ void manage_all_input(void) {
 			if (state == SDL_PRESSED) {
 				toggle_sstate_state(SSTATE_MODE_LOAD);
 			}
+		} else if (id == SDLK_F6) {
+			/* Save mapping for game */
+			write_mapping_game();
 		} else if (id == SDLK_F8) {
 			/* Toggle invert screen */
 			if (state == SDL_PRESSED) {
@@ -3233,6 +3280,29 @@ void manage_sstate_input(void) {
 		}
 	}
 }
+
+
+/***************************************************************************
+ * Toggle Save State Dialog State                                          *
+ ***************************************************************************/
+
+
+			
+void write_mapping_game(void) {
+
+	struct Notification notification;
+
+	strcpy(notification.title, "Options");
+	strcpy(notification.text, "Mapping saved for this game");
+	notification.timeout = NOTIFICATION_TIMEOUT_1250;
+	notification_show(NOTIFICATION_SHOW, &notification);
+
+	//	saved_mapping_game();
+	//rcfile_write
+	//fprintf(stderr,"Miyoo llamar a guardar mapeo\n");
+}
+
+
 
 /***************************************************************************
  * Toggle Save State Dialog State                                          *

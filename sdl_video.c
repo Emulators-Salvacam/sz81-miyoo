@@ -137,7 +137,11 @@ char *runtime_options_text3[24] = {
 	"\x1",
 	"\x1",
 	"\x1",
+	#if defined (PLATFORM_MIYOO)
+  	"\x90\x2<\x2\x85" "Back   Save  Save_game   Exit"
+  	#else
 	"\x90\x2<\x2\x85" "Back   Save    Exit          "
+	#endif
 };
 #elif defined(PLATFORM_DINGUX_A320)
 char *runtime_options_text3[24] = {
