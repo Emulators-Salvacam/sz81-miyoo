@@ -6,3 +6,4 @@ sdl_input.o
 sdl_main.o
 sdl_resources.o
 sdl_video.o
+sdl_loadsave.o
