@@ -685,6 +685,303 @@ void sdl_rcfile_read(void) {
 	}
 }
 
+
+
+/***************************************************************************
+ * Read Mapping Game File                                                      *
+ ***************************************************************************/
+
+void mapping_game_read(void) {
+	char line[256], key[64], value[192],filenameGame[192], fileLoaded[64];
+	int count, index, line_count, found;
+	struct ctrlremap read_ctrl_remaps[MAX_CTRL_REMAPS];
+	FILE *fp;
+
+//	fprintf(stderr, "Read,loaded=%s\n", load_file_dialog.loaded);
+//	fprintf(stderr, "Read,basename=%s\n", file_dialog_basename(load_file_dialog.loaded));
+
+	strcpy(filenameGame, LOCAL_DATA_DIR);
+	strcatdelimiter(filenameGame);
+	strcat(filenameGame, LOCAL_KEYMAP_DIR);
+	strcatdelimiter(filenameGame);
+	strcat(filenameGame, file_dialog_basename(load_file_dialog.loaded));
+	strcat(filenameGame, LOCAL_KEYMAP_EXT);
+
+	fprintf(stderr, "Reading to %s\n", filenameGame);
+	if ((fp = fopen(filenameGame, "r")) == NULL) {
+		fprintf(stderr, "Cannot read from %s\n", filenameGame);
+		return;
+	}
+
+	/* Undefine everything within read_ctrl_remaps */
+	for (count = 0; count < CTRL_REMAPS_GAME; count++) {
+		read_ctrl_remaps[count].components = UNDEFINED;
+		read_ctrl_remaps[count].protected = UNDEFINED;
+		read_ctrl_remaps[count].device = UNDEFINED;
+		read_ctrl_remaps[count].id = UNDEFINED;
+		read_ctrl_remaps[count].remap_device = UNDEFINED;
+		read_ctrl_remaps[count].remap_id = UNDEFINED;
+		read_ctrl_remaps[count].remap_mod_id = UNDEFINED;
+	}
+
+	/* Read the rcfile one line at a time (trailing [CR]LFs are read too) */
+	index = -1;
+	line_count = 0;
+	found = FALSE;
+	while ((fgets(line, 256, fp)) != NULL) {
+		line_count++;
+		/* Remove the trailing [CR]LFs */
+		for (count = strlen(line) - 1; count >= 0; count--)
+			if (line[count] == 13 || line[count] == 10) line[count] = 0;
+		/* Process the line ignoring comments */
+		if (strlen(line) && line[0] != '#') {
+			
+			/* Control remappings */
+			strcpy(key, "ctrl_remap.components=");
+			if (!strncmp(line, key, strlen(key))) {
+				strcpy(value, &line[strlen(key)]);
+				if (++index >= MAX_CTRL_REMAPS) {
+					fprintf(stderr, "%s: Too many remapped controls within rcfile:%03i: "
+						"max %i\n", __func__, line_count, MAX_CTRL_REMAPS);
+					index = MAX_CTRL_REMAPS - 1;	/* Simply overwrite last slot */
+				}
+				read_ctrl_remaps[index].components = 0;
+				if (strstr(value, "COMP_ALL") != NULL)
+					read_ctrl_remaps[index].components |= COMP_ALL;
+				if (strstr(value, "COMP_EMU") != NULL)
+					read_ctrl_remaps[index].components |= COMP_EMU;
+				if (strstr(value, "COMP_LOAD") != NULL)
+					read_ctrl_remaps[index].components |= COMP_LOAD;
+				if (strstr(value, "COMP_LDFILE") != NULL)
+					read_ctrl_remaps[index].components |= COMP_LDFILE;
+				if (strstr(value, "COMP_SSTATE") != NULL)
+					read_ctrl_remaps[index].components |= COMP_SSTATE;
+				if (strstr(value, "COMP_DIALOG") != NULL)
+					read_ctrl_remaps[index].components |= COMP_DIALOG;
+				if (strstr(value, "COMP_VKEYB") != NULL)
+					read_ctrl_remaps[index].components |= COMP_VKEYB;
+				if (strstr(value, "COMP_CTB") != NULL)
+					read_ctrl_remaps[index].components |= COMP_CTB;
+				if (strstr(value, "COMP_RUNOPTS_ALL") != NULL)
+					read_ctrl_remaps[index].components |= COMP_RUNOPTS_ALL;
+			}
+			strcpy(key, "ctrl_remap.protected=");
+			if (!strncmp(line, key, strlen(key))) {
+				strcpy(value, &line[strlen(key)]);
+				if (index == -1) index++;
+				if (strcmp(value, "TRUE") == 0 || strcmp(value, "1") == 0) {
+					read_ctrl_remaps[index].protected = TRUE;
+				} else if (strcmp(value, "FALSE") == 0 || strcmp(value, "0") == 0) {
+					read_ctrl_remaps[index].protected = FALSE;
+				}
+			}
+			strcpy(key, "ctrl_remap.device=");
+			if (!strncmp(line, key, strlen(key))) {
+				strcpy(value, &line[strlen(key)]);
+				if (index == -1) index++;
+				if (strcmp(value, "DEVICE_KEYBOARD") == 0) {
+					read_ctrl_remaps[index].device = DEVICE_KEYBOARD;
+				} else if (strcmp(value, "DEVICE_JOYSTICK") == 0) {
+					read_ctrl_remaps[index].device = DEVICE_JOYSTICK;
+				} else if (strcmp(value, "DEVICE_CURSOR") == 0) {
+					read_ctrl_remaps[index].device = DEVICE_CURSOR;
+				}
+			}
+			strcpy(key, "ctrl_remap.id=");
+			if (!strncmp(line, key, strlen(key))) {
+				strcpy(value, &line[strlen(key)]);
+				if (index == -1) index++;
+				read_ctrl_remaps[index].id = keysym_to_keycode(value);
+			}
+			strcpy(key, "ctrl_remap.remap_device=");
+			if (!strncmp(line, key, strlen(key))) {
+				strcpy(value, &line[strlen(key)]);
+				if (index == -1) index++;
+				if (strcmp(value, "DEVICE_KEYBOARD") == 0) {
+					read_ctrl_remaps[index].remap_device = DEVICE_KEYBOARD;
+				} else if (strcmp(value, "DEVICE_JOYSTICK") == 0) {
+					read_ctrl_remaps[index].remap_device = DEVICE_JOYSTICK;
+				} else if (strcmp(value, "DEVICE_CURSOR") == 0) {
+					read_ctrl_remaps[index].remap_device = DEVICE_CURSOR;
+				}
+			}
+			strcpy(key, "ctrl_remap.remap_id=");
+			if (!strncmp(line, key, strlen(key))) {
+				strcpy(value, &line[strlen(key)]);
+				if (index == -1) index++;
+				read_ctrl_remaps[index].remap_id = keysym_to_keycode(value);
+			}
+			strcpy(key, "ctrl_remap.remap_mod_id=");
+			if (!strncmp(line, key, strlen(key))) {
+				strcpy(value, &line[strlen(key)]);
+				if (index == -1) index++;
+				read_ctrl_remaps[index].remap_mod_id = keysym_to_keycode(value);
+				found = TRUE;	/* A complete ctrl_remap has been read */
+			}
+		}
+	}
+	fclose(fp);
+
+	#ifdef SDL_DEBUG_RCFILE
+		for (count = 0; count < CTRL_REMAPS_GAME; count++) {
+			if (read_ctrl_remaps[count].device != UNDEFINED) {
+				printf("read_ctrl_remaps[%i].components=%i\n", count, read_ctrl_remaps[count].components);
+				printf("  read_ctrl_remaps[%i].protected=%i\n", count, read_ctrl_remaps[count].protected);
+				printf("  read_ctrl_remaps[%i].device=%i\n", count, read_ctrl_remaps[count].device);
+				printf("  read_ctrl_remaps[%i].id=%i\n", count, read_ctrl_remaps[count].id);
+				printf("  read_ctrl_remaps[%i].remap_device=%i\n", count, read_ctrl_remaps[count].remap_device);
+				printf("  read_ctrl_remaps[%i].remap_id=%i\n", count, read_ctrl_remaps[count].remap_id);
+				printf("  read_ctrl_remaps[%i].remap_mod_id=%i\n", count, read_ctrl_remaps[count].remap_mod_id);
+			}
+		}
+	#endif
+
+	/* New improved system: If one or more ctrl_remaps were read then they will
+	 * completely replace the existing default ctrl_remaps. If none were read
+	 * then the defaults will remain. So after the first rcfile write the defaults
+	 * will always be replaced until either the rcfile is deleted or the user deletes
+	 * the ctrl_remaps manually */
+	if (found)
+		for (count = 0; count < MAX_CTRL_REMAPS; count++)
+			ctrl_remaps[count] = read_ctrl_remaps[count];
+	
+}
+
+
+
+/***************************************************************************
+ * Write Mapping Game File                                                     *
+ ***************************************************************************/
+
+void mapping_game_write(void) {
+	char key[64], value[192], filenameGame[192], fileLoaded[64];
+	int count, found;
+	FILE *fp;
+
+	//fprintf(stderr, "Write sdl_com_line.filename=%s\n", sdl_com_line.filename);
+	//fprintf(stderr, "Write,loaded=%s\n", load_file_dialog.loaded);
+	//fprintf(stderr, "Write,basename=%s\n", file_dialog_basename(load_file_dialog.loaded));
+
+	strcpy(filenameGame, LOCAL_DATA_DIR);
+	strcatdelimiter(filenameGame);
+	strcat(filenameGame, LOCAL_KEYMAP_DIR);
+	strcatdelimiter(filenameGame);
+	strcat(filenameGame, file_dialog_basename(load_file_dialog.loaded));
+	strcat(filenameGame, LOCAL_KEYMAP_EXT);
+
+	fprintf(stderr, "Writing to %s\n", filenameGame);
+	if ((fp = fopen(filenameGame, "w")) == NULL) {
+		fprintf(stderr, "Cannot write to %s\n", filenameGame);
+		return;
+	}
+
+	for (count = 0; count < MAX_CTRL_REMAPS; count++) {
+		if (ctrl_remaps[count].device != UNDEFINED) {
+			/* .components */
+			strcpy(key, "ctrl_remap.components");
+			strcpy(value, "");
+			found = FALSE;
+			if ((ctrl_remaps[count].components & COMP_ALL) == COMP_ALL) {
+				strcat(value, "COMP_ALL");
+			} else {
+				if (ctrl_remaps[count].components & COMP_EMU) {
+					strcat(value, "COMP_EMU"); found = TRUE;
+				}				
+				if (ctrl_remaps[count].components & COMP_LOAD) {
+					if (found) strcat(value, " | ");
+					strcat(value, "COMP_LOAD"); found = TRUE;
+				}				
+				if (ctrl_remaps[count].components & COMP_LDFILE) {
+					if (found) strcat(value, " | ");
+					strcat(value, "COMP_LDFILE"); found = TRUE;
+				}				
+				if (ctrl_remaps[count].components & COMP_SSTATE) {
+					if (found) strcat(value, " | ");
+					strcat(value, "COMP_SSTATE"); found = TRUE;
+				}				
+				if (ctrl_remaps[count].components & COMP_DIALOG) {
+					if (found) strcat(value, " | ");
+					strcat(value, "COMP_DIALOG"); found = TRUE;
+				}				
+				if (ctrl_remaps[count].components & COMP_VKEYB) {
+					if (found) strcat(value, " | ");
+					strcat(value, "COMP_VKEYB"); found = TRUE;
+				}				
+				if (ctrl_remaps[count].components & COMP_CTB) {
+					if (found) strcat(value, " | ");
+					strcat(value, "COMP_CTB"); found = TRUE;
+				}				
+				/* COMP_RUNOPTS_ALL isn't required to be broken down */
+				if ((ctrl_remaps[count].components & COMP_RUNOPTS_ALL) == COMP_RUNOPTS_ALL) {
+					if (found) strcat(value, " | ");
+					strcat(value, "COMP_RUNOPTS_ALL"); found = TRUE;
+				}				
+			}				
+			fprintf(fp, "%s=%s\n", key, value);
+			/* .protected */
+			strcpy(key, "ctrl_remap.protected");
+			strcpy(value, "");
+			if (ctrl_remaps[count].protected) {
+				strcat(value, "TRUE");
+			} else {
+				strcat(value, "FALSE");
+			}
+			fprintf(fp, "%s=%s\n", key, value);
+			/* .device */
+			strcpy(key, "ctrl_remap.device");
+			strcpy(value, "");
+			if (ctrl_remaps[count].device == DEVICE_KEYBOARD) {
+				strcat(value, "DEVICE_KEYBOARD");
+			} else if (ctrl_remaps[count].device == DEVICE_JOYSTICK) {
+				strcat(value, "DEVICE_JOYSTICK");
+			} else if (ctrl_remaps[count].device == DEVICE_CURSOR) {
+				strcat(value, "DEVICE_CURSOR");
+			}
+			fprintf(fp, "%s=%s\n", key, value);
+			/* .id */
+			strcpy(key, "ctrl_remap.id");
+			if (ctrl_remaps[count].device == DEVICE_KEYBOARD ||
+				ctrl_remaps[count].device == DEVICE_CURSOR) {
+				strcpy(value, keycode_to_keysym(ctrl_remaps[count].id));
+			} else {
+				sprintf(value, "%i", ctrl_remaps[count].id);
+			}
+			fprintf(fp, "%s=%s\n", key, value);
+			/* .remap_device */
+			strcpy(key, "ctrl_remap.remap_device");
+			strcpy(value, "");
+			if (ctrl_remaps[count].remap_device == DEVICE_KEYBOARD) {
+				strcat(value, "DEVICE_KEYBOARD");
+			} else if (ctrl_remaps[count].remap_device == DEVICE_JOYSTICK) {
+				strcat(value, "DEVICE_JOYSTICK");
+			} else if (ctrl_remaps[count].remap_device == DEVICE_CURSOR) {
+				strcat(value, "DEVICE_CURSOR");
+			}
+			fprintf(fp, "%s=%s\n", key, value);
+			/* .remap_id */
+			strcpy(key, "ctrl_remap.remap_id");
+			if (ctrl_remaps[count].remap_device == DEVICE_KEYBOARD ||
+				ctrl_remaps[count].remap_device == DEVICE_CURSOR) {
+				strcpy(value, keycode_to_keysym(ctrl_remaps[count].remap_id));
+			} else {
+				sprintf(value, "%i", ctrl_remaps[count].remap_id);
+			}
+			fprintf(fp, "%s=%s\n", key, value);
+			/* .remap_mod_id */
+			strcpy(key, "ctrl_remap.remap_mod_id");
+			if (ctrl_remaps[count].remap_device == DEVICE_KEYBOARD ||
+				ctrl_remaps[count].remap_device == DEVICE_CURSOR) {
+				strcpy(value, keycode_to_keysym(ctrl_remaps[count].remap_mod_id));
+			} else {
+				sprintf(value, "%i", ctrl_remaps[count].remap_mod_id);
+			}
+			fprintf(fp, "%s=%s\n", key, value);
+			fprintf(fp, "\n");
+		}
+	}
+	fclose(fp);
+}
+
 /***************************************************************************
  * Write Resource File                                                     *
  ***************************************************************************/

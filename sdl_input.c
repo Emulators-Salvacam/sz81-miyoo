@@ -3283,10 +3283,8 @@ void manage_sstate_input(void) {
 
 
 /***************************************************************************
- * Toggle Save State Dialog State                                          *
+ * Save Mapping for game in use                                            *
  ***************************************************************************/
-
-
 			
 void write_mapping_game(void) {
 
@@ -3297,8 +3295,7 @@ void write_mapping_game(void) {
 	notification.timeout = NOTIFICATION_TIMEOUT_1250;
 	notification_show(NOTIFICATION_SHOW, &notification);
 
-	//	saved_mapping_game();
-	//rcfile_write
+	mapping_game_write();
 	//fprintf(stderr,"Miyoo llamar a guardar mapeo\n");
 }
 
