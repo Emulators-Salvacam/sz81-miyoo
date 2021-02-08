@@ -707,7 +707,7 @@ void mapping_game_read(void) {
 	strcat(filenameGame, file_dialog_basename(load_file_dialog.loaded));
 	strcat(filenameGame, LOCAL_KEYMAP_EXT);
 
-	fprintf(stderr, "Reading to %s\n", filenameGame);
+	//fprintf(stderr, "Reading to %s\n", filenameGame);
 	if ((fp = fopen(filenameGame, "r")) == NULL) {
 		fprintf(stderr, "Cannot read from %s\n", filenameGame);
 		return;
@@ -869,7 +869,7 @@ void mapping_game_write(void) {
 	strcat(filenameGame, file_dialog_basename(load_file_dialog.loaded));
 	strcat(filenameGame, LOCAL_KEYMAP_EXT);
 
-	fprintf(stderr, "Writing to %s\n", filenameGame);
+	//fprintf(stderr, "Writing to %s\n", filenameGame);
 	if ((fp = fopen(filenameGame, "w")) == NULL) {
 		fprintf(stderr, "Cannot write to %s\n", filenameGame);
 		return;
