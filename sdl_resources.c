@@ -714,7 +714,7 @@ void mapping_game_read(void) {
 	}
 
 	/* Undefine everything within read_ctrl_remaps */
-	for (count = 0; count < CTRL_REMAPS_GAME; count++) {
+	for (count = 0; count < MAX_CTRL_REMAPS; count++) {
 		read_ctrl_remaps[count].components = UNDEFINED;
 		read_ctrl_remaps[count].protected = UNDEFINED;
 		read_ctrl_remaps[count].device = UNDEFINED;

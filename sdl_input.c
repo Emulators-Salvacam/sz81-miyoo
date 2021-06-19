@@ -2355,6 +2355,15 @@ void manage_all_input(void) {
 		#endif
 
 		#if defined(PLATFORM_MIYOO)
+
+		if (keystate[DINGOO_L]){		
+			if (state == SDL_PRESSED){
+				if (keystate[DINGOO_R]) {
+					emulator_exit();
+				}
+			}
+		}
+
 		if ( keystate[DINGOO_START] ) {
 			if (state == SDL_PRESSED) {
 				if (keystate[DINGOO_X] ) {

@@ -7,6 +7,7 @@ RESET    - Entra no menu de hardware (na tels 4/4 pode-se mapear as teclas do di
 SELECT+R - 
 START+Y  - Entra no teclado virtual
 
+L + R    - Sai do emulador
 SELECT+X - Sai do emulador
 SELECT+B - Load state
 SELECT+A - Save state
