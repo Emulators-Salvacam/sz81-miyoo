@@ -1224,7 +1224,35 @@ void sdl_video_update(void) {
 			}
 		}
 	#endif
+	
+	#if defined(PLATFORM_MIYOO)
+	offscreen = SDL_CreateRGBSurface(SDL_SWSURFACE, 320, 240, video.screen->format->BitsPerPixel,
+		video.screen->format->Rmask, video.screen->format->Gmask,
+		video.screen->format->Bmask, video.screen->format->Amask);
 
+		
+	if (SDL_MUSTLOCK(video.screen)) SDL_LockSurface(video.screen);
+	if (SDL_MUSTLOCK(offscreen)) SDL_LockSurface(offscreen);
+	
+	SDL_Rect dst;
+    dst.x = 32;
+    dst.y = 24;
+    dst.w = 320 - 2 * 32;
+    dst.h = 240 - 2 * 24;
+	
+	SDL_Rect src = { 0, 0, 320, 240 };
+
+	SDL_SoftStretch(video.screen, &dst, offscreen, &src);	
+	SDL_BlitSurface(offscreen, NULL, video.screen, NULL);
+
+	if (SDL_MUSTLOCK(video.screen)) SDL_LockSurface(video.screen);
+	if (SDL_MUSTLOCK(offscreen)) SDL_LockSurface(offscreen);
+
+	if (offscreen) {
+		SDL_FreeSurface(offscreen);
+	}
+	#endif
+	
 	SDL_Flip(video.screen);
 }
 

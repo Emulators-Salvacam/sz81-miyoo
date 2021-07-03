@@ -40,6 +40,10 @@ struct {
 	int redraw;			/* TRUE to redraw entire screen */
 } video;
 
+#if defined(PLATFORM_MIYOO)
+SDL_Surface *offscreen;
+#endif
+
 /* Function prototypes */
 SDL_Surface *BMF_RenderText(int font, char *text, Uint32 fg_colour, Uint32 bg_colour);
 Uint32 get_pixel(SDL_Surface *surface, int x, int y);
