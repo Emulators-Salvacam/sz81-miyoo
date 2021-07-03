@@ -242,6 +242,12 @@ void sdl_hotspots_init(void) {
 	hotspots[HS_RUNOPTS2_BGC_G_UP].remap_id = SDLK_0;
 	hotspots[HS_RUNOPTS2_BGC_B_DN].remap_id = SDLK_LEFTBRACKET;
 	hotspots[HS_RUNOPTS2_BGC_B_UP].remap_id = SDLK_RIGHTBRACKET;
+
+    #if defined(PLATFORM_MIYOO)
+	hotspots[HS_RUNOPTS2_FULLS_YES].remap_id = SDLK_y;
+	hotspots[HS_RUNOPTS2_FULLS_NO].remap_id = SDLK_x;
+	#endif
+
 	hotspots[HS_RUNOPTS2_BACK].remap_id = SDLK_PAGEUP;
 	hotspots[HS_RUNOPTS2_SAVE].remap_id = SDLK_ACCEPT;
 	hotspots[HS_RUNOPTS2_EXIT].remap_id = SDLK_F2;
@@ -923,6 +929,14 @@ void hotspots_resize(int gid) {
 		hotspots[HS_RUNOPTS2_FGC_B_DN].hit_y += 15.5 * 8 * video.scale;
 		hotspots[HS_RUNOPTS2_FGC_B_UP].hit_x += 13.5 * 8 * video.scale;
 		hotspots[HS_RUNOPTS2_FGC_B_UP].hit_y += 15.5 * 8 * video.scale;
+		#if defined (PLATFORM_MIYOO)
+		hotspots[HS_RUNOPTS2_FULLS_YES].hit_x += 2.5 * 8 * video.scale;
+		hotspots[HS_RUNOPTS2_FULLS_YES].hit_y += 19.5 * 8 * video.scale;
+		hotspots[HS_RUNOPTS2_FULLS_YES].hit_w = 9 * 8 * video.scale;
+		hotspots[HS_RUNOPTS2_FULLS_NO].hit_x += 11.5 * 8 * video.scale;
+		hotspots[HS_RUNOPTS2_FULLS_NO].hit_y += 19.5 * 8 * video.scale;
+		hotspots[HS_RUNOPTS2_FULLS_NO].hit_w = 9 * 8 * video.scale;
+		#endif
 		hotspots[HS_RUNOPTS2_BGC_R_DN].hit_x += 23.5 * 8 * video.scale;
 		hotspots[HS_RUNOPTS2_BGC_R_DN].hit_y += 11.5 * 8 * video.scale;
 		hotspots[HS_RUNOPTS2_BGC_R_UP].hit_x += 28.5 * 8 * video.scale;

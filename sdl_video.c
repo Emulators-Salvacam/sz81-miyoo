@@ -104,9 +104,15 @@ char *runtime_options_text2[24] = {
 	"",
 	"       B\x90\x2<\x2\x85\x1  \x90\x2>\x2\x85      B\x90\x2<\x2\x85\x1  \x90\x2>\x2\x85",
 	"",
+	#if defined (PLATFORM_MIYOO)
+	"Full Screen:",
+	"",
+	"  (\x1 \x1) Yes  (\x1 \x1) No",
+  	#else
 	"", 
 	"",
 	"",
+	#endif
 	"\x1 ",
 	"",
 	"\x90\x2<\x2\x85" "Back   Save    Exit   Next\x90\x2>\x2\x85"
@@ -910,10 +916,29 @@ void sdl_video_update(void) {
 							sprintf(text, "%02x", colours.emu_fg & 0xff);
 						} else if (count == 8) {		
 							sprintf(text, "%02x", colours.emu_bg & 0xff);
+												
+						#if defined(PLATFORM_MIYOO)
+
+						} else if (count == 9) {strcpy(text, "O");
+							invertcolours = FALSE;
+							if ( sdl_emulator.fullscr == FULL_SCREEN_YES) {
+								invertcolours = TRUE; //!invertcolours;
+							}
+						} else if (count == 11) {strcpy(text, "O");
+							invertcolours = FALSE;
+							if ( sdl_emulator.fullscr == FULL_SCREEN_NO) {
+								invertcolours = TRUE; // !invertcolours;
+							}
+						} else if (count == 12) {
+							if (runopts_is_a_reset_scheduled())
+								strcpy(text, "* A reset is scheduled on save *");
+						}
+						#else
 						} else if (count == 9) {
 							if (runopts_is_a_reset_scheduled())
 								strcpy(text, "* A reset is scheduled on save *");
 						}
+						#endif
 					} else if (runtime_options[3].state) {
 						#if defined(PLATFORM_DINGUX_A320)
 						/* Show Dingoo key maps*/
@@ -1226,30 +1251,33 @@ void sdl_video_update(void) {
 	#endif
 	
 	#if defined(PLATFORM_MIYOO)
-	offscreen = SDL_CreateRGBSurface(SDL_SWSURFACE, 320, 240, video.screen->format->BitsPerPixel,
-		video.screen->format->Rmask, video.screen->format->Gmask,
-		video.screen->format->Bmask, video.screen->format->Amask);
+	if (sdl_emulator.fullscr == FULL_SCREEN_YES) //TODO change for 1 when finish option Full Screen in menu
+	{
+		offscreen = SDL_CreateRGBSurface(SDL_SWSURFACE, video.xres, video.yres, video.screen->format->BitsPerPixel,
+			video.screen->format->Rmask, video.screen->format->Gmask,
+			video.screen->format->Bmask, video.screen->format->Amask);
 
+			
+		if (SDL_MUSTLOCK(video.screen)) SDL_LockSurface(video.screen);
+		if (SDL_MUSTLOCK(offscreen)) SDL_LockSurface(offscreen);
 		
-	if (SDL_MUSTLOCK(video.screen)) SDL_LockSurface(video.screen);
-	if (SDL_MUSTLOCK(offscreen)) SDL_LockSurface(offscreen);
-	
-	SDL_Rect dst;
-    dst.x = 32;
-    dst.y = 24;
-    dst.w = 320 - 2 * 32;
-    dst.h = 240 - 2 * 24;
-	
-	SDL_Rect src = { 0, 0, 320, 240 };
+		SDL_Rect dst;
+	    dst.x = 32;
+	    dst.y = 24;
+	    dst.w = video.xres - 2 * 32;
+	    dst.h = video.yres - 2 * 24;
+		
+		SDL_Rect src = { 0, 0, video.xres, video.yres };
 
-	SDL_SoftStretch(video.screen, &dst, offscreen, &src);	
-	SDL_BlitSurface(offscreen, NULL, video.screen, NULL);
+		SDL_SoftStretch(video.screen, &dst, offscreen, &src);	
+		SDL_BlitSurface(offscreen, NULL, video.screen, NULL);
 
-	if (SDL_MUSTLOCK(video.screen)) SDL_LockSurface(video.screen);
-	if (SDL_MUSTLOCK(offscreen)) SDL_LockSurface(offscreen);
+		if (SDL_MUSTLOCK(video.screen)) SDL_LockSurface(video.screen);
+		if (SDL_MUSTLOCK(offscreen)) SDL_LockSurface(offscreen);
 
-	if (offscreen) {
-		SDL_FreeSurface(offscreen);
+		if (offscreen) {
+			SDL_FreeSurface(offscreen);
+		}
 	}
 	#endif
 	

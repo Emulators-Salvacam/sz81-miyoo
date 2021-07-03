@@ -1626,6 +1626,18 @@ void manage_cursor_input(void) {
 						hotspots[HS_RUNOPTS2_SAVE].flags |= HS_PROP_SELECTED;
 					} else if (hs_currently_selected == HS_RUNOPTS2_VOLUME_UP) {
 						hotspots[HS_RUNOPTS2_NEXT].flags |= HS_PROP_SELECTED;
+					#if defined(PLATFORM_MIYOO)
+					}else if (hs_currently_selected == HS_RUNOPTS2_BACK) {
+						hotspots[HS_RUNOPTS2_FULLS_YES].flags |= HS_PROP_SELECTED;
+					}else if (hs_currently_selected == HS_RUNOPTS2_SAVE) {
+						hotspots[HS_RUNOPTS2_FULLS_NO].flags |= HS_PROP_SELECTED;
+
+
+					}else if (hs_currently_selected == HS_RUNOPTS2_FULLS_YES) {
+						hotspots[HS_RUNOPTS2_FGC_B_DN].flags |= HS_PROP_SELECTED;
+					}else if (hs_currently_selected == HS_RUNOPTS2_FULLS_NO) {
+						hotspots[HS_RUNOPTS2_FGC_B_UP].flags |= HS_PROP_SELECTED;
+					#endif
 					} else if (hs_currently_selected >= HS_RUNOPTS2_KRDELAY_DN &&
 						hs_currently_selected <= HS_RUNOPTS2_FGC_R_DN) {
 						hotspots[hs_currently_selected - 2].flags |= HS_PROP_SELECTED;
@@ -1820,6 +1832,20 @@ void manage_cursor_input(void) {
 					} else if (hs_currently_selected >= HS_RUNOPTS2_FGC_R_DN && 
 						hs_currently_selected <= HS_RUNOPTS2_BGC_B_UP) {
 						hotspots[hs_currently_selected + 4].flags |= HS_PROP_SELECTED;
+
+					#if defined(PLATFORM_MIYOO)
+					}else if (hs_currently_selected == HS_RUNOPTS2_FGC_B_DN) {
+						hotspots[HS_RUNOPTS2_FULLS_YES].flags |= HS_PROP_SELECTED;
+					}else if (hs_currently_selected == HS_RUNOPTS2_FGC_B_UP) {
+						hotspots[HS_RUNOPTS2_FULLS_NO].flags |= HS_PROP_SELECTED;
+
+
+					}else if (hs_currently_selected == HS_RUNOPTS2_FULLS_YES) {
+						hotspots[HS_RUNOPTS2_BACK].flags |= HS_PROP_SELECTED;
+					}else if (hs_currently_selected == HS_RUNOPTS2_FULLS_NO) {
+						hotspots[HS_RUNOPTS2_SAVE].flags |= HS_PROP_SELECTED;
+					#endif
+
 					}
 				} else if (get_active_component() == COMP_RUNOPTS3) {
 					key_repeat_manager(KRM_FUNC_REPEAT, &event, COMP_RUNOPTS3 * CURSOR_S);
@@ -2016,7 +2042,11 @@ void manage_cursor_input(void) {
 					hotspots[hs_currently_selected].flags &= ~HS_PROP_SELECTED;
 					if (hs_currently_selected == HS_RUNOPTS2_VOLUME_DN || 
 						hs_currently_selected == HS_RUNOPTS2_KRDELAY_DN ||
-						hs_currently_selected == HS_RUNOPTS2_KRINTERVAL_DN) {
+						hs_currently_selected == HS_RUNOPTS2_KRINTERVAL_DN
+						#if defined(PLATFORM_MIYOO)
+						|| hs_currently_selected == HS_RUNOPTS2_FULLS_YES
+						#endif
+						) {
 						hotspots[hs_currently_selected + 1].flags |= HS_PROP_SELECTED;
 					} else if (hs_currently_selected == HS_RUNOPTS2_FGC_R_DN || 
 						hs_currently_selected == HS_RUNOPTS2_FGC_G_DN ||
@@ -2198,7 +2228,11 @@ void manage_cursor_input(void) {
 					hotspots[hs_currently_selected].flags &= ~HS_PROP_SELECTED;
 					if (hs_currently_selected == HS_RUNOPTS2_VOLUME_UP || 
 						hs_currently_selected == HS_RUNOPTS2_KRDELAY_UP ||
-						hs_currently_selected == HS_RUNOPTS2_KRINTERVAL_UP) {
+						hs_currently_selected == HS_RUNOPTS2_KRINTERVAL_UP 						
+						#if defined(PLATFORM_MIYOO)
+						|| hs_currently_selected == HS_RUNOPTS2_FULLS_NO
+						#endif
+						) {
 						hotspots[hs_currently_selected - 1].flags |= HS_PROP_SELECTED;
 					} else if (hs_currently_selected == HS_RUNOPTS2_BGC_R_UP || 
 						hs_currently_selected == HS_RUNOPTS2_BGC_G_UP ||
@@ -2517,6 +2551,18 @@ void manage_all_input(void) {
 					key_repeat_manager(KRM_FUNC_RELEASE, NULL, 0);
 				}
 			#endif
+		#if defined(PLATFORM_MIYOO)
+		} else if (id == SDLK_x) {
+			if (runtime_options[2].state) {
+				/* No Full Screen */
+				sdl_emulator.fullscr = FULL_SCREEN_NO;
+			}
+		} else if (id == SDLK_y) {
+			if (runtime_options[2].state) {
+				/* Yes Full Screen */
+				sdl_emulator.fullscr = FULL_SCREEN_YES;
+			}
+		#endif
 		}
 	}
 }

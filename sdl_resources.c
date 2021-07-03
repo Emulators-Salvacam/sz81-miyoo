@@ -154,6 +154,9 @@ void sdl_rcfile_read(void) {
 	struct keyrepeat read_key_repeat;
 	struct colourtable read_colours;
 	int read_emulator_speed, read_emulator_frameskip, read_emulator_model;
+	#if defined(PLATFORM_MIYOO)
+	int read_emulator_fullscreen;
+	#endif
 	int read_vkeyb_alpha, read_vkeyb_autohide, read_vkeyb_toggle_shift;
 	int read_sound_volume, read_sound_device, read_sound_stereo;
 	int read_emulator_ramsize, read_emulator_invert;
@@ -189,6 +192,9 @@ void sdl_rcfile_read(void) {
 	read_emulator_speed = UNDEFINED;
 	read_emulator_frameskip = UNDEFINED;
 	read_emulator_model = UNDEFINED;
+	#if defined(PLATFORM_MIYOO)
+	read_emulator_fullscreen = UNDEFINED;
+	#endif
 	read_emulator_ramsize = UNDEFINED;
 	read_emulator_invert = UNDEFINED;
 	read_sound_volume = UNDEFINED;
@@ -287,6 +293,19 @@ void sdl_rcfile_read(void) {
 					read_emulator_model = MODEL_ZX80;
 				}
 			}
+
+			#if defined(PLATFORM_MIYOO)
+			strcpy(key, "emulator.fullscreen=");
+			if (!strncmp(line, key, strlen(key))) {
+				strcpy(value, &line[strlen(key)]);
+				if (strcmp(value, "FULL_SCREEN_NO") == 0) {
+					read_emulator_fullscreen = FULL_SCREEN_NO;
+				} else if (strcmp(value, "FULL_SCREEN_YES") == 0) {
+					read_emulator_fullscreen = FULL_SCREEN_YES;
+				}
+			}
+			#endif
+
 			strcpy(key, "emulator.ramsize=");
 			if (!strncmp(line, key, strlen(key))) {
 				sscanf(&line[strlen(key)], "%i", &read_emulator_ramsize);
@@ -502,6 +521,9 @@ void sdl_rcfile_read(void) {
 		printf("read_emulator_speed=%i\n", read_emulator_speed);
 		printf("read_emulator_frameskip=%i\n", read_emulator_frameskip);
 		printf("read_emulator_model=%i\n", read_emulator_model);
+		#if defined(PLATFORM_MIYOO)
+		printf("read_emulator_fullscreen=%i\n", read_emulator_fullscreen);
+		#endif
 		printf("read_emulator_ramsize=%i\n", read_emulator_ramsize);
 		printf("read_emulator_invert=%i\n", read_emulator_invert);
 		printf("read_sound_volume=%i\n", read_sound_volume);
@@ -594,6 +616,11 @@ void sdl_rcfile_read(void) {
 
 		/* Machine model (it's vetted) */
 		if (read_emulator_model != UNDEFINED) *sdl_emulator.model = read_emulator_model;
+
+		#if defined(PLATFORM_MIYOO)
+		/* full screen (it's vetted) */
+		if (read_emulator_fullscreen != UNDEFINED) sdl_emulator.fullscr = read_emulator_fullscreen;
+		#endif
 
 		/* RAM size */
 		if (read_emulator_ramsize != UNDEFINED) {
@@ -1036,6 +1063,17 @@ void rcfile_write(void) {
 		strcat(value, "MODEL_ZX81");
 	}
 	fprintf(fp, "%s=%s\n", key, value);
+
+	#if defined(PLATFORM_MIYOO)
+	/* sdl_emulator.fullscreen */
+	strcpy(key, "emulator.fullscreen"); strcpy(value, "");
+	if (sdl_emulator.fullscr == FULL_SCREEN_NO) {
+		strcat(value, "FULL_SCREEN_NO");
+	} else if (sdl_emulator.fullscr == FULL_SCREEN_YES) {
+		strcat(value, "FULL_SCREEN_YES");
+	}
+	fprintf(fp, "%s=%s\n", key, value);
+	#endif
 
 	fprintf(fp, "emulator.ramsize=%i\n", sdl_emulator.ramsize);
 

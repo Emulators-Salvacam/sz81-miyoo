@@ -64,6 +64,12 @@
 	#define SOUND_BUFFER_SIZE (1024 * 16)
 #endif
 
+#if defined(PLATFORM_MIYOO)
+/* Full Screen */
+#define FULL_SCREEN_NO 0
+#define FULL_SCREEN_YES 1
+#endif
+
 /* Variables */
 int keyboard_buffer[MAX_KEYCODES];
 
@@ -84,6 +90,9 @@ struct {
 	int speed;		/* 10ms=200%, 20ms=100%, 30ms=66%, 40ms=50% */
 	int frameskip;	/* 0 to MAX_FRAMESKIP */
 	int *model;		/* Points to z81's zx80: 0=ZX81, 1=ZX80 */
+	#if defined(PLATFORM_MIYOO)
+	int *fullscr;		/* 0=NO, 1=YES */
+	#endif
 	int ramsize;	/* 1, 2, 3, 4, 16, 32, 48 or 56K */
 	int invert;		/* This should really be in video but it's easier to put it here */
 	int autoload;	/* Set to TRUE when auto-loading or forced-loading */
