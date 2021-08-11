@@ -196,7 +196,7 @@ void sdl_hotspots_init(void) {
 	hotspots[HS_RUNOPTS0_RAM_DN].remap_id = SDLK_INSERT;
 	hotspots[HS_RUNOPTS0_RAM_UP].remap_id = SDLK_DELETE;
 	hotspots[HS_RUNOPTS0_M1NOT_NO].remap_id = SDLK_3;
-	hotspots[HS_RUNOPTS0_M1NOT_NO].flags |= HS_PROP_SELECTED;	/* Default selected */
+	//hotspots[HS_RUNOPTS0_M1NOT_NO].flags |= HS_PROP_SELECTED;	/* Default selected */
 	hotspots[HS_RUNOPTS0_M1NOT_YES].remap_id = SDLK_4;
 	hotspots[HS_RUNOPTS0_FRAMESKIP_DN].remap_id = SDLK_LEFTBRACKET;
 	hotspots[HS_RUNOPTS0_FRAMESKIP_UP].remap_id = SDLK_RIGHTBRACKET;

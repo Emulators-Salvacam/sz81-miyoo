@@ -1593,20 +1593,23 @@ void manage_cursor_input(void) {
 					hotspots[hs_currently_selected].flags &= ~HS_PROP_SELECTED;
 					if (hs_currently_selected == HS_RUNOPTS0_ZX80 ||
 						hs_currently_selected == HS_RUNOPTS0_ZX81) {
-						hotspots[hs_currently_selected + 8].flags |= HS_PROP_SELECTED;
+						hotspots[hs_currently_selected + 10].flags |= HS_PROP_SELECTED;
 					} else if (hs_currently_selected == HS_RUNOPTS0_NEXT) {
 						hotspots[hs_currently_selected - 3].flags |= HS_PROP_SELECTED;
 					} else {
 						hotspots[hs_currently_selected - 2].flags |= HS_PROP_SELECTED;
 					}
+					/*
 					if (hs_currently_selected == HS_RUNOPTS0_M1NOT_NO ||
 						hs_currently_selected == HS_RUNOPTS0_M1NOT_YES) {
 						hotspots[hs_currently_selected + 8].flags |= HS_PROP_SELECTED;
-					} else if (hs_currently_selected == HS_RUNOPTS0_NEXT) {
+					} else 
+					if (hs_currently_selected == HS_RUNOPTS0_NEXT) {
 						hotspots[hs_currently_selected - 3].flags |= HS_PROP_SELECTED;
 					} else {
 						hotspots[hs_currently_selected - 2].flags |= HS_PROP_SELECTED;
 					}
+					*/
 					#ifndef ENABLE_EMULATION_SPEED_ADJUST
 						hs_currently_selected = get_selected_hotspot(HS_GRP_RUNOPTS0 << runtime_options_which());
 						if (hs_currently_selected == HS_RUNOPTS0_SPEED_DN ||
