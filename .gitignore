@@ -1,6 +1,6 @@
 *.o
 sz81_2.1.7/*
-local/
+local/*
 *.swp
 sdl_hosposts.o
 sdl_input.o
