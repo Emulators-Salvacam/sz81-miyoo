@@ -56,7 +56,12 @@ int sdl_init(void) {
 	#endif
 
 	/* Set-up a default video resolution depending on platform */
-	#if defined(PLATFORM_GP2X) || defined(PLATFORM_DINGUX_A320) && !defined(DEBUG_DINGUX_A320)
+
+	// TODO miyoo remove when remove PLATFORM_GP2X 
+	#if defined (DEBUG_DINGUX_A320)
+		video.xres = 640; video.yres = 480; video.scale = 2;
+		video.fullscreen = FALSE;
+	#elif defined(PLATFORM_GP2X) || defined(PLATFORM_DINGUX_A320) && !defined(DEBUG_DINGUX_A320)
 		video.xres = 320; video.yres = 240; video.scale = 1;
 		video.fullscreen = SDL_FULLSCREEN;
 	#elif defined(PLATFORM_ZAURUS)

@@ -1266,7 +1266,7 @@ void sdl_video_update(void) {
 	#endif
 	
 	#if defined(PLATFORM_MIYOO)
-	if (sdl_emulator.fullscr == FULL_SCREEN_YES) //TODO change for 1 when finish option Full Screen in menu
+	if (sdl_emulator.fullscr == FULL_SCREEN_YES)
 	{
 		offscreen = SDL_CreateRGBSurface(SDL_SWSURFACE, video.xres, video.yres, video.screen->format->BitsPerPixel,
 			video.screen->format->Rmask, video.screen->format->Gmask,
