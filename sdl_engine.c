@@ -17,6 +17,7 @@
 
 /* Includes */
 #include "sdl_engine.h"
+#include "w5100.h"
 
 /* Defines */
 
@@ -61,9 +62,6 @@ int sdl_init(void) {
 	#elif defined(PLATFORM_ZAURUS)
 		video.xres = 640; video.yres = 480; video.scale = 2;
 		video.fullscreen = SDL_FULLSCREEN;
-	#elif defined(DEBUG_DINGUX_A320)
-		video.xres = 320; video.yres = 240; video.scale = 1;
-		video.fullscreen = FALSE;
 	#else
 		video.xres = 640; video.yres = 480; video.scale = 2;
 		video.fullscreen = FALSE;
@@ -89,6 +87,7 @@ int sdl_init(void) {
 	sdl_key_repeat.delay = KEY_REPEAT_DELAY;
 	sdl_key_repeat.interval = KEY_REPEAT_INTERVAL;
 	sdl_emulator.model = &zx80;		/* It's a lot easier to do this */
+	sdl_emulator.m1not = 0;
 	sdl_emulator.frameskip = 1;		/* Equivalent to z81's scrn_freq=2 */
 	sdl_emulator.ramsize = 16;		/* 16K is the default */
 	sdl_emulator.invert = 0;		/* Off is the default */
@@ -232,7 +231,7 @@ int sdl_com_line_process(int argc, char *argv[]) {
 				/*   1234567890123456789012345678901234567890 <- Formatting for small terminal. */
 				fprintf (stdout,
 					"z81 2.1 - copyright (C) 1994-2004 Ian Collier and Russell Marks.\n"
-					"sz81 " VERSION " - copyright (C) 2007-2011 Thunor and Chris Young.\n\n"
+					"sz81 " VERSION " (unofficial, see NEWS) - copyright (C) 2007-2011 Thunor and Chris Young.\n\n"
 					"usage: sz81 [-fhw] [-XRESxYRES] [filename.{o|p|80|81}]\n\n"
 					"  -f  run the program fullscreen\n"
 					"  -h  this usage help\n"
@@ -682,6 +681,11 @@ void clean_up_before_exit(void) {
 	#endif
 
 	if (wm_icon) SDL_FreeSurface(wm_icon);
+
+
+	#ifndef PLATFORM_MIYOO
+	w_exit();
+	#endif
 
 	SDL_Quit();
 

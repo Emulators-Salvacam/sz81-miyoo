@@ -399,7 +399,8 @@ void sdl_keyboard_init(void) {
 	ctrl_remaps[index].remap_mod_id = SDLK_LSHIFT;
 
 #else /* ------------------------------------------------------------------------------- */
-	/* Set some default controls for platforms */
+
+	/* Set some default controls for platform */
 	index = -1;
 	/* Keyboard to keyboard */
 	/* Universally active */
@@ -517,7 +518,7 @@ void sdl_keyboard_init(void) {
 	 * Platform specific joysticks can be hardcoded with some defaults
 	 * here but otherwise their configurations should be entirely read
 	 * in from the rcfile since their button/axis layouts are unknown */
-        #ifndef PLATFORM_DINGUX_A320	
+	#ifndef PLATFORM_DINGUX_A320
 	if (joystick) {
 		#if defined(PLATFORM_GP2X)
 			/* Universally active */
@@ -960,6 +961,7 @@ void sdl_keyboard_init(void) {
 	#ifdef SDL_DEBUG_EVENTS
 		printf("%s: ctrl_remaps index=%i\n", __func__, index);
 	#endif
+
 }
 
 /***************************************************************************
@@ -995,7 +997,7 @@ int keyboard_update(void) {
 	int hs_vkeyb_ctb_selected;
 	int hs_runopts_selected;
 	int axis_end = 0;
-/*	SDLMod modstate; inused */ 
+	SDLMod modstate;
 	#ifdef SDL_DEBUG_TIMING
 		static Uint32 lasttime = 0;
 		static int Hz = 0;
@@ -1287,12 +1289,11 @@ int keyboard_update(void) {
 				/* Manage DEVICE_CURSOR input */
 				manage_cursor_input();
 
-				#ifndef PLATFORM_DINGUX_A320 /* removes a bug in 'R' Virtual Keyboard */
+				#ifndef PLATFORM_DINGUX_A320 /* removes a bug in 'R' Virtual Keyboard */				
 				/* Manage sz81 input */
 				if (device == DEVICE_KEYBOARD) {
 					found = FALSE;
 					modstate = SDL_GetModState();
-
 					if (id == SDLK_r && (modstate & (KMOD_ALT | KMOD_MODE))) {
 						/* Cycle screen resolutions on supported platforms */
 						if (state == SDL_PRESSED) {
@@ -1452,10 +1453,8 @@ int keyboard_update(void) {
 void manage_cursor_input(void) {
 	int hs_currently_selected = 0;
 	
-
-	//fprintf(stderr,"video.scale: `%i'.\n",video.scale);
-
 	if (device == DEVICE_CURSOR) {
+
 		/* Locate currently selected hotspot for active component (there can be only one) */
 		if (get_active_component() == COMP_DIALOG) {
 			hs_currently_selected = get_selected_hotspot(HS_GRP_DIALOG);
@@ -1482,7 +1481,7 @@ void manage_cursor_input(void) {
 				 * which will hit a hotspot and generate a keyboard event.
 				 * I'm adding 128 to the mouse button index to make them
 				 * uniquely identifiable in keyboard_update's hotspot code */
-#if defined(DEBUG_DINGUX_A320)
+				#if defined(DEBUG_DINGUX_A320)
 				printf("HIT:%d\n",hs_currently_selected);
 /*				printf("hs:%d\n Button pressed: %s\n",hs_currently_selected,keysyms[hs_currently_selected]); // This causes core dump in tests*/
 
@@ -1517,7 +1516,7 @@ void manage_cursor_input(void) {
 						hotspots[hs_currently_selected].hit_w / 2;
 					virtualevent.button.y = hotspots[hs_currently_selected].hit_y +
 						hotspots[hs_currently_selected].hit_h / 2;
-#if defined(DEBUG_DINGUX_A320)
+						#if defined(DEBUG_DINGUX_A320)
 					if(hs_currently_selected==HS_VKEYB_NEWLINE){
 						printf("OK :%d\n",hs_currently_selected);
 //						virtualevent.type = SDL_MOUSEBUTTONUP;
@@ -1600,6 +1599,14 @@ void manage_cursor_input(void) {
 					} else {
 						hotspots[hs_currently_selected - 2].flags |= HS_PROP_SELECTED;
 					}
+					if (hs_currently_selected == HS_RUNOPTS0_M1NOT_NO ||
+						hs_currently_selected == HS_RUNOPTS0_M1NOT_YES) {
+						hotspots[hs_currently_selected + 8].flags |= HS_PROP_SELECTED;
+					} else if (hs_currently_selected == HS_RUNOPTS0_NEXT) {
+						hotspots[hs_currently_selected - 3].flags |= HS_PROP_SELECTED;
+					} else {
+						hotspots[hs_currently_selected - 2].flags |= HS_PROP_SELECTED;
+					}
 					#ifndef ENABLE_EMULATION_SPEED_ADJUST
 						hs_currently_selected = get_selected_hotspot(HS_GRP_RUNOPTS0 << runtime_options_which());
 						if (hs_currently_selected == HS_RUNOPTS0_SPEED_DN ||
@@ -1651,7 +1658,7 @@ void manage_cursor_input(void) {
 				} else if (get_active_component() == COMP_RUNOPTS3) {
 					key_repeat_manager(KRM_FUNC_REPEAT, &event, COMP_RUNOPTS3 * CURSOR_N);
 					hotspots[hs_currently_selected].flags &= ~HS_PROP_SELECTED;
-
+					
 					#if defined(PLATFORM_DINGUX_A320)
 					if (hs_currently_selected == HS_RUNOPTS3_JOY_CFG_LTRIG) {
 						hotspots[HS_RUNOPTS3_BACK].flags |= HS_PROP_SELECTED;
@@ -1710,7 +1717,7 @@ void manage_cursor_input(void) {
 						hotspots[HS_RUNOPTS3_JOY_CFG_DOWN].flags |= HS_PROP_SELECTED;
 					} else if (hs_currently_selected == HS_RUNOPTS3_SAVE) {
 						hotspots[HS_RUNOPTS3_JOY_CFG_START].flags |= HS_PROP_SELECTED;
-
+						
 					#if defined(PLATFORM_MIYOO)
 					}else if (hs_currently_selected == HS_RUNOPTS3_SAVE_GAME) {
 						hotspots[HS_RUNOPTS3_KEY_X].flags |= HS_PROP_SELECTED;
@@ -1845,12 +1852,12 @@ void manage_cursor_input(void) {
 					}else if (hs_currently_selected == HS_RUNOPTS2_FULLS_NO) {
 						hotspots[HS_RUNOPTS2_SAVE].flags |= HS_PROP_SELECTED;
 					#endif
-
+					
 					}
 				} else if (get_active_component() == COMP_RUNOPTS3) {
 					key_repeat_manager(KRM_FUNC_REPEAT, &event, COMP_RUNOPTS3 * CURSOR_S);
 					hotspots[hs_currently_selected].flags &= ~HS_PROP_SELECTED;
-
+					
 					/* dingoo key remap - down*/
 					#if defined(PLATFORM_DINGUX_A320)
 					if (hs_currently_selected == HS_RUNOPTS3_BACK ||
@@ -1940,18 +1947,11 @@ void manage_cursor_input(void) {
 					} else if (hs_currently_selected == HS_RUNOPTS3_JOY_CFG_A ||
 						hs_currently_selected == HS_RUNOPTS3_JOY_CFG_B) {
 						hotspots[HS_RUNOPTS3_JOY_CFG_X].flags |= HS_PROP_SELECTED;
-
 					} else if (hs_currently_selected == HS_RUNOPTS3_JOY_CFG_DOWN) {
 						hotspots[HS_RUNOPTS3_BACK].flags |= HS_PROP_SELECTED;
-
 					} else if (hs_currently_selected == HS_RUNOPTS3_JOY_CFG_SELECT ||
 						hs_currently_selected == HS_RUNOPTS3_JOY_CFG_START) {
 						hotspots[HS_RUNOPTS3_SAVE].flags |= HS_PROP_SELECTED;
-
-					// } else if (hs_currently_selected == HS_RUNOPTS3_JOY_CFG_SELECT ||
-					// 	hs_currently_selected == HS_RUNOPTS3_JOY_CFG_START) {
-					// 	hotspots[HS_RUNOPTS3_SAVE_GAME].flags |= HS_PROP_SELECTED;
-
 					} else if (hs_currently_selected == HS_RUNOPTS3_JOY_CFG_X) {
 						hotspots[HS_RUNOPTS3_EXIT].flags |= HS_PROP_SELECTED;
 					}
@@ -2019,6 +2019,7 @@ void manage_cursor_input(void) {
 					hotspots[hs_currently_selected].flags &= ~HS_PROP_SELECTED;
 					if (hs_currently_selected == HS_RUNOPTS0_ZX80 ||
 						hs_currently_selected == HS_RUNOPTS0_RAM_DN ||
+						hs_currently_selected == HS_RUNOPTS0_M1NOT_NO ||
 						hs_currently_selected == HS_RUNOPTS0_FRAMESKIP_DN ||
 						hs_currently_selected == HS_RUNOPTS0_SPEED_DN) {
 						hotspots[hs_currently_selected + 1].flags |= HS_PROP_SELECTED;
@@ -2042,7 +2043,7 @@ void manage_cursor_input(void) {
 					hotspots[hs_currently_selected].flags &= ~HS_PROP_SELECTED;
 					if (hs_currently_selected == HS_RUNOPTS2_VOLUME_DN || 
 						hs_currently_selected == HS_RUNOPTS2_KRDELAY_DN ||
-						hs_currently_selected == HS_RUNOPTS2_KRINTERVAL_DN
+						hs_currently_selected == HS_RUNOPTS2_KRINTERVAL_DN 
 						#if defined(PLATFORM_MIYOO)
 						|| hs_currently_selected == HS_RUNOPTS2_FULLS_YES
 						#endif
@@ -2205,6 +2206,7 @@ void manage_cursor_input(void) {
 					hotspots[hs_currently_selected].flags &= ~HS_PROP_SELECTED;
 					if (hs_currently_selected == HS_RUNOPTS0_ZX81 ||
 						hs_currently_selected == HS_RUNOPTS0_RAM_UP ||
+						hs_currently_selected == HS_RUNOPTS0_M1NOT_YES ||
 						hs_currently_selected == HS_RUNOPTS0_FRAMESKIP_UP ||
 						hs_currently_selected == HS_RUNOPTS0_SPEED_UP) {
 						hotspots[hs_currently_selected - 1].flags |= HS_PROP_SELECTED;
@@ -2228,7 +2230,7 @@ void manage_cursor_input(void) {
 					hotspots[hs_currently_selected].flags &= ~HS_PROP_SELECTED;
 					if (hs_currently_selected == HS_RUNOPTS2_VOLUME_UP || 
 						hs_currently_selected == HS_RUNOPTS2_KRDELAY_UP ||
-						hs_currently_selected == HS_RUNOPTS2_KRINTERVAL_UP 						
+						hs_currently_selected == HS_RUNOPTS2_KRINTERVAL_UP 
 						#if defined(PLATFORM_MIYOO)
 						|| hs_currently_selected == HS_RUNOPTS2_FULLS_NO
 						#endif
@@ -2302,7 +2304,7 @@ void manage_cursor_input(void) {
 					#else
 					if (hs_currently_selected == HS_RUNOPTS3_JDEADZ_UP) {
 						hotspots[HS_RUNOPTS3_JDEADZ_DN].flags |= HS_PROP_SELECTED;
-					} else 	if (hs_currently_selected == HS_RUNOPTS3_JOY_CFG_RTRIG) {
+					} else if (hs_currently_selected == HS_RUNOPTS3_JOY_CFG_RTRIG) {
 						hotspots[HS_RUNOPTS3_JOY_CFG_LTRIG].flags |= HS_PROP_SELECTED;
 					} else if (hs_currently_selected == HS_RUNOPTS3_JOY_CFG_UP ||
 						hs_currently_selected == HS_RUNOPTS3_JOY_CFG_DOWN) {
@@ -2849,7 +2851,15 @@ void manage_runopts_input(void) {
 				}
 			}
 		} else if (id == SDLK_3 || id == SDLK_4) {
-			if (runtime_options[1].state) {
+			if (runtime_options[0].state) {
+					if (state == SDL_PRESSED) {
+						if (id == SDLK_3) {
+							sdl_emulator.m1not = 0;
+						} else {
+							sdl_emulator.m1not = 1;
+						}
+					}
+			} else if (runtime_options[1].state) {
 				#ifdef OSS_SOUND_SUPPORT
 					if (state == SDL_PRESSED) {
 						if (id == SDLK_3) {
@@ -3457,6 +3467,7 @@ void runopts_transit(int state) {
 	if (state == TRANSIT_OUT) {
 		if (last_state != TRANSIT_SAVE) {
 			/* Restore the original contents of these variables */
+			sdl_emulator.m1not = runopts_emulator_m1not;
 			sdl_emulator.frameskip = runopts_emulator_frameskip;
 			sdl_key_repeat.delay = runopts_key_repeat.delay;
 			sdl_key_repeat.interval = runopts_key_repeat.interval;
@@ -3472,6 +3483,7 @@ void runopts_transit(int state) {
 		runopts_emulator_speed = sdl_emulator.speed;
 		runopts_emulator_model = *sdl_emulator.model;
 		runopts_emulator_ramsize = sdl_emulator.ramsize;
+		runopts_emulator_m1not = sdl_emulator.m1not;
 		runopts_emulator_frameskip = sdl_emulator.frameskip;
 		runopts_sound_device = sdl_sound.device;
 		runopts_sound_stereo = sdl_sound.stereo;

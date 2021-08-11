@@ -68,7 +68,7 @@ void sdl_zxprinter_init(void) {
 	char unique[32];
 	int	nextnum;
 
-	#if defined(PLATFORM_GP2X) || defined(__amigaos4__) || defined(_WIN32) || defined(PLATFORM_DINGUX_A320)
+	#if defined(PLATFORM_GP2X) || defined(__amigaos4__) || defined(_WIN32)
 		strcpy(zxprinter.filename, LOCAL_DATA_DIR);
 	#else
 		strcpy(zxprinter.filename, getenv ("HOME"));
@@ -107,13 +107,8 @@ void local_data_dir_init(void) {
 	int count;
 	
 	/* Create local data directory structure whilst ignoring errors */
-
-      #if defined(INDIVIDUAL_SETTINGS)
-	for (count = 0; count < 6; count++) {
-      #else
 	for (count = 0; count < 5; count++) {
-      #endif
-		#if defined(PLATFORM_GP2X) || defined(__amigaos4__) || defined(_WIN32) || defined(PLATFORM_DINGUX_A320)
+		#if defined(PLATFORM_GP2X) || defined(__amigaos4__) || defined(_WIN32)
 			strcpy(foldername, LOCAL_DATA_DIR);
 		#else
 			strcpy(foldername, getenv ("HOME"));
@@ -133,13 +128,6 @@ void local_data_dir_init(void) {
 			strcatdelimiter(foldername);
 			strcat(foldername, LOCAL_PROGRM_DIR);
 		}
-		#if defined(INDIVIDUAL_SETTINGS)
-		else if (count == 5){
-			strcatdelimiter(foldername);
-			strcat(foldername, LOCAL_INDIVIDUAL_SET);
-		}
-
-		#endif
 		mkdir(foldername, 0755);
 	}
 }
@@ -153,7 +141,7 @@ void sdl_rcfile_read(void) {
 	struct ctrlremap read_ctrl_remaps[MAX_CTRL_REMAPS];
 	struct keyrepeat read_key_repeat;
 	struct colourtable read_colours;
-	int read_emulator_speed, read_emulator_frameskip, read_emulator_model;
+	int read_emulator_m1not, read_emulator_speed, read_emulator_frameskip, read_emulator_model;
 	#if defined(PLATFORM_MIYOO)
 	int read_emulator_fullscreen;
 	#endif
@@ -176,7 +164,7 @@ void sdl_rcfile_read(void) {
 	strcatdelimiter(rcfile.filename);
 	strcat(rcfile.filename, RESOURCE_FILE);
 
-	//fprintf(stdout, "Reading from %s\n", rcfile.filename);
+	fprintf(stdout, "Reading from %s\n", rcfile.filename);
 	if ((fp = fopen(rcfile.filename, "r")) == NULL) {
 		fprintf(stderr, "%s: Cannot read from %s\n", __func__, rcfile.filename);
 		/* Schedule a new rcfile */
@@ -189,6 +177,7 @@ void sdl_rcfile_read(void) {
 	read_joystick_dead_zone = UNDEFINED;
 	read_key_repeat.delay = UNDEFINED;
 	read_key_repeat.interval = UNDEFINED;
+	read_emulator_m1not = UNDEFINED;
 	read_emulator_speed = UNDEFINED;
 	read_emulator_frameskip = UNDEFINED;
 	read_emulator_model = UNDEFINED;
@@ -266,6 +255,10 @@ void sdl_rcfile_read(void) {
 			strcpy(key, "key_repeat.interval=");
 			if (!strncmp(line, key, strlen(key))) {
 				sscanf(&line[strlen(key)], "%i", &read_key_repeat.interval);
+			}
+			strcpy(key, "emulator.m1not=");
+			if (!strncmp(line, key, strlen(key))) {
+				sscanf(&line[strlen(key)], "%i", &read_emulator_m1not);
 			}
 			strcpy(key, "emulator.speed=");
 			if (!strncmp(line, key, strlen(key))) {
@@ -518,6 +511,7 @@ void sdl_rcfile_read(void) {
 		printf("read_joystick_dead_zone=%i\n", read_joystick_dead_zone);
 		printf("read_key_repeat.delay=%i\n", read_key_repeat.delay);
 		printf("read_key_repeat.interval=%i\n", read_key_repeat.interval);
+		printf("read_emulator_m1not=%i\n", read_emulator_m1not);
 		printf("read_emulator_speed=%i\n", read_emulator_speed);
 		printf("read_emulator_frameskip=%i\n", read_emulator_frameskip);
 		printf("read_emulator_model=%i\n", read_emulator_model);
@@ -598,6 +592,8 @@ void sdl_rcfile_read(void) {
 					"try 80 to 520\n", __func__);
 			}
 		}
+
+		if (read_emulator_m1not != UNDEFINED) sdl_emulator.m1not = read_emulator_m1not;
 
 		#ifdef ENABLE_EMULATION_SPEED_ADJUST
 			/* Emulation speed (it's vetted) */
@@ -1039,6 +1035,8 @@ void rcfile_write(void) {
 	fprintf(fp, "joystick_dead_zone=%i\n", joystick_dead_zone);
 	fprintf(fp, "key_repeat.delay=%i\n", sdl_key_repeat.delay);
 	fprintf(fp, "key_repeat.interval=%i\n", sdl_key_repeat.interval);
+
+	fprintf(fp, "emulator.m1not=%i\n", sdl_emulator.m1not);
 
 	/* sdl_emulator.speed */
 	strcpy(key, "emulator.speed"); strcpy(value, "");
