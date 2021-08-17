@@ -41,6 +41,9 @@
 #define LOCAL_KEYMAP_DIR "keymap"
 #define LOCAL_KEYMAP_EXT ".kbd"
 #endif
+#if defined(INDIVIDUAL_SETTINGS)
+#define LOCAL_INDIVIDUAL_SET "indset"
+#endif
 
 /* Bitmap font IDs */
 #define BMF_FONT_ZX80 0

@@ -21,6 +21,10 @@
 #include "common.h"
 #include "sound.h"
 #include "z80.h"
+#ifdef SZ81	/* Added by Thunor */
+#include "sdl.h"
+#endif
+
 
 #define parity(a) (partable[a])
 
@@ -54,11 +58,10 @@ unsigned char scrnbmp_old[ZX_VID_FULLWIDTH*ZX_VID_FULLHEIGHT/8];
 
 /* chroma */
 unsigned char scrnbmpc_new[ZX_VID_FULLWIDTH*ZX_VID_FULLHEIGHT/8]; /* written */
-unsigned char scrnbmpc[ZX_VID_FULLWIDTH*ZX_VID_FULLHEIGHT/8];	/* displayed */
-						/* checked against for diffs */
+unsigned char scrnbmpc[ZX_VID_FULLWIDTH*ZX_VID_FULLHEIGHT/8]; /* displayed */
+            /* checked against for diffs */
 
 #ifdef SZ81	/* Added by Thunor. I need these to be visible to sdl_loadsave.c */
-#include "sdl_sound.h"
 int liney=0, lineyi=0;
 int vsy=0;
 unsigned long linestart=0;
@@ -95,11 +98,7 @@ vsync_toggle++;
 /* we don't emulate this stuff by default; if nothing else,
  * it can be fscking annoying when you're typing in a program.
  */
-#ifdef OSS_SOUND_SUPPORT
-if(sdl_sound.device != DEVICE_VSYNC)
-#else
 if(!vsync_visuals)
-#endif
   return;
 
 /* even when we do emulate it, we don't bother with x timing,
@@ -285,7 +284,7 @@ executed by the Z80.
       if (op==0x7f) {
         for (ilinex=0; ilinex<7; ilinex++) {
           scrnbmpc_new[liney*(ZX_VID_FULLWIDTH/8)+linex] = bordercolour << 4;
-	  linex += 8;
+    linex += 8;
         }
       } else {
         linestate = 0;
@@ -293,7 +292,7 @@ executed by the Z80.
         if (sdl_emulator.ramsize>=4 && !zx80) {
           liney++;
           lineyi=1;
-	}
+  }
       }
     } else {
       linestate++;
@@ -311,11 +310,12 @@ executed by the Z80.
     unsigned char op2, color;
     
     /* do the ULA's char-generating stuff */
+    //x=LINEX;
     x=linex;
     y=liney;
 /*    printf("ULA %3d,%3d = %02X\n",x,y,op);*/
     if(y>=0 && y<ZX_VID_FULLHEIGHT && x>=0 && x<ZX_VID_FULLWIDTH/8)
-      {
+{
       /* XXX I think this is what's needed for the `true hi-res'
        * stuff from the ULA's side, but the timing is messed up
        * at the moment so not worth it currently.
@@ -330,16 +330,16 @@ executed by the Z80.
       if (chromamode) {
         op2 = ((op&0x80)>>1) | (op&0x3f);
         if (chromamode&0x10)
-	  color = fetch(pc);
+    color = fetch(pc);
         else
-	  color = fetch(0xc000|(op2<<3)|ulacharline);
+    color = fetch(0xc000|(op2<<3)|ulacharline);
         scrnbmpc_new[y*(ZX_VID_FULLWIDTH/8)+x] = color;
       }
 
       }
 
+    
     op=0;	/* the CPU sees a nop */
-
     }
 
   pc++;
@@ -414,18 +414,14 @@ executed by the Z80.
      * but if we just loaded/saved, wait for the first real frame instead
      * to avoid jumpiness.
      */
-    if(!vsync && tstates-lastvsyncpend>=tsmax*2 && !framewait)
+    if(!vsync && tstates-lastvsyncpend>=tsmax && !framewait)
       vsyncpend=1;
 
     /* but that won't ever happen if we always have vsync on -
      * i.e., if we're grinding away in FAST mode. So for that
      * case, we check for vsync being held for a full frame.
      */
-#ifdef OSS_SOUND_SUPPORT
-    if(sdl_sound.device==DEVICE_VSYNC && vsynclen>=tsmax)
-#else
     if(vsync_visuals && vsynclen>=tsmax)
-#endif
       {
       vsyncpend=1;
       vsynclen=1;
@@ -449,9 +445,11 @@ executed by the Z80.
       {
       memcpy(scrnbmp,scrnbmp_new,sizeof(scrnbmp));
       if (chromamode) memcpy(scrnbmpc,scrnbmpc_new,sizeof(scrnbmpc)); /* chroma */
+      
       postcopy:
       memset(scrnbmp_new,0,sizeof(scrnbmp_new));
       if (chromamode) memset(scrnbmpc_new,bordercolour<<4,sizeof(scrnbmpc_new));
+      
       lastvsyncpend=tstates;
       vsyncpend=0;
       framewait=0;
@@ -480,6 +478,7 @@ executed by the Z80.
       /* hardware syncs tstates to falling of NMI pulse (?),
        * so a slight kludge here...
        */
+      //if(fetch(pc&0x7fff)==0x76)
       if (fetchm(pc)==0x76)
         {
         pc++;
@@ -504,6 +503,7 @@ executed by the Z80.
     if(iff1)
       {
 /*      printf("int line %d tst %d\n",liney,tstates);*/
+      //if(fetch(pc&0x7fff)==0x76)pc++;
       if (fetchm(pc)==0x76) pc++;
       iff1=iff2=0;
       tstates+=5; /* accompanied by an input from the data bus */

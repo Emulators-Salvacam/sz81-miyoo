@@ -35,19 +35,19 @@ char *runtime_options_text0[24] = {
 	"",
 	"  (\x1 \x1) ZX80  (\x1 \x1) ZX81",
 	"",
-	"RAM Size \x90\x2<\x2\x85 \x1  K \x90\x2>\x2\x85",
+	"RAM Size \x90\x2<\x2\x85 \x1  K\x90\x2>\x2\x85",
 	"",
-	"M1NOT:",
-	"",
-	"  (\x1 \x1) No    (\x1 \x1) Yes",
-	"",
-	"Frameskip\x90\x2<\x2\x85   \x1  \x90\x2>\x2\x85",
+	"Frameskip\x90\x2<\x2\x85   \x1 \x90\x2>\x2\x85",
 	"",
 #ifdef ENABLE_EMULATION_SPEED_ADJUST
-	"Emu Speed\x90\x2<\x2\x85\x1    %\x90\x2>\x2\x85",
+	"Emu Speed\x90\x2<\x2\x85\x1   %\x90\x2>\x2\x85",
 #else
 	"",
 #endif
+	"",
+	"",
+	"",
+	"",
 	"",
 	"",
 	"",
@@ -150,6 +150,33 @@ char *runtime_options_text3[24] = {
 	"\x90\x2<\x2\x85" "Back   Save    Exit          "
 	#endif
 };
+#elif defined(PLATFORM_DINGUX_A320)
+char *runtime_options_text3[24] = {
+	"\x2 Dingoo A320 button mapper  4/4 \x2",
+	"",
+	"   \x87\x83\x83\x83\x83\x83""DINGOO BUTTONS\x83\x83\x83\x83\x83\x2\x84\x2",
+	"    \x2 L \x2                  \x2 R \x2    ",
+	"\x87\x83\x83\x83\x83\x83\x83\x83\x83\x83\x83\x83\x83\x83\x83\x83\x83\x83\x83\x83\x83\x83\x83\x83\x83\x83\x83\x83\x83\x83\x83\x2\x84\x2",
+	"\x85         \x87\x83\x83\x83\x83\x83\x83\x83\x83\x83\x83\x2\x84\x2         \x90",
+	"\x85    \x2 \x2    \x85\x88\x88\x88\x88\x88\x88\x88\x88\x88\x88\x90    \x2X\x2    \x90",
+	"\x85   \x2   \x2   \x85\x88\x88\x88\x88\x88\x88\x88\x88\x88\x88\x90  \x2Y\x2   \x2""A\x2  \x90",
+	"\x85    \x2 \x2    \x85\x88\x88\x88\x88\x88\x88\x88\x88\x88\x88\x90    \x2""B\x2    \x90", 
+	"\x85         \x85\x88\x88\x88\x88\x88\x88\x88\x88\x88\x88\x90         \x90",
+	"\x85   \x2SEL\x2   \x2\x82\x83\x83\x83\x83\x83\x83\x83\x83\x83\x83\x81\x2   \x2STR\x2   \x90",
+	"\x2\x82\x83\x83\x83\x83\x83\x83\x83\x83\x83\x83\x83\x83\x83\x83\x83\x83\x83\x83\x83\x83\x83\x83\x83\x83\x83\x83\x83\x83\x83\x83\x81\x2", 
+	"",
+	"   \x87\x83\x83\x83\x83\x83 ZX KEYBOARD \x83\x83\x83\x83\x83\x83\x2\x84\x2",
+	"      \x2""1""\x2 \x2""2""\x2 \x2""3""\x2 \x2""4""\x2 \x2""5""\x2 \x2""6""\x2 \x2""7""\x2 \x2""8""\x2 \x2""9""\x2 \x2""0""\x2",
+    	"      \x2""Q""\x2 \x2""W""\x2 \x2""E""\x2 \x2""R""\x2 \x2""T""\x2 \x2""Y""\x2 \x2""U""\x2 \x2""I""\x2 \x2""O""\x2 \x2""P""\x2",
+    	"      \x2""A""\x2 \x2""S""\x2 \x2""D""\x2 \x2""F""\x2 \x2""G""\x2 \x2""H""\x2 \x2""J""\x2 \x2""K""\x2 \x2""L""\x2 \x2[NEWLN]\x2",
+	"\x2[SHIFT]\x2 \x2""Z""\x2 \x2""X""\x2 \x2""C""\x2 \x2""V""\x2 \x2""B""\x2 \x2""N""\x2 \x2""M""\x2 \x2"".""\x2 \x2[SPACE]\x2",
+	"",
+	"\x1",
+	"\x1",
+	"\x1",
+	"\x1",
+	"\x90\x2<\x2\x85" "Back   Save    Exit          "
+};
 #else
 char *runtime_options_text3[24] = {
 	"\x2 Joystick Options           4/4 \x2",
@@ -237,7 +264,8 @@ int sdl_video_setmode(void) {
 	#endif
 
 	/* Hide the mouse pointer for certain devices */
-	#if defined(PLATFORM_GP2X) || defined(PLATFORM_ZAURUS) || defined(PLATFORM_DINGUX_A320)
+	#if defined(PLATFORM_GP2X) || defined(PLATFORM_ZAURUS) || \
+		defined(PLATFORM_DINGUX_A320) && !defined(DEBUG_DINGUX_A320)
 		SDL_ShowCursor(SDL_DISABLE);
 	#endif
 	
@@ -843,21 +871,14 @@ void sdl_video_update(void) {
 							}
 						} else if (count == 4) {
 							sprintf(text, "%2i", runopts_emulator_ramsize);
-						} else if (count >= 5 && count <= 8) {
-							if (count == 5 || count == 7) strcpy(text, "O");
-							if ((count <= 6 && !sdl_emulator.m1not) || 
-								(count >= 7 && sdl_emulator.m1not)) {
-								/* Invert the colours */
-								invertcolours = !invertcolours;
-							}
-						} else if (count == 9) {
+						} else if (count == 5) {
 							sprintf(text, "%1i", sdl_emulator.frameskip);
 					#ifdef ENABLE_EMULATION_SPEED_ADJUST
-						} else if (count == 10) {
-							sprintf(text, "%4i", 2000 / runopts_emulator_speed);
-						} else if (count == 11) {
+						} else if (count == 6) {
+							sprintf(text, "%3i", 2000 / runopts_emulator_speed);
+						} else if (count == 7) {
 					#else
-						} else if (count == 10) {
+						} else if (count == 6) {
 							if (runopts_is_a_reset_scheduled())
 								strcpy(text, "* A reset is scheduled on save *");
 					#endif
@@ -1266,7 +1287,7 @@ void sdl_video_update(void) {
 	#endif
 	
 	#if defined(PLATFORM_MIYOO)
-	if (sdl_emulator.fullscr == FULL_SCREEN_YES)
+	if (sdl_emulator.fullscr == FULL_SCREEN_YES) //TODO change for 1 when finish option Full Screen in menu
 	{
 		offscreen = SDL_CreateRGBSurface(SDL_SWSURFACE, video.xres, video.yres, video.screen->format->BitsPerPixel,
 			video.screen->format->Rmask, video.screen->format->Gmask,
@@ -1762,7 +1783,7 @@ void save_screenshot(void) {
 	char fullpath[256], filename[256];
 	int nextnum;
 
-	#if defined(PLATFORM_GP2X) || defined(__amigaos4__) || defined(_WIN32)  || defined(PLATFORM_DINGUX_A320)
+	#if defined(PLATFORM_GP2X) || defined(__amigaos4__) || defined(_WIN32) || defined(PLATFORM_DINGUX_A320)
 		strcpy(fullpath, LOCAL_DATA_DIR);
 	#else
 		strcpy(fullpath, getenv ("HOME"));

@@ -192,7 +192,7 @@ int main(int argc, char *argv[]) {
 			/* I personally like to dump this about here so that if
 			 * something goes wrong then it's clear to the user where
 			 * everything is supposed to be */
-			fprintf(stdout, "PACKAGE_DATA_DIR is %s\n", PACKAGE_DATA_DIR);
+			//fprintf(stdout, "PACKAGE_DATA_DIR is %s\n", PACKAGE_DATA_DIR);
 
 			/* Set the video mode, set-up component screen offsets,
 			 * initialise fonts, icons, vkeyb and control bar */ 
