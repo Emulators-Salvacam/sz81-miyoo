@@ -995,7 +995,7 @@ int keyboard_update(void) {
 	int hs_vkeyb_ctb_selected;
 	int hs_runopts_selected;
 	int axis_end = 0;
-/*	SDLMod modstate; inused */ 
+	SDLMod modstate;
 	#ifdef SDL_DEBUG_TIMING
 		static Uint32 lasttime = 0;
 		static int Hz = 0;

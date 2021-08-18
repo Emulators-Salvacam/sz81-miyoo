@@ -15,7 +15,8 @@
 PREFIX?=.
 BINDIR?=$(PREFIX)
 DOCDIR?=$(PREFIX)
-PACKAGE_DATA_DIR?=$(PREFIX)/data
+#PACKAGE_DATA_DIR?=$(PREFIX)/data
+PACKAGE_DATA_DIR?=/home/salva/src/sz81/data
 
 # For sz81 OSS_SOUND_SUPPORT is now synonymous with SDL_SOUND_SUPPORT.
 # Comment this out if you don't want sound support.

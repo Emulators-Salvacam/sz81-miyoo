@@ -17,6 +17,7 @@
 
 /* Includes */
 #include "sdl_engine.h"
+#include "common.h"
 
 /* Defines */
 
@@ -759,6 +760,9 @@ int sdl_load_file(int parameter, int method) {
 	if (method != LOAD_FILE_METHOD_STATELOAD) {
 		/* We've finished with the load file dialog now */
 		load_file_dialog.method = LOAD_FILE_METHOD_NONE;
+
+		chromamode=0;
+		
 		/* Read the mapping game file */
 		#if defined (PLATFORM_MIYOO)
 		mapping_game_read();
