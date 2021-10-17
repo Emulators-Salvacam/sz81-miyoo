@@ -201,6 +201,10 @@ void sdl_hotspots_init(void) {
 		hotspots[HS_RUNOPTS0_SPEED_DN].remap_id = SDLK_1;
 		hotspots[HS_RUNOPTS0_SPEED_UP].remap_id = SDLK_2;
 	#endif
+	
+	#if defined(PLATFORM_MIYOO)
+	hotspots[HS_RUNOPTS0_CLOSE].remap_id = SDLK_END;
+	#endif
 	hotspots[HS_RUNOPTS0_SAVE].remap_id = SDLK_ACCEPT;
 	hotspots[HS_RUNOPTS0_EXIT].remap_id = SDLK_F2;
 	hotspots[HS_RUNOPTS0_NEXT].remap_id = SDLK_PAGEDOWN;
@@ -818,6 +822,22 @@ void hotspots_resize(int gid) {
 			hotspots[HS_RUNOPTS0_SPEED_UP].hit_x += 16.5 * 8 * video.scale;
 			hotspots[HS_RUNOPTS0_SPEED_UP].hit_y += 9.5 * 8 * video.scale;
 		#endif
+
+		#if defined (PLATFORM_MIYOO)
+		hotspots[HS_RUNOPTS0_CLOSE].hit_x += 0 * 8 * video.scale;
+		hotspots[HS_RUNOPTS0_CLOSE].hit_y += 22.5 * 8 * video.scale;
+		hotspots[HS_RUNOPTS0_CLOSE].hit_w = 9 * 8 * video.scale;
+
+		hotspots[HS_RUNOPTS0_SAVE].hit_x += 11 * 8 * video.scale;
+		hotspots[HS_RUNOPTS0_SAVE].hit_y += 22.5 * 8 * video.scale;
+		hotspots[HS_RUNOPTS0_SAVE].hit_w = 4 * 8 * video.scale;
+		hotspots[HS_RUNOPTS0_EXIT].hit_x += 18 * 8 * video.scale;
+		hotspots[HS_RUNOPTS0_EXIT].hit_y += 22.5 * 8 * video.scale;
+		hotspots[HS_RUNOPTS0_EXIT].hit_w = 4 * 8 * video.scale;
+		hotspots[HS_RUNOPTS0_NEXT].hit_x += 24 * 8 * video.scale;
+		hotspots[HS_RUNOPTS0_NEXT].hit_y += 22.5 * 8 * video.scale;
+		hotspots[HS_RUNOPTS0_NEXT].hit_w = 6.5 * 8 * video.scale;
+		#else
 		hotspots[HS_RUNOPTS0_SAVE].hit_x += 10 * 8 * video.scale;
 		hotspots[HS_RUNOPTS0_SAVE].hit_y += 22.5 * 8 * video.scale;
 		hotspots[HS_RUNOPTS0_SAVE].hit_w = 4 * 8 * video.scale;
@@ -827,10 +847,16 @@ void hotspots_resize(int gid) {
 		hotspots[HS_RUNOPTS0_NEXT].hit_x += 25 * 8 * video.scale;
 		hotspots[HS_RUNOPTS0_NEXT].hit_y += 22.5 * 8 * video.scale;
 		hotspots[HS_RUNOPTS0_NEXT].hit_w = 6.5 * 8 * video.scale;
+		#endif
 		/* Set-up hit_w/h */
 		for (count = HS_RUNOPTS0_ZX80; count <= HS_RUNOPTS0_NEXT; count++) {
 			hotspots[count].hit_h = 2 * 8 * video.scale;
+
+			#if defined (PLATFORM_MIYOO)
+			if (count >= HS_RUNOPTS0_RAM_DN && count < HS_RUNOPTS0_CLOSE) 
+			#else
 			if (count >= HS_RUNOPTS0_RAM_DN && count < HS_RUNOPTS0_SAVE) 
+			#endif
 				hotspots[count].hit_w = 2 * 8 * video.scale;
 		}
 		/* Set-up hl_x/y/w/h */

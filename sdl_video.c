@@ -44,6 +44,17 @@ char *runtime_options_text0[24] = {
 #else
 	"",
 #endif
+#if defined (PLATFORM_MIYOO)
+	"",	
+	"  Start Accept / Select Exit",
+	"",
+	"  Load State > [Select+B]",
+	"  Save State > [Select+A]",
+	"  Load File  > [Select+Start]",
+	"  Keyboard   > [Select+R]",
+	"  Keyboard   > [Start+Y]",
+	"",
+#else
 	"",
 	"",
 	"",
@@ -53,10 +64,15 @@ char *runtime_options_text0[24] = {
 	"",
 	"",
 	"",
+#endif
 	"",
 	"\x1 ",
-	"",
+	"",	
+#if defined (PLATFORM_MIYOO)
+	"Close Emu  Save   Exit  Next\x90\x2>\x2\x85"	
+#else
 	"          Save    Exit   Next\x90\x2>\x2\x85"
+#endif
 };
 
 char *runtime_options_text1[24] = {
@@ -145,7 +161,7 @@ char *runtime_options_text3[24] = {
 	"\x1",
 	"\x1",
 	#if defined (PLATFORM_MIYOO)
-  	"\x90\x2<\x2\x85" "Back   Save  Save_game   Exit"
+  	"\x90\x2<\x2\x85" "Back   Save  Save Game   Exit"
   	#else
 	"\x90\x2<\x2\x85" "Back   Save    Exit          "
 	#endif

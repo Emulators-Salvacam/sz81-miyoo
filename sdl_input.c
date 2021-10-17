@@ -1596,10 +1596,19 @@ void manage_cursor_input(void) {
 						hs_currently_selected == HS_RUNOPTS0_ZX81) {
 						hotspots[hs_currently_selected + 8].flags |= HS_PROP_SELECTED;
 					} else if (hs_currently_selected == HS_RUNOPTS0_NEXT) {
+					#if defined(PLATFORM_MIYOO)
+						hotspots[hs_currently_selected - 4].flags |= HS_PROP_SELECTED;
+					} else if (hs_currently_selected == HS_RUNOPTS0_EXIT) {
 						hotspots[hs_currently_selected - 3].flags |= HS_PROP_SELECTED;
 					} else {
 						hotspots[hs_currently_selected - 2].flags |= HS_PROP_SELECTED;
 					}
+					#else
+						hotspots[hs_currently_selected - 3].flags |= HS_PROP_SELECTED;
+					} else {
+						hotspots[hs_currently_selected - 2].flags |= HS_PROP_SELECTED;
+					}
+					#endif
 					#ifndef ENABLE_EMULATION_SPEED_ADJUST
 						hs_currently_selected = get_selected_hotspot(HS_GRP_RUNOPTS0 << runtime_options_which());
 						if (hs_currently_selected == HS_RUNOPTS0_SPEED_DN ||
@@ -1788,7 +1797,11 @@ void manage_cursor_input(void) {
 				} else if (get_active_component() == COMP_RUNOPTS0) {
 					key_repeat_manager(KRM_FUNC_REPEAT, &event, COMP_RUNOPTS0 * CURSOR_S);
 					hotspots[hs_currently_selected].flags &= ~HS_PROP_SELECTED;
-					if (hs_currently_selected == HS_RUNOPTS0_SAVE) {
+					if (hs_currently_selected == HS_RUNOPTS0_SAVE
+					 #if defined(PLATFORM_MIYOO)
+					 || hs_currently_selected == HS_RUNOPTS0_CLOSE
+					 #endif
+					 ) {
 						hotspots[HS_RUNOPTS0_ZX80].flags |= HS_PROP_SELECTED;
 					} else if (hs_currently_selected == HS_RUNOPTS0_EXIT ||
 						hs_currently_selected == HS_RUNOPTS0_NEXT) {
@@ -2022,8 +2035,18 @@ void manage_cursor_input(void) {
 						hs_currently_selected == HS_RUNOPTS0_FRAMESKIP_DN ||
 						hs_currently_selected == HS_RUNOPTS0_SPEED_DN) {
 						hotspots[hs_currently_selected + 1].flags |= HS_PROP_SELECTED;
-					} else if (hs_currently_selected == HS_RUNOPTS0_SAVE) {
+					} else if (
+					 #if defined(PLATFORM_MIYOO)
+					 	hs_currently_selected == HS_RUNOPTS0_CLOSE
+					 #else
+						hs_currently_selected == HS_RUNOPTS0_SAVE
+					 #endif
+						) {
+					 #if defined(PLATFORM_MIYOO)
+						hotspots[hs_currently_selected + 3].flags |= HS_PROP_SELECTED;
+					 #else
 						hotspots[hs_currently_selected + 2].flags |= HS_PROP_SELECTED;
+					 #endif
 					} else {
 						hotspots[hs_currently_selected - 1].flags |= HS_PROP_SELECTED;
 					}
@@ -2208,8 +2231,12 @@ void manage_cursor_input(void) {
 						hs_currently_selected == HS_RUNOPTS0_FRAMESKIP_UP ||
 						hs_currently_selected == HS_RUNOPTS0_SPEED_UP) {
 						hotspots[hs_currently_selected - 1].flags |= HS_PROP_SELECTED;
-					} else if (hs_currently_selected == HS_RUNOPTS0_NEXT) {
+					} else if (hs_currently_selected == HS_RUNOPTS0_NEXT) {					
+						#if defined(PLATFORM_MIYOO)
+						hotspots[hs_currently_selected - 3].flags |= HS_PROP_SELECTED;
+						#else
 						hotspots[hs_currently_selected - 2].flags |= HS_PROP_SELECTED;
+						#endif
 					} else {
 						hotspots[hs_currently_selected + 1].flags |= HS_PROP_SELECTED;
 					}
@@ -2561,6 +2588,10 @@ void manage_all_input(void) {
 			if (runtime_options[2].state) {
 				/* Yes Full Screen */
 				sdl_emulator.fullscr = FULL_SCREEN_YES;
+			}
+		} else if (id == SDLK_END) {
+			if (runtime_options[0].state) {
+				emulator_exit();
 			}
 		#endif
 		}
