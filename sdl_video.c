@@ -45,14 +45,14 @@ char *runtime_options_text0[24] = {
 	"",
 #endif
 #if defined (PLATFORM_MIYOO)
-	"",	
-	"  Start Accept / Select Exit",
+	" In Menu:",	
+	"  Accept Start / Exit Select",
 	"",
-	"  Load State > [Select+B]",
-	"  Save State > [Select+A]",
-	"  Load File  > [Select+Start]",
-	"  Keyboard   > [Select+R]",
-	"  Keyboard   > [Start+Y]",
+	" In Game:",
+	"  Load State > [ Start + B ]",
+	"  Save State > [ Start + A ]",
+	"  Load File  > [ Start + Y ]",
+	"  Keyboard   > [ Select]",
 	"",
 #else
 	"",

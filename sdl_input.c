@@ -1925,11 +1925,11 @@ void manage_cursor_input(void) {
 						(hs_currently_selected == HS_RUNOPTS3_JOY_CFG_A)) {
 						hotspots[HS_RUNOPTS3_JOY_CFG_B].flags |= HS_PROP_SELECTED;
 					} else if (hs_currently_selected == HS_RUNOPTS3_JOY_CFG_DOWN){
-
+						#ifndef(PLATFORM_MIYOO)
 						hotspots[HS_RUNOPTS3_KEY_1].flags |= HS_PROP_SELECTED;
-						/* TODO MIYOO TODO
+						#else
 						hotspots[HS_RUNOPTS3_JOY_CFG_SELECT].flags |= HS_PROP_SELECTED;
-						*/
+						#endif
 					} else if (hs_currently_selected == HS_RUNOPTS3_JOY_CFG_B){
 						hotspots[HS_RUNOPTS3_JOY_CFG_START].flags |= HS_PROP_SELECTED;
 					} else if (hs_currently_selected == HS_RUNOPTS3_JOY_CFG_SELECT){
@@ -2108,14 +2108,17 @@ void manage_cursor_input(void) {
 
 					} else if(hs_currently_selected == HS_RUNOPTS3_BACK){
 						hotspots[HS_RUNOPTS3_EXIT].flags |= HS_PROP_SELECTED;
-/*
+
+					#ifndef(PLATFORM_MIYOO)
 					}else if(hs_currently_selected == HS_RUNOPTS3_JOY_CFG_SELECT){
 						hotspots[HS_RUNOPTS3_JOY_CFG_START].flags |= HS_PROP_SELECTED;
-*/
-
+					#endif
 					}else if(hs_currently_selected == HS_RUNOPTS3_JOY_CFG_START){
+						#if def(PLATFORM_MIYOO)
 						hotspots[HS_RUNOPTS3_JOY_CFG_START].flags |= HS_PROP_SELECTED;
-						//hotspots[HS_RUNOPTS3_JOY_CFG_SELECT].flags |= HS_PROP_SELECTED;
+						#else
+						hotspots[HS_RUNOPTS3_JOY_CFG_SELECT].flags |= HS_PROP_SELECTED;
+						#endif
 					}else if(hs_currently_selected == HS_RUNOPTS3_JOY_CFG_B){
 						hotspots[HS_RUNOPTS3_JOY_CFG_DOWN].flags |= HS_PROP_SELECTED;
 
@@ -2161,11 +2164,11 @@ void manage_cursor_input(void) {
 					} else if (hs_currently_selected == HS_RUNOPTS3_JOY_CFG_RIGHT) {
 						hotspots[HS_RUNOPTS3_JOY_CFG_DOWN].flags |= HS_PROP_SELECTED;
 					} else if (hs_currently_selected == HS_RUNOPTS3_JOY_CFG_SELECT) {
-						hotspots[HS_RUNOPTS3_JOY_CFG_RIGHT].flags |= HS_PROP_SELECTED;
-/*
+						hotspots[HS_RUNOPTS3_JOY_CFG_RIGHT].flags |= HS_PROP_SELECTED;						
+					#ifndef(PLATFORM_MIYOO)
 					} else if (hs_currently_selected == HS_RUNOPTS3_JOY_CFG_START) {
 						hotspots[HS_RUNOPTS3_JOY_CFG_SELECT].flags |= HS_PROP_SELECTED;
-						*/
+					#endif
 					} else if (hs_currently_selected == HS_RUNOPTS3_JOY_CFG_A) {
 						hotspots[HS_RUNOPTS3_JOY_CFG_START].flags |= HS_PROP_SELECTED;
 					} else if (hs_currently_selected == HS_RUNOPTS3_JOY_CFG_B) {
@@ -2307,11 +2310,10 @@ void manage_cursor_input(void) {
 
 					}else if(hs_currently_selected == HS_RUNOPTS3_JOY_CFG_DOWN){
 						hotspots[HS_RUNOPTS3_JOY_CFG_B].flags |= HS_PROP_SELECTED;
-						/*
+					#ifndef(PLATFORM_MIYOO)
 					}else if(hs_currently_selected == HS_RUNOPTS3_JOY_CFG_SELECT){
 						hotspots[HS_RUNOPTS3_JOY_CFG_START].flags |= HS_PROP_SELECTED;
-						*/
-
+					#endif
 					}else if(hs_currently_selected == HS_RUNOPTS3_JOY_CFG_START){
 						hotspots[HS_RUNOPTS3_JOY_CFG_START].flags |= HS_PROP_SELECTED;
 						//hotspots[HS_RUNOPTS3_JOY_CFG_SELECT].flags |= HS_PROP_SELECTED;
@@ -2353,10 +2355,10 @@ void manage_cursor_input(void) {
 						hotspots[HS_RUNOPTS3_JOY_CFG_B].flags |= HS_PROP_SELECTED;
 					} else if (hs_currently_selected == HS_RUNOPTS3_JOY_CFG_LEFT) {
 						hotspots[HS_RUNOPTS3_JOY_CFG_UP].flags |= HS_PROP_SELECTED;
-						/*
+					#ifndef(PLATFORM_MIYOO)
 					} else if (hs_currently_selected == HS_RUNOPTS3_JOY_CFG_RIGHT) {
 						hotspots[HS_RUNOPTS3_JOY_CFG_SELECT].flags |= HS_PROP_SELECTED;
-					*/
+					#endif						
 					} else if (hs_currently_selected == HS_RUNOPTS3_JOY_CFG_SELECT) {
 						hotspots[HS_RUNOPTS3_JOY_CFG_START].flags |= HS_PROP_SELECTED;
 					} else if (hs_currently_selected == HS_RUNOPTS3_JOY_CFG_START) {
@@ -2449,9 +2451,13 @@ void manage_all_input(void) {
 		if ( keystate[DINGOO_START] ) {
 			if (state == SDL_PRESSED) {
 				if (keystate[DINGOO_X] ) {
-					toggle_vkeyb_state();
+					emulator_exit();
 				} else if (keystate[DINGOO_Y] ) {
-					toggle_runopts_state();
+					toggle_ldfile_state();
+				}else if (keystate[DINGOO_A]) {
+					toggle_sstate_state(SSTATE_MODE_SAVE);
+				}else if (keystate[DINGOO_B]) {
+					toggle_sstate_state(SSTATE_MODE_LOAD);
 				}
 			}
 		} else if ( keystate[DINGOO_POWER] ) {
