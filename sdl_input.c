@@ -1925,7 +1925,7 @@ void manage_cursor_input(void) {
 						(hs_currently_selected == HS_RUNOPTS3_JOY_CFG_A)) {
 						hotspots[HS_RUNOPTS3_JOY_CFG_B].flags |= HS_PROP_SELECTED;
 					} else if (hs_currently_selected == HS_RUNOPTS3_JOY_CFG_DOWN){
-						#ifndef(PLATFORM_MIYOO)
+						#ifndef PLATFORM_MIYOO
 						hotspots[HS_RUNOPTS3_KEY_1].flags |= HS_PROP_SELECTED;
 						#else
 						hotspots[HS_RUNOPTS3_JOY_CFG_SELECT].flags |= HS_PROP_SELECTED;
@@ -2109,12 +2109,12 @@ void manage_cursor_input(void) {
 					} else if(hs_currently_selected == HS_RUNOPTS3_BACK){
 						hotspots[HS_RUNOPTS3_EXIT].flags |= HS_PROP_SELECTED;
 
-					#ifndef(PLATFORM_MIYOO)
+					#ifndef PLATFORM_MIYOO
 					}else if(hs_currently_selected == HS_RUNOPTS3_JOY_CFG_SELECT){
 						hotspots[HS_RUNOPTS3_JOY_CFG_START].flags |= HS_PROP_SELECTED;
 					#endif
 					}else if(hs_currently_selected == HS_RUNOPTS3_JOY_CFG_START){
-						#if def(PLATFORM_MIYOO)
+						#if defined(PLATFORM_MIYOO)
 						hotspots[HS_RUNOPTS3_JOY_CFG_START].flags |= HS_PROP_SELECTED;
 						#else
 						hotspots[HS_RUNOPTS3_JOY_CFG_SELECT].flags |= HS_PROP_SELECTED;
@@ -2165,7 +2165,7 @@ void manage_cursor_input(void) {
 						hotspots[HS_RUNOPTS3_JOY_CFG_DOWN].flags |= HS_PROP_SELECTED;
 					} else if (hs_currently_selected == HS_RUNOPTS3_JOY_CFG_SELECT) {
 						hotspots[HS_RUNOPTS3_JOY_CFG_RIGHT].flags |= HS_PROP_SELECTED;						
-					#ifndef(PLATFORM_MIYOO)
+					#ifndef PLATFORM_MIYOO
 					} else if (hs_currently_selected == HS_RUNOPTS3_JOY_CFG_START) {
 						hotspots[HS_RUNOPTS3_JOY_CFG_SELECT].flags |= HS_PROP_SELECTED;
 					#endif
@@ -2310,7 +2310,7 @@ void manage_cursor_input(void) {
 
 					}else if(hs_currently_selected == HS_RUNOPTS3_JOY_CFG_DOWN){
 						hotspots[HS_RUNOPTS3_JOY_CFG_B].flags |= HS_PROP_SELECTED;
-					#ifndef(PLATFORM_MIYOO)
+					#ifndef PLATFORM_MIYOO
 					}else if(hs_currently_selected == HS_RUNOPTS3_JOY_CFG_SELECT){
 						hotspots[HS_RUNOPTS3_JOY_CFG_START].flags |= HS_PROP_SELECTED;
 					#endif
@@ -2355,7 +2355,7 @@ void manage_cursor_input(void) {
 						hotspots[HS_RUNOPTS3_JOY_CFG_B].flags |= HS_PROP_SELECTED;
 					} else if (hs_currently_selected == HS_RUNOPTS3_JOY_CFG_LEFT) {
 						hotspots[HS_RUNOPTS3_JOY_CFG_UP].flags |= HS_PROP_SELECTED;
-					#ifndef(PLATFORM_MIYOO)
+					#ifndef PLATFORM_MIYOO
 					} else if (hs_currently_selected == HS_RUNOPTS3_JOY_CFG_RIGHT) {
 						hotspots[HS_RUNOPTS3_JOY_CFG_SELECT].flags |= HS_PROP_SELECTED;
 					#endif						
