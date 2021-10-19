@@ -1690,7 +1690,11 @@ void manage_cursor_input(void) {
 							(hs_currently_selected == HS_RUNOPTS3_KEY_4) ||
 							(hs_currently_selected == HS_RUNOPTS3_KEY_5) ||
 							(hs_currently_selected == HS_RUNOPTS3_KEY_6) ) {
+						
+						hotspots[HS_RUNOPTS3_JOY_CFG_DOWN].flags |= HS_PROP_SELECTED;
+						/* TODO MIYOO TODO
 						hotspots[HS_RUNOPTS3_JOY_CFG_SELECT].flags |= HS_PROP_SELECTED;
+						*/
 					} else if ((hs_currently_selected == HS_RUNOPTS3_KEY_7) ||
 							(hs_currently_selected == HS_RUNOPTS3_KEY_8) ||
 							(hs_currently_selected == HS_RUNOPTS3_KEY_9) ||
@@ -1921,7 +1925,11 @@ void manage_cursor_input(void) {
 						(hs_currently_selected == HS_RUNOPTS3_JOY_CFG_A)) {
 						hotspots[HS_RUNOPTS3_JOY_CFG_B].flags |= HS_PROP_SELECTED;
 					} else if (hs_currently_selected == HS_RUNOPTS3_JOY_CFG_DOWN){
+
+						hotspots[HS_RUNOPTS3_KEY_1].flags |= HS_PROP_SELECTED;
+						/* TODO MIYOO TODO
 						hotspots[HS_RUNOPTS3_JOY_CFG_SELECT].flags |= HS_PROP_SELECTED;
+						*/
 					} else if (hs_currently_selected == HS_RUNOPTS3_JOY_CFG_B){
 						hotspots[HS_RUNOPTS3_JOY_CFG_START].flags |= HS_PROP_SELECTED;
 					} else if (hs_currently_selected == HS_RUNOPTS3_JOY_CFG_SELECT){
@@ -2100,13 +2108,14 @@ void manage_cursor_input(void) {
 
 					} else if(hs_currently_selected == HS_RUNOPTS3_BACK){
 						hotspots[HS_RUNOPTS3_EXIT].flags |= HS_PROP_SELECTED;
-
+/*
 					}else if(hs_currently_selected == HS_RUNOPTS3_JOY_CFG_SELECT){
 						hotspots[HS_RUNOPTS3_JOY_CFG_START].flags |= HS_PROP_SELECTED;
+*/
 
 					}else if(hs_currently_selected == HS_RUNOPTS3_JOY_CFG_START){
-						hotspots[HS_RUNOPTS3_JOY_CFG_SELECT].flags |= HS_PROP_SELECTED;
-
+						hotspots[HS_RUNOPTS3_JOY_CFG_START].flags |= HS_PROP_SELECTED;
+						//hotspots[HS_RUNOPTS3_JOY_CFG_SELECT].flags |= HS_PROP_SELECTED;
 					}else if(hs_currently_selected == HS_RUNOPTS3_JOY_CFG_B){
 						hotspots[HS_RUNOPTS3_JOY_CFG_DOWN].flags |= HS_PROP_SELECTED;
 
@@ -2153,8 +2162,10 @@ void manage_cursor_input(void) {
 						hotspots[HS_RUNOPTS3_JOY_CFG_DOWN].flags |= HS_PROP_SELECTED;
 					} else if (hs_currently_selected == HS_RUNOPTS3_JOY_CFG_SELECT) {
 						hotspots[HS_RUNOPTS3_JOY_CFG_RIGHT].flags |= HS_PROP_SELECTED;
+/*
 					} else if (hs_currently_selected == HS_RUNOPTS3_JOY_CFG_START) {
 						hotspots[HS_RUNOPTS3_JOY_CFG_SELECT].flags |= HS_PROP_SELECTED;
+						*/
 					} else if (hs_currently_selected == HS_RUNOPTS3_JOY_CFG_A) {
 						hotspots[HS_RUNOPTS3_JOY_CFG_START].flags |= HS_PROP_SELECTED;
 					} else if (hs_currently_selected == HS_RUNOPTS3_JOY_CFG_B) {
@@ -2296,11 +2307,14 @@ void manage_cursor_input(void) {
 
 					}else if(hs_currently_selected == HS_RUNOPTS3_JOY_CFG_DOWN){
 						hotspots[HS_RUNOPTS3_JOY_CFG_B].flags |= HS_PROP_SELECTED;
+						/*
 					}else if(hs_currently_selected == HS_RUNOPTS3_JOY_CFG_SELECT){
 						hotspots[HS_RUNOPTS3_JOY_CFG_START].flags |= HS_PROP_SELECTED;
+						*/
 
 					}else if(hs_currently_selected == HS_RUNOPTS3_JOY_CFG_START){
-						hotspots[HS_RUNOPTS3_JOY_CFG_SELECT].flags |= HS_PROP_SELECTED;
+						hotspots[HS_RUNOPTS3_JOY_CFG_START].flags |= HS_PROP_SELECTED;
+						//hotspots[HS_RUNOPTS3_JOY_CFG_SELECT].flags |= HS_PROP_SELECTED;
 					}else if(hs_currently_selected == HS_RUNOPTS3_JOY_CFG_LEFT){
 						hotspots[HS_RUNOPTS3_JOY_CFG_RIGHT].flags |= HS_PROP_SELECTED;
 					}else if(hs_currently_selected == HS_RUNOPTS3_JOY_CFG_RIGHT){
@@ -2339,8 +2353,10 @@ void manage_cursor_input(void) {
 						hotspots[HS_RUNOPTS3_JOY_CFG_B].flags |= HS_PROP_SELECTED;
 					} else if (hs_currently_selected == HS_RUNOPTS3_JOY_CFG_LEFT) {
 						hotspots[HS_RUNOPTS3_JOY_CFG_UP].flags |= HS_PROP_SELECTED;
+						/*
 					} else if (hs_currently_selected == HS_RUNOPTS3_JOY_CFG_RIGHT) {
 						hotspots[HS_RUNOPTS3_JOY_CFG_SELECT].flags |= HS_PROP_SELECTED;
+					*/
 					} else if (hs_currently_selected == HS_RUNOPTS3_JOY_CFG_SELECT) {
 						hotspots[HS_RUNOPTS3_JOY_CFG_START].flags |= HS_PROP_SELECTED;
 					} else if (hs_currently_selected == HS_RUNOPTS3_JOY_CFG_START) {
@@ -2393,6 +2409,10 @@ void manage_all_input(void) {
 		/* HOtkeys for Dingoo A320 */
 		Uint8 *keystate = SDL_GetKeyState(NULL);
 		if ( keystate[DINGOO_SELECT] ){
+
+			#if defined(PLATFORM_MIYOO)
+			toggle_vkeyb_state();
+			#else
 			if (state == SDL_PRESSED){
 				if (keystate[DINGOO_X]) {
 					emulator_exit();
@@ -2411,7 +2431,8 @@ void manage_all_input(void) {
 						toggle_sstate_state(SSTATE_MODE_LOAD);
 					}
 				}
-			}
+			}			
+			#endif
 		}
 		#endif
 

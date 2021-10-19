@@ -998,14 +998,13 @@ void sdl_video_update(void) {
 							if(key_map_status==STATUS_KEY_MAP_NULL){
 							//strcpy(text, "*LINHA 0");
 							#if defined(PLATFORM_MIYOO)
-							snprintf(text, sizeof text, "B=%.1s A=%.1s Y=%.1s X=%.1s L=%.1s R=%.1s SEL=%.1s",
+							snprintf(text, sizeof text, "B=%.1s A=%.1s Y=%.1s X=%.1s L=%.1s R=%.1s",
 									keycode_to_keysym(ctrl_remaps[DINGOO_REMAP_B].remap_id)+5,
 									keycode_to_keysym(ctrl_remaps[DINGOO_REMAP_A].remap_id)+5,
 									keycode_to_keysym(ctrl_remaps[DINGOO_REMAP_Y].remap_id)+5,
 									keycode_to_keysym(ctrl_remaps[DINGOO_REMAP_X].remap_id)+5,
 									keycode_to_keysym(ctrl_remaps[DINGOO_REMAP_L].remap_id)+5,
-									keycode_to_keysym(ctrl_remaps[DINGOO_REMAP_R].remap_id)+5,
-									keycode_to_keysym(ctrl_remaps[DINGOO_REMAP_SELECT].remap_id)+5
+									keycode_to_keysym(ctrl_remaps[DINGOO_REMAP_R].remap_id)+5
 									);
 							#else
 							snprintf(text, sizeof text, "A=%.1s B=%.1s X=%.1s Y=%.1s L=%.1s R=%.1s SEL=%.1s",
