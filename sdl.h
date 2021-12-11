@@ -1,3 +1,6 @@
+#ifndef _SDL_H_
+#define _SDL_H_
+
 /* sz81 Copyright (C) 2007-2011 Thunor <thunorsif@hotmail.com>
  * 
  * This program is free software; you can redistribute it and/or modify
@@ -57,11 +60,11 @@
 /* 16KB was fine for everything but the Wiz is currently experiencing
  * linear buffer overflow and so I'm quadrupling it for the Wiz only */
 #if defined(PLATFORM_GP2X) && defined (TOOLCHAIN_OPENWIZ)
-	#define SOUND_BUFFER_SIZE (1024 * 16 * 4)
+	#define SOUND_BUFFER_SIZE (1024 * 8 * 4)
 #elif defined(PLATFORM_DINGUX_A320)
-	#define SOUND_BUFFER_SIZE (1024 * 16 * 4)
+	#define SOUND_BUFFER_SIZE (1024 * 8 * 4)
 #else
-	#define SOUND_BUFFER_SIZE (1024 * 16)
+        #define SOUND_BUFFER_SIZE (1024 * 8)
 #endif
 
 #if defined(PLATFORM_MIYOO)
@@ -74,10 +77,19 @@
 int keyboard_buffer[MAX_KEYCODES];
 
 struct {
+	int nxtlin;
+	int load_hook;
+	int save_hook;
+	int rsz81mem;
+	int wsz81mem;
+	int bigscreen;
 	int fullscreen;
+	int networking;
 	int scale;
 	int xres;
 	int yres;
+	int bdis;
+	int edis;
 	char filename[256];
 } sdl_com_line;
 
@@ -86,17 +98,20 @@ struct {
 	int paused;		/* Via Pause key: TRUE=emulation on-hold, keyboard input disabled */
 	int xoffset;
 	int yoffset;
-	SDL_TimerID timer_id;	
+	SDL_TimerID timer_id;
 	int m1not;
-	int speed;		/* 10ms=200%, 20ms=100%, 30ms=66%, 40ms=50% */
-	int frameskip;	/* 0 to MAX_FRAMESKIP */
+	int speed;		/* 5ms=400%, 10ms=200%, 20ms=100%, 30ms=66%, 40ms=50% */
+	int frameskip;	        /* 0 to MAX_FRAMESKIP */
 	int *model;		/* Points to z81's zx80: 0=ZX81, 1=ZX80 */
 	#if defined(PLATFORM_MIYOO)
 	int *fullscr;		/* 0=NO, 1=YES */
 	#endif
-	int ramsize;	/* 1, 2, 3, 4, 16, 32, 48 or 56K */
+	int ramsize;	        /* 1, 2, 3, 4, 16, 32, 48 or 56K */
 	int invert;		/* This should really be in video but it's easier to put it here */
-	int autoload;	/* Set to TRUE when auto-loading or forced-loading */
+	int autoload;	        /* Set to TRUE when auto-loading or forced-loading */
+	int networking;         /* enable calls to WIZ chip emulation */
+	int bdis;
+	int edis;
 } sdl_emulator;
 
 struct {
@@ -104,7 +119,8 @@ struct {
 	int volume;
 	int device;		/* See DEVICE* defines in sdl_sound.h */
 	int stereo;
-	Uint8 buffer[SOUND_BUFFER_SIZE];
+	int ay_unreal;
+	Uint16 buffer[SOUND_BUFFER_SIZE];
 	int buffer_start;
 	int buffer_end;
 } sdl_sound;
@@ -118,6 +134,11 @@ struct {
 	int state;
 	unsigned char data[8 * 1024];
 } sdl_zx81rom;
+
+struct {
+	int state;
+	unsigned char data[4 * 1024];
+} sdl_aszmicrom;
 
 struct keyrepeat {
 	int delay;
@@ -141,11 +162,10 @@ int keyboard_update(void);
 void sdl_video_update(void);
 int sdl_sound_init(int freq, int *stereo, int *sixteenbit);
 void sdl_sound_callback(void *userdata, Uint8 *stream, int len);
-void sdl_sound_frame(unsigned char *data, int len);
+void sdl_sound_frame(Uint16 *data, int len);
 void sdl_sound_end(void);
 int sdl_filetype_casecmp(char *filename, char *filetype);
 int sdl_load_file(int parameter, int method);
 int sdl_save_file(int parameter, int method);
 
-
-
+#endif

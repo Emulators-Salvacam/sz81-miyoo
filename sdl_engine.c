@@ -17,11 +17,15 @@
 
 /* Includes */
 #include "sdl_engine.h"
+#include "w5100.h"
 
 /* Defines */
 
 /* Emulator variables I require access to */
 extern int zx80, ramsize;
+extern int load_hook, save_hook;
+extern int rwsz81mem;
+extern void exitmem();
 
 /* Variables */
 
@@ -45,11 +49,10 @@ int sdl_init(void) {
 	int count;
 	#if defined(PLATFORM_GP2X)
 	#elif defined(PLATFORM_ZAURUS)
-	#elif defined(PLATFORM_DINGUX_A320)
 	#else
 		char filename[256];
 	#endif
-	
+
 	#if defined(PLATFORM_DINGUX_A320)
 		key_map_status=STATUS_KEY_MAP_NULL;
 	#endif
@@ -70,7 +73,7 @@ int sdl_init(void) {
 		video.fullscreen = FALSE;
 	#else
 		video.xres = 640; video.yres = 480; video.scale = 2;
-		video.fullscreen = FALSE;
+		video.bigscreen = video.fullscreen = FALSE;
 	#endif
 	#endif
 
@@ -94,16 +97,18 @@ int sdl_init(void) {
 	sdl_key_repeat.delay = KEY_REPEAT_DELAY;
 	sdl_key_repeat.interval = KEY_REPEAT_INTERVAL;
 	sdl_emulator.model = &zx80;		/* It's a lot easier to do this */
+	sdl_emulator.m1not = 0;
 	sdl_emulator.frameskip = 1;		/* Equivalent to z81's scrn_freq=2 */
 	sdl_emulator.ramsize = 16;		/* 16K is the default */
 	sdl_emulator.invert = 0;		/* Off is the default */
 	#if defined(PLATFORM_GP2X) || defined(PLATFORM_DINGUX_A320)
 		sdl_sound.volume = 30;
 	#else
-		sdl_sound.volume = 128;
+		sdl_sound.volume = 64;
 	#endif
 	sdl_sound.device = DEVICE_NONE;
-	sdl_sound.stereo = FALSE;
+	sdl_sound.stereo = TRUE;
+	sdl_sound.ay_unreal = FALSE;
 	vkeyb.alpha = SDL_ALPHA_OPAQUE;
 	vkeyb.autohide = FALSE;
 	vkeyb.toggle_shift = FALSE;
@@ -123,10 +128,19 @@ int sdl_init(void) {
 	colours.hs_ctb_pressed = 0xffc000;
 	colours.hs_options_selected = 0x00ff00;
 	colours.hs_options_pressed = 0xffc000;
+	sdl_com_line.nxtlin = UNDEFINED;
+	sdl_com_line.load_hook = UNDEFINED;
+	sdl_com_line.save_hook = UNDEFINED;
+	sdl_com_line.rsz81mem = UNDEFINED;
+	sdl_com_line.wsz81mem = UNDEFINED;
+	sdl_com_line.bigscreen = UNDEFINED;
 	sdl_com_line.fullscreen = UNDEFINED;
+	sdl_com_line.networking = UNDEFINED;
 	sdl_com_line.scale = UNDEFINED;
 	sdl_com_line.xres = UNDEFINED;
 	sdl_com_line.yres = UNDEFINED;
+	sdl_com_line.bdis = UNDEFINED;
+	sdl_com_line.edis = UNDEFINED;
 	sdl_com_line.filename[0] = 0;
 
 	/* Initialise other things that need to be done before sdl_video_setmode */
@@ -179,7 +193,6 @@ int sdl_init(void) {
 	 * setting a video mode as per SDL docs instructions */
 	#if defined(PLATFORM_GP2X)
 	#elif defined(PLATFORM_ZAURUS)
-	#elif defined(PLATFORM_DINGUX_A320)
 	#else
 		strcpy(filename, PACKAGE_DATA_DIR);
 		strcatdelimiter(filename);
@@ -218,16 +231,31 @@ int sdl_com_line_process(int argc, char *argv[]) {
 
 	if (argc > 1) {
 		for (count = 1; count < argc; count++) {
-			if (!strcmp (argv[count], "-f")) {
+			if (!strcmp (argv[count], "-N")) {
+				sdl_com_line.nxtlin = FALSE;
+			} else if (!strcmp (argv[count], "-L")) {
+				sdl_com_line.load_hook = FALSE;
+			} else if (!strcmp (argv[count], "-S")) {
+				sdl_com_line.save_hook = FALSE;
+			} else if (!strcmp (argv[count], "-R")) {
+				sdl_com_line.rsz81mem = TRUE;
+			} else if (!strcmp (argv[count], "-W")) {
+				sdl_com_line.wsz81mem = TRUE;
+			} else if (!strcmp (argv[count], "-b")) {
+				sdl_com_line.bigscreen = TRUE;
+			} else if (!strcmp (argv[count], "-f")) {
 				sdl_com_line.fullscreen = TRUE;
+			} else if (!strcmp (argv[count], "-n")) {
+				sdl_com_line.networking = TRUE;
 			} else if (!strcmp (argv[count], "-w")) {
 				sdl_com_line.fullscreen = FALSE;
+			} else if (sscanf (argv[count], "-B%i",
+				&sdl_com_line.bdis) == 1) {
+			} else if (sscanf (argv[count], "-E%i",
+				&sdl_com_line.edis) == 1) {
 			} else if (sscanf (argv[count], "-%ix%i", 
 				&sdl_com_line.xres, &sdl_com_line.yres) == 2) {
-				if (sdl_com_line.xres < 240 || sdl_com_line.yres < 240) {
-					fprintf (stdout, "Invalid resolution: a minimum of 240x240 is required.\n");
-					return TRUE;
-				}
+	// could add resolution check here
 			} else if (sdl_filetype_casecmp(argv[count], ".o") == 0 ||
 				sdl_filetype_casecmp(argv[count], ".80") == 0 ||
 				sdl_filetype_casecmp(argv[count], ".p") == 0 ||
@@ -237,31 +265,57 @@ int sdl_com_line_process(int argc, char *argv[]) {
 				/*   1234567890123456789012345678901234567890 <- Formatting for small terminal. */
 				fprintf (stdout,
 					"z81 2.1 - copyright (C) 1994-2004 Ian Collier and Russell Marks.\n"
-					"sz81 " VERSION " - copyright (C) 2007-2011 Thunor and Chris Young.\n\n"
-					"usage: sz81 [-fhw] [-XRESxYRES] [filename.{o|p|80|81}]\n\n"
+					"sz81 " VERSION " (unofficial, see NEWS) - copyright (C) 2007-2011 Thunor and Chris Young.\n\n"
+					"usage: sz81 [-bfhnwNLSRW] [-XRESxYRES] [filename.{o|p|80|81}]\n\n"
+					"  -b  use a big screen for display\n"
 					"  -f  run the program fullscreen\n"
 					"  -h  this usage help\n"
-					"  -w  run the program in a window\n"
-					"  -XRESxYRES e.g. -800x480\n\n");
+					"  -n  enable networking\n"
+					"  -N  do not autorun (NXTLIN=0)\n"
+					"  -Baddr beginning of region to disassemble\n"
+					"  -Eaddr end of region to disassemble\n"
+					"  -L  disable LOAD hook\n"
+					"  -S  disable SAVE hook\n"
+					"  -R  enable reading from shared memory\n"
+					"  -W  enable writing to shared memory\n"
+					"  -XRESxYRES e.g. -800x600\n\n");
 				return TRUE;
 			}
 		}
 	}
 
 	/* Process sz81's command line options */
+	load_hook = sdl_com_line.load_hook;
+	save_hook = sdl_com_line.save_hook;
+	if (sdl_com_line.rsz81mem==TRUE) rwsz81mem = 1;
+	else if (sdl_com_line.wsz81mem==TRUE) rwsz81mem = 2;
+	else rwsz81mem = 0;
+	video.bigscreen = sdl_com_line.bigscreen == UNDEFINED ? FALSE : sdl_com_line.bigscreen;
+	if (video.bigscreen) { video.xres = 800; video.yres = 600; } /* re-init */
 	if (sdl_com_line.fullscreen != UNDEFINED && sdl_com_line.fullscreen)
 		video.fullscreen = SDL_FULLSCREEN;
+	sdl_emulator.networking = sdl_com_line.networking==UNDEFINED ? FALSE : TRUE;
 	if (sdl_com_line.xres != UNDEFINED) {
 		/* Calculate the scale for the requested resolution */
-		if (sdl_com_line.xres / 240 > sdl_com_line.yres / 240) {
-			sdl_com_line.scale = sdl_com_line.yres / 240;
+		if (video.bigscreen) {
+			if (sdl_com_line.xres / 400 > sdl_com_line.yres / 300) {
+				sdl_com_line.scale = sdl_com_line.yres / 300;
+			} else {
+				sdl_com_line.scale = sdl_com_line.xres / 400;
+			}
 		} else {
-			sdl_com_line.scale = sdl_com_line.xres / 240;
+			if (sdl_com_line.xres / 320 > sdl_com_line.yres / 240) {
+				sdl_com_line.scale = sdl_com_line.yres / 240;
+			} else {
+				sdl_com_line.scale = sdl_com_line.xres / 320;
+			}
 		}
 		video.scale = sdl_com_line.scale;
 		video.xres = sdl_com_line.xres;
 		video.yres = sdl_com_line.yres;
 	}
+	sdl_emulator.bdis = sdl_com_line.bdis;
+	sdl_emulator.edis = sdl_com_line.edis == UNDEFINED ? sdl_com_line.bdis : sdl_com_line.edis;
 	if (*sdl_com_line.filename) {
 		/* sdl_load_file will detect this preset method when
 		 * autoloading is triggered at the top of z80.c */
@@ -275,6 +329,7 @@ int sdl_com_line_process(int argc, char *argv[]) {
 		for (count = 0; count < argc; count++) {
 			printf("  %i: %s\n", count, argv[count]);
 		}
+		printf("  sdl_com_line.bigscreen=%i\n", sdl_com_line.bigscreen);
 		printf("  sdl_com_line.fullscreen=%i\n", sdl_com_line.fullscreen);
 		printf("  sdl_com_line.scale=%i\n", sdl_com_line.scale);
 		printf("  sdl_com_line.xres=%i\n", sdl_com_line.xres);
@@ -364,7 +419,8 @@ void sdl_component_executive(void) {
 
 	#ifdef OSS_SOUND_SUPPORT
 		/* Monitor sound device and stereo changes */
-		if (sdl_sound_device != sdl_sound.device || sdl_sound_stereo != sdl_sound.stereo) {
+	        if (sdl_sound_device != sdl_sound.device || sdl_sound_stereo != sdl_sound.stereo || (sdl_sound_device == DEVICE_ZONX && sound_ay_unreal != sdl_sound.ay_unreal)) {
+			sound_end();
 			/* Update stereo regardless */
 			sdl_sound_stereo = sdl_sound.stereo;
 			/* Only restart the mainloop if either the sound device 
@@ -394,6 +450,11 @@ void sdl_component_executive(void) {
 							sound_stereo = sound_stereo_acb = 1;
 						} else {
 							sound_stereo = sound_stereo_acb = 0;
+						}
+						if (sdl_sound.ay_unreal) {
+							sound_ay_unreal = 1;
+						} else {
+							sound_ay_unreal = 0;
 						}
 						break;
 					case DEVICE_VSYNC:
@@ -561,8 +622,10 @@ void sdl_timer_init(void) {
 Uint32 emulator_timer(Uint32 interval, void *param) {
 	static int intervals = 0;
 
+	/* speed setting is partly done here, partly in sz81.c... */
+
 	intervals++;
-	if (intervals >= sdl_emulator.speed / 10) {
+	if (intervals >= (sdl_emulator.speed > 20 ? sdl_emulator.speed : 20) / 10) {
 		signal_int_flag = TRUE;
 		intervals = 0;
 	}
@@ -576,6 +639,8 @@ Uint32 emulator_timer(Uint32 interval, void *param) {
 /* The mainloop is restarted via this function */
 
 void emulator_reset(void) {
+
+        /* printf("Emulator reset...\n"); */
 
 	/* Erase record of which program was last loaded/saved */
 	strcpy(load_file_dialog.loaded, "");
@@ -621,6 +686,8 @@ int emulator_hold(int *condition) {
  ***************************************************************************/
 
 void emulator_exit(void) {
+
+        SDL_PauseAudio(1);
 
 	/* If the rcfile is scheduled for writing then get user confirmation
 	 * for writing to sz81rc so that they can choose to discard changes */
@@ -687,6 +754,9 @@ void clean_up_before_exit(void) {
 	#endif
 
 	if (wm_icon) SDL_FreeSurface(wm_icon);
+
+	if (sdl_emulator.networking) w_exit();
+	exitmem();
 
 	SDL_Quit();
 

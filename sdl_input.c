@@ -1226,6 +1226,7 @@ int keyboard_update(void) {
 					}
 					break;
 				case SDL_QUIT:
+					printf("SDL_QUIT\n");
 					/* Simulate an F10 press which will execute the exit code */
 					device = DEVICE_KEYBOARD;
 					id = SDLK_F10;
@@ -1247,8 +1248,8 @@ int keyboard_update(void) {
 
 			#ifdef SDL_DEBUG_EVENTS
 				if (device != UNDEFINED) {
-					printf("%s: device=%i: id=%i state=%i mod_id=%i\n",
-						__func__, device, id, state, mod_id);
+					printf("%s: event.type=%i; device=%i: id=%i state=%i mod_id=%i\n",
+					       __func__, event.type, device, id, state, mod_id);
 				}
 			#endif
 
@@ -1452,10 +1453,8 @@ int keyboard_update(void) {
 void manage_cursor_input(void) {
 	int hs_currently_selected = 0;
 	
-
-	//fprintf(stderr,"video.scale: `%i'.\n",video.scale);
-
 	if (device == DEVICE_CURSOR) {
+
 		/* Locate currently selected hotspot for active component (there can be only one) */
 		if (get_active_component() == COMP_DIALOG) {
 			hs_currently_selected = get_selected_hotspot(HS_GRP_DIALOG);
@@ -1594,7 +1593,7 @@ void manage_cursor_input(void) {
 					hotspots[hs_currently_selected].flags &= ~HS_PROP_SELECTED;
 					if (hs_currently_selected == HS_RUNOPTS0_ZX80 ||
 						hs_currently_selected == HS_RUNOPTS0_ZX81) {
-						hotspots[hs_currently_selected + 8].flags |= HS_PROP_SELECTED;
+						hotspots[hs_currently_selected + 10].flags |= HS_PROP_SELECTED;
 					} else if (hs_currently_selected == HS_RUNOPTS0_NEXT) {
 					#if defined(PLATFORM_MIYOO)
 						hotspots[hs_currently_selected - 4].flags |= HS_PROP_SELECTED;
@@ -1609,6 +1608,16 @@ void manage_cursor_input(void) {
 						hotspots[hs_currently_selected - 2].flags |= HS_PROP_SELECTED;
 					}
 					#endif
+					/*
+					if (hs_currently_selected == HS_RUNOPTS0_M1NOT_NO ||
+						hs_currently_selected == HS_RUNOPTS0_M1NOT_YES) {
+						hotspots[hs_currently_selected + 8].flags |= HS_PROP_SELECTED;
+					} else if (hs_currently_selected == HS_RUNOPTS0_NEXT) {
+						hotspots[hs_currently_selected - 3].flags |= HS_PROP_SELECTED;
+					} else {
+						hotspots[hs_currently_selected - 2].flags |= HS_PROP_SELECTED;
+					}
+					*/
 					#ifndef ENABLE_EMULATION_SPEED_ADJUST
 						hs_currently_selected = get_selected_hotspot(HS_GRP_RUNOPTS0 << runtime_options_which());
 						if (hs_currently_selected == HS_RUNOPTS0_SPEED_DN ||
@@ -2041,6 +2050,7 @@ void manage_cursor_input(void) {
 					hotspots[hs_currently_selected].flags &= ~HS_PROP_SELECTED;
 					if (hs_currently_selected == HS_RUNOPTS0_ZX80 ||
 						hs_currently_selected == HS_RUNOPTS0_RAM_DN ||
+						hs_currently_selected == HS_RUNOPTS0_M1NOT_NO ||
 						hs_currently_selected == HS_RUNOPTS0_FRAMESKIP_DN ||
 						hs_currently_selected == HS_RUNOPTS0_SPEED_DN) {
 						hotspots[hs_currently_selected + 1].flags |= HS_PROP_SELECTED;
@@ -2243,6 +2253,7 @@ void manage_cursor_input(void) {
 					hotspots[hs_currently_selected].flags &= ~HS_PROP_SELECTED;
 					if (hs_currently_selected == HS_RUNOPTS0_ZX81 ||
 						hs_currently_selected == HS_RUNOPTS0_RAM_UP ||
+						hs_currently_selected == HS_RUNOPTS0_M1NOT_YES ||
 						hs_currently_selected == HS_RUNOPTS0_FRAMESKIP_UP ||
 						hs_currently_selected == HS_RUNOPTS0_SPEED_UP) {
 						hotspots[hs_currently_selected - 1].flags |= HS_PROP_SELECTED;
@@ -2479,7 +2490,6 @@ void manage_all_input(void) {
 			if (state == SDL_PRESSED) {
 				toggle_runopts_state();
 			}
-
 		} else if (id == SDLK_F3) {
 			/* Toggle the load file dialog */
 			if (state == SDL_PRESSED) {
@@ -2834,9 +2844,12 @@ void manage_runopts_input(void) {
 					if (id == SDLK_INSERT) {
 						if (runopts_emulator_ramsize == 56) {
 							runopts_emulator_ramsize = 48;
-						} else if (runopts_emulator_ramsize >= 32 &&
-							runopts_emulator_ramsize <= 48) {
-							runopts_emulator_ramsize -= 16;
+						} else if (runopts_emulator_ramsize == 48) {
+							runopts_emulator_ramsize = 32;
+						} else if (runopts_emulator_ramsize == 32) {
+							runopts_emulator_ramsize = 24;
+						} else if (runopts_emulator_ramsize == 24) {
+							runopts_emulator_ramsize = 16;
 						} else if (runopts_emulator_ramsize == 16) {
 							runopts_emulator_ramsize = 4;
 						} else if (runopts_emulator_ramsize > 1 &&
@@ -2848,9 +2861,12 @@ void manage_runopts_input(void) {
 							runopts_emulator_ramsize += 1;
 						} else if (runopts_emulator_ramsize == 4) {
 							runopts_emulator_ramsize = 16;
-						} else if (runopts_emulator_ramsize >= 16 &&
-							runopts_emulator_ramsize <= 32) {
-							runopts_emulator_ramsize += 16;
+						} else if (runopts_emulator_ramsize == 16) {
+							runopts_emulator_ramsize = 24;
+						} else if (runopts_emulator_ramsize == 24) {
+							runopts_emulator_ramsize = 32;
+						} else if (runopts_emulator_ramsize == 32) {
+							runopts_emulator_ramsize = 48;
 						} else if (runopts_emulator_ramsize == 48) {
 							runopts_emulator_ramsize = 56;
 						}
@@ -2878,9 +2894,11 @@ void manage_runopts_input(void) {
 					if (state == SDL_PRESSED) {
 						key_repeat_manager(KRM_FUNC_REPEAT, &event, COMP_RUNOPTS0 * id);
 						if (id == SDLK_1) {
-							if (runopts_emulator_speed < 40) runopts_emulator_speed += 10;
+							if (runopts_emulator_speed == 5) runopts_emulator_speed += 5;
+							else if (runopts_emulator_speed < 40) runopts_emulator_speed += 10;
 						} else {
 							if (runopts_emulator_speed > 10) runopts_emulator_speed -= 10;
+							else if (runopts_emulator_speed > 5) runopts_emulator_speed -= 5;
 						}
 					} else if (state == SDL_RELEASED) {
 						key_repeat_manager(KRM_FUNC_RELEASE, NULL, 0);
@@ -2911,7 +2929,15 @@ void manage_runopts_input(void) {
 				}
 			}
 		} else if (id == SDLK_3 || id == SDLK_4) {
-			if (runtime_options[1].state) {
+			if (runtime_options[0].state) {
+					if (state == SDL_PRESSED) {
+						if (id == SDLK_3) {
+							sdl_emulator.m1not = 0;
+						} else {
+							sdl_emulator.m1not = 1;
+						}
+					}
+			} else if (runtime_options[1].state) {
 				#ifdef OSS_SOUND_SUPPORT
 					if (state == SDL_PRESSED) {
 						if (id == SDLK_3) {
@@ -2939,10 +2965,9 @@ void manage_runopts_input(void) {
 				#ifdef OSS_SOUND_SUPPORT
 					if (state == SDL_PRESSED) {
 						if (id == SDLK_5) {
-							/* ACB Stereo */
-							if (runopts_sound_device == DEVICE_QUICKSILVA ||
-								runopts_sound_device == DEVICE_ZONX)
-								runopts_sound_stereo = !runopts_sound_stereo;
+							/* Unreal */
+							if (runopts_sound_device == DEVICE_ZONX)
+								runopts_sound_ay_unreal = !runopts_sound_ay_unreal;
 						} else {
 							/* Sound Device: VSYNC */
 							runopts_sound_device = DEVICE_VSYNC;
@@ -3481,6 +3506,9 @@ int runopts_is_a_reset_scheduled(void) {
 		runopts_sound_device != DEVICE_NONE && 
 		runopts_sound_device != DEVICE_VSYNC) {
 		retval = TRUE;
+	} else if (runopts_sound_ay_unreal != sdl_sound.ay_unreal &&
+		runopts_sound_device == DEVICE_ZONX) {
+	        retval = TRUE;
 #endif
 	}
 
@@ -3519,6 +3547,7 @@ void runopts_transit(int state) {
 	if (state == TRANSIT_OUT) {
 		if (last_state != TRANSIT_SAVE) {
 			/* Restore the original contents of these variables */
+			sdl_emulator.m1not = runopts_emulator_m1not;
 			sdl_emulator.frameskip = runopts_emulator_frameskip;
 			sdl_key_repeat.delay = runopts_key_repeat.delay;
 			sdl_key_repeat.interval = runopts_key_repeat.interval;
@@ -3534,9 +3563,11 @@ void runopts_transit(int state) {
 		runopts_emulator_speed = sdl_emulator.speed;
 		runopts_emulator_model = *sdl_emulator.model;
 		runopts_emulator_ramsize = sdl_emulator.ramsize;
+		runopts_emulator_m1not = sdl_emulator.m1not;
 		runopts_emulator_frameskip = sdl_emulator.frameskip;
 		runopts_sound_device = sdl_sound.device;
 		runopts_sound_stereo = sdl_sound.stereo;
+		runopts_sound_ay_unreal = sdl_sound.ay_unreal;
 		runopts_key_repeat.delay = sdl_key_repeat.delay;
 		runopts_key_repeat.interval = sdl_key_repeat.interval;
 		runopts_colours_emu_fg = colours.emu_fg;
@@ -3582,6 +3613,12 @@ void runopts_transit(int state) {
 				/* The component executive monitors this variable and
 				 * manages emulator and component reinitialisation */
 				sdl_sound.stereo = runopts_sound_stereo;
+			}
+			/* Update Unreal */
+			if (runopts_sound_ay_unreal != sdl_sound.ay_unreal) {
+				/* The component executive monitors this variable and
+				 * manages emulator and component reinitialisation */
+				sdl_sound.ay_unreal = runopts_sound_ay_unreal;
 			}
 		#endif
 		/* If the joycfg was used then update/insert the controls that

@@ -191,10 +191,13 @@ void sdl_hotspots_init(void) {
 	for (count = HS_RUNOPTS0_RUNOPTS0; count <= HS_RUNOPTS0_NEXT; count++)
 		hotspots[count].gid = HS_GRP_RUNOPTS0;
 	hotspots[HS_RUNOPTS0_ZX80].remap_id = SDLK_HOME;
-	hotspots[HS_RUNOPTS0_ZX80].flags |= HS_PROP_SELECTED;	/* Default selected */
+	hotspots[HS_RUNOPTS0_ZX81].flags |= HS_PROP_SELECTED;	/* Default selected */
 	hotspots[HS_RUNOPTS0_ZX81].remap_id = SDLK_END;
 	hotspots[HS_RUNOPTS0_RAM_DN].remap_id = SDLK_INSERT;
 	hotspots[HS_RUNOPTS0_RAM_UP].remap_id = SDLK_DELETE;
+	hotspots[HS_RUNOPTS0_M1NOT_NO].remap_id = SDLK_3;
+	//hotspots[HS_RUNOPTS0_M1NOT_NO].flags |= HS_PROP_SELECTED;	/* Default selected */
+	hotspots[HS_RUNOPTS0_M1NOT_YES].remap_id = SDLK_4;
 	hotspots[HS_RUNOPTS0_FRAMESKIP_DN].remap_id = SDLK_LEFTBRACKET;
 	hotspots[HS_RUNOPTS0_FRAMESKIP_UP].remap_id = SDLK_RIGHTBRACKET;
 	#ifdef ENABLE_EMULATION_SPEED_ADJUST
@@ -747,19 +750,6 @@ void hotspots_resize(int gid) {
 				hotspots[HS_VKEYB_1 + count].hit_h = 16 * video.scale;
 			}
 		}
-//		#if defined(PLATFORM_DINGUX_A320)
-//			hotspots[HS_VKEYB_VKEYB].hl_x = hotspots[HS_VKEYB_VKEYB].hit_x;
-//			hotspots[HS_VKEYB_VKEYB].hl_y = hotspots[HS_VKEYB_VKEYB].hit_y;
-//			hotspots[HS_VKEYB_VKEYB].hl_w = hotspots[HS_VKEYB_VKEYB].hit_w;
-//			hotspots[HS_VKEYB_VKEYB].hl_h = hotspots[HS_VKEYB_VKEYB].hit_h;
-//
-//			for (count = 0; count < 40; count++) {
-//				hotspots[HS_VKEYB_1 + count].hl_x = hotspots[HS_VKEYB_1 + count].hit_x;
-//				hotspots[HS_VKEYB_1 + count].hl_y = hotspots[HS_VKEYB_1 + count].hit_y; 
-//				hotspots[HS_VKEYB_1 + count].hl_w = hotspots[HS_VKEYB_1 + count].hit_w;
-//				hotspots[HS_VKEYB_1 + count].hl_h = hotspots[HS_VKEYB_1 + count].hit_h;
-//			}
-//		#endif
 	}
 
 	if (gid & HS_GRP_CTB) {
@@ -810,17 +800,23 @@ void hotspots_resize(int gid) {
 		hotspots[HS_RUNOPTS0_ZX81].hit_w = 7.5 * 8 * video.scale;
 		hotspots[HS_RUNOPTS0_RAM_DN].hit_x += 9.5 * 8 * video.scale;
 		hotspots[HS_RUNOPTS0_RAM_DN].hit_y += 5.5 * 8 * video.scale;
-		hotspots[HS_RUNOPTS0_RAM_UP].hit_x += 16.5 * 8 * video.scale;
+		hotspots[HS_RUNOPTS0_RAM_UP].hit_x += 17.5 * 8 * video.scale;
 		hotspots[HS_RUNOPTS0_RAM_UP].hit_y += 5.5 * 8 * video.scale;
+		hotspots[HS_RUNOPTS0_M1NOT_NO].hit_x += 2.5 * 8 * video.scale;
+		hotspots[HS_RUNOPTS0_M1NOT_NO].hit_y += 9.5 * 8 * video.scale;
+		hotspots[HS_RUNOPTS0_M1NOT_NO].hit_w = 7.5 * 8 * video.scale;
+		hotspots[HS_RUNOPTS0_M1NOT_YES].hit_x += 12.5 * 8 * video.scale;
+		hotspots[HS_RUNOPTS0_M1NOT_YES].hit_y += 9.5 * 8 * video.scale;
+		hotspots[HS_RUNOPTS0_M1NOT_YES].hit_w = 7.5 * 8 * video.scale;
 		hotspots[HS_RUNOPTS0_FRAMESKIP_DN].hit_x += 9.5 * 8 * video.scale;
-		hotspots[HS_RUNOPTS0_FRAMESKIP_DN].hit_y += 7.5 * 8 * video.scale;
-		hotspots[HS_RUNOPTS0_FRAMESKIP_UP].hit_x += 16.5 * 8 * video.scale;
-		hotspots[HS_RUNOPTS0_FRAMESKIP_UP].hit_y += 7.5 * 8 * video.scale;
+		hotspots[HS_RUNOPTS0_FRAMESKIP_DN].hit_y += 11.5 * 8 * video.scale;
+		hotspots[HS_RUNOPTS0_FRAMESKIP_UP].hit_x += 17.5 * 8 * video.scale;
+		hotspots[HS_RUNOPTS0_FRAMESKIP_UP].hit_y += 11.5 * 8 * video.scale;
 		#ifdef ENABLE_EMULATION_SPEED_ADJUST
 			hotspots[HS_RUNOPTS0_SPEED_DN].hit_x += 9.5 * 8 * video.scale;
-			hotspots[HS_RUNOPTS0_SPEED_DN].hit_y += 9.5 * 8 * video.scale;
-			hotspots[HS_RUNOPTS0_SPEED_UP].hit_x += 16.5 * 8 * video.scale;
-			hotspots[HS_RUNOPTS0_SPEED_UP].hit_y += 9.5 * 8 * video.scale;
+			hotspots[HS_RUNOPTS0_SPEED_DN].hit_y += 13.5 * 8 * video.scale;
+			hotspots[HS_RUNOPTS0_SPEED_UP].hit_x += 17.5 * 8 * video.scale;
+			hotspots[HS_RUNOPTS0_SPEED_UP].hit_y += 13.5 * 8 * video.scale;
 		#endif
 
 		#if defined (PLATFORM_MIYOO)
@@ -851,11 +847,12 @@ void hotspots_resize(int gid) {
 		/* Set-up hit_w/h */
 		for (count = HS_RUNOPTS0_ZX80; count <= HS_RUNOPTS0_NEXT; count++) {
 			hotspots[count].hit_h = 2 * 8 * video.scale;
-
 			#if defined (PLATFORM_MIYOO)
-			if (count >= HS_RUNOPTS0_RAM_DN && count < HS_RUNOPTS0_CLOSE) 
+			if ((count >= HS_RUNOPTS0_RAM_DN && count < HS_RUNOPTS0_M1NOT_NO) ||
+			    (count > HS_RUNOPTS0_M1NOT_YES && count < HS_RUNOPTS0_CLOSE))
 			#else
-			if (count >= HS_RUNOPTS0_RAM_DN && count < HS_RUNOPTS0_SAVE) 
+			if ((count >= HS_RUNOPTS0_RAM_DN && count < HS_RUNOPTS0_M1NOT_NO) ||
+			    (count > HS_RUNOPTS0_M1NOT_YES && count < HS_RUNOPTS0_SAVE))
 			#endif
 				hotspots[count].hit_w = 2 * 8 * video.scale;
 		}
@@ -1441,44 +1438,6 @@ void hotspots_render(void) {
 	/* Highlight any hotspots that are currently visible that have IDs
 	 * that are recorded as being pressed, and selected hotspots if applicable */
 	for (count = 0; count < MAX_HOTSPOTS; count++) {
-/*
-		#if defined(DEBUG_DINGUX_A320)
-		if (count==HS_RUNOPTS3_JOY_CFG_LTRIG){
-			printf("HS_RUNOPTS3_JOY_CFG_LTRIG\n");
-		}
-		if (count==HS_RUNOPTS3_KEY_1){
-			printf("HS_RUNOPTS3_KEY_1\n");
-		}
-		if (count==HS_RUNOPTS3_JOY_CFG_LTRIG||count==HS_RUNOPTS3_KEY_1){
-			printf("item=%d\n"
-				"hotspots[%d].gid=%d\n"
-				"hotspots[%d].flags=%d\n"
-				"hotspots[%d].hit_x=%d\n"
-				"hotspots[%d].hit_y=%d\n"
-				"hotspots[%d].hit_w=%d\n"
-				"hotspots[%d].hit_h=%d\n"
-				"hotspots[%d].hl_x=%d\n"
-				"hotspots[%d].hl_y=%d\n"
-				"hotspots[%d].hl_w=%d\n"
-				"hotspots[%d].hl_h=%d\n"
-				"hotspots[%d].remap_id=%d\n"
-				"-------------------------------------------------------\n",
-				count,
-				count,hotspots[count].gid,
-				count,hotspots[count].flags,
-				count,hotspots[count].hit_x,
-				count,hotspots[count].hit_y,
-				count,hotspots[count].hit_w,
-				count,hotspots[count].hit_h,
-				count,hotspots[count].hl_x,
-				count,hotspots[count].hl_y,
-				count,hotspots[count].hl_w,
-				count,hotspots[count].hl_h,
-				count,hotspots[count].remap_id
-			);
-		}
-		#endif
-*/
 		if (hotspots[count].gid != UNDEFINED &&
 			hotspots[count].gid != HS_GRP_EMU &&
 			(hotspots[count].gid == active_component ||
@@ -1582,34 +1541,33 @@ void hotspots_render(void) {
 					exit(1);
 				}
 				/* For the vkeyb make the hotspot corners transparent */
-
-//				if (hotspots[count].gid == HS_GRP_VKEYB) {
-//					colour = SDL_MapRGB(video.screen->format, colours.colour_key >> 16 & 0xff,
-//						colours.colour_key >> 8 & 0xff, colours.colour_key & 0xff);
-//					dstrect.w = video.scale; dstrect.h = video.scale;
-//					for (surround = 0; surround < 4; surround++) {
-//						if (surround == 0) {
-//							dstrect.x = 0; dstrect.y = 0;
-//						} else if (surround == 1) {
-//							dstrect.x = hl_w - video.scale; dstrect.y = 0;
-//						} else if (surround == 2) {
-//							dstrect.x = hl_w - video.scale; dstrect.y = hl_h - video.scale;
-//						} else if (surround == 3) {
-//							dstrect.x = 0; dstrect.y = hl_h - video.scale;
-//						}
-//						if (SDL_FillRect(highlight, &dstrect, colour) < 0) {
-//							fprintf(stderr, "%s: FillRect error: %s\n", __func__,
-//								SDL_GetError ());
-//							exit(1);
-//						}
-//					}
-//					/* Set the transparent colour */
-//					if (SDL_SetColorKey (highlight, SDL_SRCCOLORKEY, colour) < 0) {
-//						fprintf(stderr, "%s: Cannot set surface colour key: %s\n", __func__,
-//							SDL_GetError ());
-//						exit(1);
-//					}
-//				}
+				if (hotspots[count].gid == HS_GRP_VKEYB) {
+					colour = SDL_MapRGB(video.screen->format, colours.colour_key >> 16 & 0xff,
+						colours.colour_key >> 8 & 0xff, colours.colour_key & 0xff);
+					dstrect.w = video.scale; dstrect.h = video.scale;
+					for (surround = 0; surround < 4; surround++) {
+						if (surround == 0) {
+							dstrect.x = 0; dstrect.y = 0;
+						} else if (surround == 1) {
+							dstrect.x = hl_w - video.scale; dstrect.y = 0;
+						} else if (surround == 2) {
+							dstrect.x = hl_w - video.scale; dstrect.y = hl_h - video.scale;
+						} else if (surround == 3) {
+							dstrect.x = 0; dstrect.y = hl_h - video.scale;
+						}
+						if (SDL_FillRect(highlight, &dstrect, colour) < 0) {
+							fprintf(stderr, "%s: FillRect error: %s\n", __func__,
+								SDL_GetError ());
+							exit(1);
+						}
+					}
+					/* Set the transparent colour */
+					if (SDL_SetColorKey (highlight, SDL_SRCCOLORKEY, colour) < 0) {
+						fprintf(stderr, "%s: Cannot set surface colour key: %s\n", __func__,
+							SDL_GetError ());
+						exit(1);
+					}
+				}
 				/* Choose a suitable alpha */
 				if (hotspots[count].gid == HS_GRP_VKEYB) {
 					alpha = 128 - (256 - vkeyb.alpha) / 4;

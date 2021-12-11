@@ -107,13 +107,8 @@ void local_data_dir_init(void) {
 	int count;
 	
 	/* Create local data directory structure whilst ignoring errors */
-
-      #if defined(INDIVIDUAL_SETTINGS)
-	for (count = 0; count < 6; count++) {
-      #else
 	for (count = 0; count < 5; count++) {
-      #endif
-		#if defined(PLATFORM_GP2X) || defined(__amigaos4__) || defined(_WIN32) || defined(PLATFORM_DINGUX_A320)
+		#if defined(PLATFORM_GP2X) || defined(__amigaos4__) || defined(_WIN32)
 			strcpy(foldername, LOCAL_DATA_DIR);
 		#else
 			strcpy(foldername, getenv ("HOME"));
@@ -133,13 +128,6 @@ void local_data_dir_init(void) {
 			strcatdelimiter(foldername);
 			strcat(foldername, LOCAL_PROGRM_DIR);
 		}
-		#if defined(INDIVIDUAL_SETTINGS)
-		else if (count == 5){
-			strcatdelimiter(foldername);
-			strcat(foldername, LOCAL_INDIVIDUAL_SET);
-		}
-
-		#endif
 		mkdir(foldername, 0755);
 	}
 }
@@ -153,12 +141,12 @@ void sdl_rcfile_read(void) {
 	struct ctrlremap read_ctrl_remaps[MAX_CTRL_REMAPS];
 	struct keyrepeat read_key_repeat;
 	struct colourtable read_colours;
-	int read_emulator_speed, read_emulator_frameskip, read_emulator_model;
+	int read_emulator_m1not, read_emulator_speed, read_emulator_frameskip, read_emulator_model;
 	#if defined(PLATFORM_MIYOO)
 	int read_emulator_fullscreen;
 	#endif
 	int read_vkeyb_alpha, read_vkeyb_autohide, read_vkeyb_toggle_shift;
-	int read_sound_volume, read_sound_device, read_sound_stereo;
+	int read_sound_volume, read_sound_device, read_sound_stereo, read_sound_ay_unreal;
 	int read_emulator_ramsize, read_emulator_invert;
 	int count, index, line_count, found;
 	int read_joystick_dead_zone;
@@ -176,7 +164,7 @@ void sdl_rcfile_read(void) {
 	strcatdelimiter(rcfile.filename);
 	strcat(rcfile.filename, RESOURCE_FILE);
 
-	//fprintf(stdout, "Reading from %s\n", rcfile.filename);
+	fprintf(stdout, "Reading from %s\n", rcfile.filename);
 	if ((fp = fopen(rcfile.filename, "r")) == NULL) {
 		fprintf(stderr, "%s: Cannot read from %s\n", __func__, rcfile.filename);
 		/* Schedule a new rcfile */
@@ -189,6 +177,7 @@ void sdl_rcfile_read(void) {
 	read_joystick_dead_zone = UNDEFINED;
 	read_key_repeat.delay = UNDEFINED;
 	read_key_repeat.interval = UNDEFINED;
+	read_emulator_m1not = UNDEFINED;
 	read_emulator_speed = UNDEFINED;
 	read_emulator_frameskip = UNDEFINED;
 	read_emulator_model = UNDEFINED;
@@ -200,6 +189,7 @@ void sdl_rcfile_read(void) {
 	read_sound_volume = UNDEFINED;
 	read_sound_device = UNDEFINED;
 	read_sound_stereo = UNDEFINED;
+	read_sound_ay_unreal = UNDEFINED;
 	read_vkeyb_alpha = UNDEFINED;
 	read_vkeyb_autohide = UNDEFINED;
 	read_vkeyb_toggle_shift = UNDEFINED;
@@ -267,10 +257,16 @@ void sdl_rcfile_read(void) {
 			if (!strncmp(line, key, strlen(key))) {
 				sscanf(&line[strlen(key)], "%i", &read_key_repeat.interval);
 			}
+			strcpy(key, "emulator.m1not=");
+			if (!strncmp(line, key, strlen(key))) {
+				sscanf(&line[strlen(key)], "%i", &read_emulator_m1not);
+			}
 			strcpy(key, "emulator.speed=");
 			if (!strncmp(line, key, strlen(key))) {
 				strcpy(value, &line[strlen(key)]);
-				if (strcmp(value, "200") == 0) {
+				if (strcmp(value, "400") == 0) {
+					read_emulator_speed = 5;
+				} else if (strcmp(value, "200") == 0) {
 					read_emulator_speed = 10;
 				} else if (strcmp(value, "100") == 0) {
 					read_emulator_speed = 20;
@@ -293,7 +289,6 @@ void sdl_rcfile_read(void) {
 					read_emulator_model = MODEL_ZX80;
 				}
 			}
-
 			#if defined(PLATFORM_MIYOO)
 			strcpy(key, "emulator.fullscreen=");
 			if (!strncmp(line, key, strlen(key))) {
@@ -305,7 +300,6 @@ void sdl_rcfile_read(void) {
 				}
 			}
 			#endif
-
 			strcpy(key, "emulator.ramsize=");
 			if (!strncmp(line, key, strlen(key))) {
 				sscanf(&line[strlen(key)], "%i", &read_emulator_ramsize);
@@ -344,6 +338,15 @@ void sdl_rcfile_read(void) {
 						read_sound_stereo = TRUE;
 					} else if (strcmp(value, "FALSE") == 0 || strcmp(value, "0") == 0) {
 						read_sound_stereo = FALSE;
+					}
+				}
+				strcpy(key, "sound.ay_unreal=");
+				if (!strncmp(line, key, strlen(key))) {
+					strcpy(value, &line[strlen(key)]);
+					if (strcmp(value, "TRUE") == 0 || strcmp(value, "1") == 0) {
+						read_sound_ay_unreal = TRUE;
+					} else if (strcmp(value, "FALSE") == 0 || strcmp(value, "0") == 0) {
+						read_sound_ay_unreal = FALSE;
 					}
 				}
 			#endif
@@ -518,6 +521,7 @@ void sdl_rcfile_read(void) {
 		printf("read_joystick_dead_zone=%i\n", read_joystick_dead_zone);
 		printf("read_key_repeat.delay=%i\n", read_key_repeat.delay);
 		printf("read_key_repeat.interval=%i\n", read_key_repeat.interval);
+		printf("read_emulator_m1not=%i\n", read_emulator_m1not);
 		printf("read_emulator_speed=%i\n", read_emulator_speed);
 		printf("read_emulator_frameskip=%i\n", read_emulator_frameskip);
 		printf("read_emulator_model=%i\n", read_emulator_model);
@@ -529,6 +533,7 @@ void sdl_rcfile_read(void) {
 		printf("read_sound_volume=%i\n", read_sound_volume);
 		printf("read_sound_device=%i\n", read_sound_device);
 		printf("read_sound_stereo=%i\n", read_sound_stereo);
+		printf("read_sound_ay_unreal=%i\n", read_sound_ay_unreal);
 		printf("read_vkeyb_alpha=%i\n", read_vkeyb_alpha);
 		printf("read_vkeyb_autohide=%i\n", read_vkeyb_autohide);
 		printf("read_vkeyb_toggle_shift=%i\n", read_vkeyb_toggle_shift);
@@ -599,6 +604,8 @@ void sdl_rcfile_read(void) {
 			}
 		}
 
+		if (read_emulator_m1not != UNDEFINED) sdl_emulator.m1not = read_emulator_m1not;
+
 		#ifdef ENABLE_EMULATION_SPEED_ADJUST
 			/* Emulation speed (it's vetted) */
 			if (read_emulator_speed != UNDEFINED) sdl_emulator.speed = read_emulator_speed;
@@ -616,7 +623,7 @@ void sdl_rcfile_read(void) {
 
 		/* Machine model (it's vetted) */
 		if (read_emulator_model != UNDEFINED) *sdl_emulator.model = read_emulator_model;
-
+		
 		#if defined(PLATFORM_MIYOO)
 		/* full screen (it's vetted) */
 		if (read_emulator_fullscreen != UNDEFINED) sdl_emulator.fullscr = read_emulator_fullscreen;
@@ -626,12 +633,12 @@ void sdl_rcfile_read(void) {
 		if (read_emulator_ramsize != UNDEFINED) {
 			if (read_emulator_ramsize == 1 || read_emulator_ramsize == 2 ||
 				read_emulator_ramsize == 3 || read_emulator_ramsize == 4 ||
-				read_emulator_ramsize == 16 || read_emulator_ramsize == 32 ||
+				read_emulator_ramsize == 16 || read_emulator_ramsize == 24 || read_emulator_ramsize == 32 ||
 				read_emulator_ramsize == 48 || read_emulator_ramsize == 56) {
 				sdl_emulator.ramsize = read_emulator_ramsize;
 			} else {
 				fprintf(stderr, "%s: emulator.ramsize within rcfile is invalid: "
-					"try 1, 2, 3, 4, 16, 32, 48 or 56\n", __func__);
+					"try 1, 2, 3, 4, 16, 24, 32, 48 or 56\n", __func__);
 			}
 		}
 
@@ -654,6 +661,9 @@ void sdl_rcfile_read(void) {
 
 			/* Sound stereo (it's vetted) */
 			if (read_sound_stereo != UNDEFINED) sdl_sound.stereo = read_sound_stereo;
+
+			/* Sound ay_unreal (it's vetted) */
+			if (read_sound_ay_unreal != UNDEFINED) sdl_sound.ay_unreal = read_sound_ay_unreal;
 		#endif
 
 		/* Vkeyb alpha */
@@ -1040,9 +1050,13 @@ void rcfile_write(void) {
 	fprintf(fp, "key_repeat.delay=%i\n", sdl_key_repeat.delay);
 	fprintf(fp, "key_repeat.interval=%i\n", sdl_key_repeat.interval);
 
+	fprintf(fp, "emulator.m1not=%i\n", sdl_emulator.m1not);
+
 	/* sdl_emulator.speed */
 	strcpy(key, "emulator.speed"); strcpy(value, "");
-	if (sdl_emulator.speed == 10) {
+	if (sdl_emulator.speed == 5) {
+		strcat(value, "400");
+	} else if (sdl_emulator.speed == 10) {
 		strcat(value, "200");
 	} else if (sdl_emulator.speed == 20) {
 		strcat(value, "100");
@@ -1063,7 +1077,7 @@ void rcfile_write(void) {
 		strcat(value, "MODEL_ZX81");
 	}
 	fprintf(fp, "%s=%s\n", key, value);
-
+	
 	#if defined(PLATFORM_MIYOO)
 	/* sdl_emulator.fullscreen */
 	strcpy(key, "emulator.fullscreen"); strcpy(value, "");
@@ -1104,6 +1118,15 @@ void rcfile_write(void) {
 	/* sdl_sound.stereo */
 	strcpy(key, "sound.stereo"); strcpy(value, "");
 	if (sdl_sound.stereo) {
+		strcat(value, "TRUE");
+	} else {
+		strcat(value, "FALSE");
+	}
+	fprintf(fp, "%s=%s\n", key, value);
+
+	/* sdl_sound.ay_unreal */
+	strcpy(key, "sound.ay_unreal"); strcpy(value, "");
+	if (sdl_sound.ay_unreal) {
 		strcat(value, "TRUE");
 	} else {
 		strcat(value, "FALSE");
@@ -1682,31 +1705,39 @@ int sdl_zxroms_init(void) {
 	int count;
 	FILE *fp;
 
-	for (count = 0; count < 2; count++) {
+	for (count = 0; count < 3; count++) {
 		if ((count == 0 && !sdl_zx80rom.state) || 
-			(count == 1 && !sdl_zx81rom.state)) {
+		    (count == 1 && !sdl_zx81rom.state) ||
+		    (count == 2 && !sdl_aszmicrom.state)) {
 			/* Prepare the relevant filename */
 			if (count == 0) {
 				strcpy(filename, PACKAGE_DATA_DIR);
 				strcatdelimiter(filename);
 				strcat(filename, ROM_ZX80);
-			} else {
+			} else if (count == 1) {
 				strcpy(filename, PACKAGE_DATA_DIR);
 				strcatdelimiter(filename);
 				strcat(filename, ROM_ZX81);
+			} else if (count == 2) {
+				strcpy(filename, PACKAGE_DATA_DIR);
+				strcatdelimiter(filename);
+				strcat(filename, ASZMIC);
 			}
 			/* Open the ROM */
 			if ((fp = fopen(filename, "rb")) == NULL) {
 				fprintf(stderr, "%s: Cannot read from %s\n", __func__, filename);
-				retval = TRUE;
+				if (count < 2) retval = TRUE;
 			} else {
 				/* Read in the data */
 				if (count == 0) {
 					fread(sdl_zx80rom.data, 1, 4 * 1024, fp);
 					sdl_zx80rom.state = TRUE;
-				} else {
+				} else if (count == 1) {
 					fread(sdl_zx81rom.data, 1, 8 * 1024, fp);
 					sdl_zx81rom.state = TRUE;
+				} else if (count == 2) {
+					fread(sdl_aszmicrom.data, 1, 4 * 1024, fp);
+					sdl_aszmicrom.state = TRUE;
 				}
 				fclose(fp);
 			}

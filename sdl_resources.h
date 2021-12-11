@@ -31,7 +31,7 @@
 #if defined(_WIN32)
 	#define RESOURCE_FILE "sz81.ini"
 #else
-	#define RESOURCE_FILE "sz81rc.4"
+	#define RESOURCE_FILE "sz81rc"
 #endif
 #define LOCAL_PRTOUT_DIR "prtout"
 #define LOCAL_SAVSTA_DIR "savsta"
@@ -60,6 +60,7 @@
 
 #define ROM_ZX80 "zx80.rom"
 #define ROM_ZX81 "zx81.rom"
+#define ASZMIC   "aszmic.rom"
 
 /* Notification function IDs */
 #define NOTIFICATION_SHOW 1
