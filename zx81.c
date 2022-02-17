@@ -275,12 +275,14 @@ void zx81_writebyte(int Address, int Data)
 #endif
         noise = (noise<<8) | Data;
 
+#ifdef OSS_SOUND_SUPPORT
         if (zx81.aytype == AY_TYPE_QUICKSILVA)
         {
                 if (Address == 0x7fff) SelectAYReg=Data&15;
                 if (Address == 0x7ffe) sound_ay_write(SelectAYReg,Data,0);
         }
 
+#endif
         // The lambda colour board has 1k of RAM mapped between 8k-16k (8 shadows)
         // with a further 8 shadows between 49152 and 57344.
 
@@ -632,6 +634,7 @@ void zx81_writeport(int Address, int Data, int *tstates)
                 configbyte=Data;
                 break;
 
+#ifdef OSS_SOUND_SUPPORT
         case 0x0f:
                 if (zx81.aytype==AY_TYPE_ZONX)
                         sound_ay_write(SelectAYReg, Data, 0);
@@ -648,7 +651,7 @@ void zx81_writeport(int Address, int Data, int *tstates)
                 if (zx81.aytype==AY_TYPE_ACE) sound_ay_write(SelectAYReg, Data, 0);
                 if (zx81.aytype==AY_TYPE_ZONX) SelectAYReg=Data&15;
                 break;
-
+#endif
 		/*
         case 0x3f:
                 if (zx81.aytype==AY_TYPE_FULLER)
@@ -790,10 +793,12 @@ BYTE zx81_readport(int Address, int *tstates)
                                 return(sound_ay_read(SelectAYReg));
 			*/
 
+#ifdef OSS_SOUND_SUPPORT
                 case 0xf5:
                         beeper = 1-beeper;
                         if ((zx81.machine==MACHINELAMBDA) && zx81.vsyncsound) sound_beeper(beeper);
                         return(255);
+#endif
                 case 0xfb:
 			data = printer_inout(0,0);
                         return (BYTE) data;
@@ -861,7 +866,10 @@ void anyout()
 			VSYNC_state = 2; // will be reset by HSYNC circuitry
 		else
 			VSYNC_state = 0;
+
+#ifdef OSS_SOUND_SUPPORT
 		if ((zx81.machine!=MACHINELAMBDA) && zx81.vsyncsound) sound_beeper(0);
+#endif                
 #ifdef VRCNTR
 		/* due to differences in when the "207" counters give the /HSYNC, and OUT instruction delay */
 		hsync_counter = 25;
@@ -933,7 +941,10 @@ int zx81_do_scanlines(int tstotal)
                         {
                                 if (VSYNC_state==0) {
 					VSYNC_state = 1;
+
+#ifdef OSS_SOUND_SUPPORT
 					if ((zx81.machine!=MACHINELAMBDA) && zx81.vsyncsound) sound_beeper(1);
+                                        #endif
 				}
                         }
                         break;
