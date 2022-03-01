@@ -2555,6 +2555,10 @@ void manage_all_input(void) {
 			if (state == SDL_PRESSED) {
 				save_screenshot();
 			}
+		} else if (id == SDLK_LCTRL) {
+			if (get_active_component() & COMP_RUNOPTS_ALL) {
+				toggle_runopts_state();
+			}
 		} else if (id == SDLK_ESCAPE) {
 			/* Exit the currently active component */
 			if (state == SDL_PRESSED) {
