@@ -328,6 +328,13 @@ void sdl_keyboard_init(void) {
 	ctrl_remaps[index].device = DEVICE_KEYBOARD;
 	ctrl_remaps[index].id = DINGOO_START;
 	ctrl_remaps[index].remap_device = DEVICE_CURSOR;
+	ctrl_remaps[index].remap_id = CURSOR_HIT;	
+
+	ctrl_remaps[++index].components = COMP_DIALOG | COMP_LDFILE | COMP_SSTATE | COMP_RUNOPTS_ALL;
+	ctrl_remaps[index].protected = TRUE;
+	ctrl_remaps[index].device = DEVICE_KEYBOARD;
+	ctrl_remaps[index].id = DINGOO_A;
+	ctrl_remaps[index].remap_device = DEVICE_CURSOR;
 	ctrl_remaps[index].remap_id = CURSOR_HIT;
 
 	ctrl_remaps[++index].components = COMP_VKEYB;
@@ -2564,6 +2571,10 @@ void manage_all_input(void) {
 			/* Save a screenshot */
 			if (state == SDL_PRESSED) {
 				save_screenshot();
+			}			
+		} else if (id == SDLK_LCTRL) {
+			if (get_active_component() & COMP_RUNOPTS_ALL) {
+					toggle_runopts_state();
 			}
 		} else if (id == SDLK_ESCAPE) {
 			/* Exit the currently active component */

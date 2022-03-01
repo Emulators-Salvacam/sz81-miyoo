@@ -53,7 +53,7 @@ char *runtime_options_text0[24] = {
 	"",
 #endif
 	#if defined (PLATFORM_MIYOO)
-	" MENU: Ok Start / Exit Select",
+	" MENU: Ok Start|A/Exit Select|B",
 	"",
 	" GAME: Keyboard   > [ Select]",
 	"  Load State > [ Start + B ]",
