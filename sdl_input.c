@@ -2480,6 +2480,34 @@ void manage_all_input(void) {
 					toggle_sstate_state(SSTATE_MODE_SAVE);
 				}else if (keystate[DINGOO_B]) {
 					toggle_sstate_state(SSTATE_MODE_LOAD);
+				#ifdef OSS_SOUND_SUPPORT
+				}else if (keystate[DINGOO_L]) {
+					if (sdl_sound.volume > 0) {
+						sdl_sound.volume -= 2;
+						if (sdl_sound.state && 
+							(sdl_sound.device == DEVICE_QUICKSILVA ||
+							sdl_sound.device == DEVICE_ZONX)) 
+							sound_ay_setvol();						
+
+						strcpy(notification.title, "Sound");
+						sprintf(notification.text, "Volume:%i", sdl_sound.volume);
+						notification.timeout = NOTIFICATION_TIMEOUT_750;
+						notification_show(NOTIFICATION_SHOW, &notification);
+					}
+				}else if (keystate[DINGOO_R]) {					
+					if (sdl_sound.volume < 128) {
+						sdl_sound.volume += 2;
+						if (sdl_sound.state && 
+							(sdl_sound.device == DEVICE_QUICKSILVA ||
+							sdl_sound.device == DEVICE_ZONX)) 
+							sound_ay_setvol();
+
+						strcpy(notification.title, "Sound");
+						sprintf(notification.text, "Volume:%i", sdl_sound.volume);
+						notification.timeout = NOTIFICATION_TIMEOUT_750;
+						notification_show(NOTIFICATION_SHOW, &notification);
+					}
+				#endif
 				}
 			}
 		} else if ( keystate[DINGOO_POWER] ) {
@@ -2575,6 +2603,10 @@ void manage_all_input(void) {
 		} else if (id == SDLK_LCTRL) {
 			if (get_active_component() & COMP_RUNOPTS_ALL) {
 					toggle_runopts_state();
+			}
+		} else if (id == SDLK_LCTRL) {
+			if (get_active_component() & COMP_RUNOPTS_ALL) {
+				toggle_runopts_state();
 			}
 		} else if (id == SDLK_ESCAPE) {
 			/* Exit the currently active component */
