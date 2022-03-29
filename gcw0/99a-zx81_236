@@ -1,0 +1,7 @@
+title=SZ81 2.3.6
+description=ZX81 2.3.6
+exec=/mnt/emus/sz81/sz81_236
+clock=702
+selectordir=/mnt/roms/zx81
+selectorscreens=/mnt/roms/zx81/.preview
+selectorelement=50

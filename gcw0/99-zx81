@@ -1,0 +1,7 @@
+title=SZ81
+description=ZX81
+exec=/mnt/emus/sz81/sz81
+clock=702
+selectordir=/mnt/roms/zx81
+selectorscreens=/mnt/roms/zx81/.preview
+selectorelement=1

@@ -1,0 +1,10 @@
+[Desktop Entry]
+Name=SZ81
+Comment=ZX80/81 emulator
+Exec=sz81_236 %f
+Icon=zx81
+Terminal=false
+Type=Application
+MimeType=application/x-zx81-rom;
+StartupNotify=true
+Categories=emulators;
