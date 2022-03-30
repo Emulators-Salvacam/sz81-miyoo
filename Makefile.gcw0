@@ -13,7 +13,7 @@ VERSION=$(shell cat VERSION)
 #PACKAGE_DATA_DIR?=$(PREFIX)/
 
 
-export PACKAGE_DATA_DIR=/media/data/local/home/.sz81/data
+export PACKAGE_DATA_DIR=./data
 export TOOLCHAIN=mipsel-linux-uclibc
 
 DEVPREFIX=/opt/gcw0-toolchain
@@ -23,7 +23,7 @@ SYSROOT := $(shell $(CC) --print-sysroot)
 SDL_CONFIG = $(SYSROOT)/usr/bin/sdl-config
 
 CFLAGS=-Ofast -Wall -I$(DEVPREFIX)/include `$(SDL_CONFIG) --cflags` \
-	-DPLATFORM_DINGUX_A320 -D_DZ80_EXCLUDE_SCRIPT -DPLATFORM_MIYOO -DPLATFORM_GP2X -DVERSION=\"$(VERSION)\" -DPACKAGE_DATA_DIR=\"$(PACKAGE_DATA_DIR)\" \
+	-DPLATFORM_DINGUX_A320 -D_DZ80_EXCLUDE_SCRIPT -DPLATFORM_MIYOO -DPLATFORM_GP2X -DPLATFORM_GCW0 -DVERSION=\"$(VERSION)\" -DPACKAGE_DATA_DIR=\"$(PACKAGE_DATA_DIR)\" \
 	-DOSS_SOUND_SUPPORT -DSZ81 -DENABLE_EMULATION_SPEED_ADJUST
 LINK=$(CC)
 LDFLAGS=-L$(DEVPREFIX)/lib 
@@ -35,6 +35,10 @@ all: $(SOURCES) $(TARGET)
 $(TARGET): $(OBJECTS) sndrender/libsndrender.a
 	$(LINK) $(LDFLAGS) $(OBJECTS) $(LIBS) -o $@
 	#miyoo/build-$(TARGET)
+	rm -f ./gcw0/opk/*.opk
+	cp sz81_236 ./gcw0/opk
+	mksquashfs ./gcw0/opk/* ./gcw0/opk/sz81.opk -all-root -no-xattrs -noappend -no-exports
+
 
 %.o: %.c 
 	$(CC) $(CFLAGS) -c $< -o $@
@@ -47,3 +51,4 @@ sndrender/libsndrender.a: sndrender/sndbuffer.cpp sndrender/sndchip.cpp sndrende
 clean:
 	cd sndrender && $(MAKE) clean
 	rm -f *.o *~ sz81 z80/*.o z80/*~ stzxfs
+	rm -f ./gcw0/opk/*.opk

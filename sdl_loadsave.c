@@ -96,6 +96,11 @@ int save_state_dialog_slots_populate(void) {
 	for (count = 0; count < 9; count++)
 		save_state_dialog.slots[count] = 0;
 
+	#if defined(PLATFORM_GCW0)
+		strcpy(foldername, getenv ("HOME"));
+		strcatdelimiter(foldername);
+		strcat(foldername, LOCAL_DATA_DIR);
+	#else
 	/* Build a path to the currently loaded program's save state folder */
 	#if defined(PLATFORM_GP2X) || defined(__amigaos4__) || defined(_WIN32) || defined(PLATFORM_DINGUX_A320)
 		strcpy(foldername, LOCAL_DATA_DIR);
@@ -103,6 +108,7 @@ int save_state_dialog_slots_populate(void) {
 		strcpy(foldername, getenv ("HOME"));
 		strcatdelimiter(foldername);
 		strcat(foldername, LOCAL_DATA_DIR);
+	#endif
 	#endif
 	strcatdelimiter(foldername);
 	strcat(foldername, LOCAL_SAVSTA_DIR);
@@ -274,6 +280,12 @@ int sdl_save_file(int parameter, int method) {
 				strcat(fullpath, ".o");
 		}
 	} else if (method == SAVE_FILE_METHOD_STATESAVE) {
+		
+		#if defined(PLATFORM_GCW0)
+			strcpy(fullpath, getenv ("HOME"));
+			strcatdelimiter(fullpath);
+			strcat(fullpath, LOCAL_DATA_DIR);
+		#else
 		/* Build a path to the currently loaded program's save state folder */
 		#if defined(PLATFORM_GP2X) || defined(__amigaos4__) || defined(_WIN32)
 			strcpy(fullpath, LOCAL_DATA_DIR);
@@ -281,6 +293,7 @@ int sdl_save_file(int parameter, int method) {
 			strcpy(fullpath, getenv ("HOME"));
 			strcatdelimiter(fullpath);
 			strcat(fullpath, LOCAL_DATA_DIR);
+		#endif
 		#endif
 		strcatdelimiter(fullpath);
 		strcat(fullpath, LOCAL_SAVSTA_DIR);
@@ -495,6 +508,11 @@ int sdl_load_file(int parameter, int method) {
 			retval = TRUE;
 		}
 	} else if (method == LOAD_FILE_METHOD_STATELOAD) {
+		#if defined(PLATFORM_GCW0)
+			strcpy(fullpath, getenv ("HOME"));
+			strcatdelimiter(fullpath);
+			strcat(fullpath, LOCAL_DATA_DIR);
+		#else
 		/* Build a path to the currently loaded program's save state folder */
 		#if defined(PLATFORM_GP2X) || defined(__amigaos4__) || defined(_WIN32)
 			strcpy(fullpath, LOCAL_DATA_DIR);
@@ -502,6 +520,7 @@ int sdl_load_file(int parameter, int method) {
 			strcpy(fullpath, getenv ("HOME"));
 			strcatdelimiter(fullpath);
 			strcat(fullpath, LOCAL_DATA_DIR);
+		#endif
 		#endif
 		strcatdelimiter(fullpath);
 		strcat(fullpath, LOCAL_SAVSTA_DIR);

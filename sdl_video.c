@@ -138,9 +138,15 @@ char *runtime_options_text2[24] = {
 
 #if defined(PLATFORM_MIYOO)
 char *runtime_options_text3[24] = {
+	#if defined(PLATFORM_GCW0)
+	"\x2 GCW-Zero button mapper        4/4 \x2",
+	"",
+	"   \x87\x83\x83\x83\x83""GCW-Zero BUTTONS\x83\x83\x83\x83\x2\x84\x2",
+  	#else
 	"\x2 Miyoo button mapper        4/4 \x2",
 	"",
 	"   \x87\x83\x83\x83\x83\x83\x83""MIYOO BUTTONS\x83\x83\x83\x83\x83\x2\x84\x2",
+	#endif
 	"    \x2 L \x2                  \x2 R \x2    ",
 	"\x87\x83\x83\x83\x83\x83\x83\x83\x83\x83\x83\x83\x83\x83\x83\x83\x83\x83\x83\x83\x83\x83\x83\x83\x83\x83\x83\x83\x83\x83\x83\x2\x84\x2",
 	"\x85         \x87\x83\x83\x83\x83\x83\x83\x83\x83\x83\x83\x2\x84\x2         \x90",
@@ -1824,13 +1830,18 @@ void set_joy_cfg_text(int textid) {
 void save_screenshot(void) {
 	char fullpath[256], filename[256];
 	int nextnum;
-
+	#if defined(PLATFORM_GCW0)
+		strcpy(fullpath, getenv ("HOME"));
+		strcatdelimiter(fullpath);
+		strcat(fullpath, LOCAL_DATA_DIR);
+	#else
 	#if defined(PLATFORM_GP2X) || defined(__amigaos4__) || defined(_WIN32) || defined(PLATFORM_DINGUX_A320)
 		strcpy(fullpath, LOCAL_DATA_DIR);
 	#else
 		strcpy(fullpath, getenv ("HOME"));
 		strcatdelimiter(fullpath);
 		strcat(fullpath, LOCAL_DATA_DIR);
+	#endif
 	#endif
 	strcatdelimiter(fullpath);
 	strcat(fullpath, LOCAL_SCNSHT_DIR);

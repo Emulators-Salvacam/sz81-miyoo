@@ -67,13 +67,18 @@ void sdl_zxprinter_init(void) {
 	time_t rightnow;*/
 	char unique[32];
 	int	nextnum;
-
+	#if defined(PLATFORM_GCW0)
+		strcpy(zxprinter.filename, getenv ("HOME"));
+		strcatdelimiter(zxprinter.filename);
+		strcat(zxprinter.filename, LOCAL_DATA_DIR);
+	#else
 	#if defined(PLATFORM_GP2X) || defined(__amigaos4__) || defined(_WIN32) || defined(PLATFORM_DINGUX_A320)
 		strcpy(zxprinter.filename, LOCAL_DATA_DIR);
 	#else
 		strcpy(zxprinter.filename, getenv ("HOME"));
 		strcatdelimiter(zxprinter.filename);
 		strcat(zxprinter.filename, LOCAL_DATA_DIR);
+	#endif
 	#endif
 	strcatdelimiter(zxprinter.filename);
 	strcat(zxprinter.filename, LOCAL_PRTOUT_DIR);
@@ -107,13 +112,20 @@ void local_data_dir_init(void) {
 	int count;
 	
 	/* Create local data directory structure whilst ignoring errors */
-	for (count = 0; count < 5; count++) {
+	for (count = 0; count < 6; count++) {
+			
+		#if defined(PLATFORM_GCW0)
+			strcpy(foldername, getenv ("HOME"));
+			strcatdelimiter(foldername);
+			strcat(foldername, LOCAL_DATA_DIR);
+		#else
 		#if defined(PLATFORM_GP2X) || defined(__amigaos4__) || defined(_WIN32)
 			strcpy(foldername, LOCAL_DATA_DIR);
 		#else
 			strcpy(foldername, getenv ("HOME"));
 			strcatdelimiter(foldername);
 			strcat(foldername, LOCAL_DATA_DIR);
+		#endif
 		#endif
 		if (count == 1) {
 			strcatdelimiter(foldername);
@@ -127,7 +139,10 @@ void local_data_dir_init(void) {
 		} else if (count == 4) {
 			strcatdelimiter(foldername);
 			strcat(foldername, LOCAL_PROGRM_DIR);
-		}
+		} else if (count == 5) {
+			strcatdelimiter(foldername);
+			strcat(foldername, LOCAL_KEYMAP_DIR);
+		}		
 		mkdir(foldername, 0755);
 	}
 }
@@ -154,12 +169,18 @@ void sdl_rcfile_read(void) {
 	char read_version[16];
 	FILE *fp;
 
+	#if defined(PLATFORM_GCW0)
+		strcpy(rcfile.filename, getenv ("HOME"));
+		strcatdelimiter(rcfile.filename);
+		strcat(rcfile.filename, LOCAL_DATA_DIR);
+	#else
 	#if defined(PLATFORM_GP2X) || defined(__amigaos4__) || defined(_WIN32) || defined(PLATFORM_DINGUX_A320)
 		strcpy(rcfile.filename, LOCAL_DATA_DIR);
 	#else
 		strcpy(rcfile.filename, getenv ("HOME"));
 		strcatdelimiter(rcfile.filename);
 		strcat(rcfile.filename, LOCAL_DATA_DIR);
+	#endif
 	#endif
 	strcatdelimiter(rcfile.filename);
 	strcat(rcfile.filename, RESOURCE_FILE);
@@ -737,7 +758,13 @@ void mapping_game_read(void) {
 //	fprintf(stderr, "Read,loaded=%s\n", load_file_dialog.loaded);
 //	fprintf(stderr, "Read,basename=%s\n", file_dialog_basename(load_file_dialog.loaded));
 
+	#if defined(PLATFORM_GCW0)
+	strcpy(filenameGame, getenv ("HOME"));
+	strcatdelimiter(filenameGame);
+	strcat(filenameGame, LOCAL_DATA_DIR);
+	#else
 	strcpy(filenameGame, LOCAL_DATA_DIR);
+	#endif
 	strcatdelimiter(filenameGame);
 	strcat(filenameGame, LOCAL_KEYMAP_DIR);
 	strcatdelimiter(filenameGame);
@@ -898,8 +925,14 @@ void mapping_game_write(void) {
 	//fprintf(stderr, "Write sdl_com_line.filename=%s\n", sdl_com_line.filename);
 	//fprintf(stderr, "Write,loaded=%s\n", load_file_dialog.loaded);
 	//fprintf(stderr, "Write,basename=%s\n", file_dialog_basename(load_file_dialog.loaded));
-
+	
+	#if defined(PLATFORM_GCW0)
+	strcpy(filenameGame, getenv ("HOME"));
+	strcatdelimiter(filenameGame);
+	strcat(filenameGame, LOCAL_DATA_DIR);
+	#else 
 	strcpy(filenameGame, LOCAL_DATA_DIR);
+	#endif
 	strcatdelimiter(filenameGame);
 	strcat(filenameGame, LOCAL_KEYMAP_DIR);
 	strcatdelimiter(filenameGame);
