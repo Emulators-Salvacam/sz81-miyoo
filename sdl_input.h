@@ -16,7 +16,7 @@
  */
 
 /* Defines */
-#define MAX_CTRL_REMAPS 64
+#define MAX_CTRL_REMAPS 65
 #define MAX_JOY_AXES 20
 
 #define DEVICE_KEYBOARD 1
