@@ -8,3 +8,4 @@ Type=Application
 MimeType=application/x-zx81-rom;
 StartupNotify=true
 Categories=emulators;
+X-OD-Manual=gcw0_keys.txt

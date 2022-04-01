@@ -737,8 +737,12 @@ void sdl_rcfile_read(void) {
 		 * will always be replaced until either the rcfile is deleted or the user deletes
 		 * the ctrl_remaps manually */
 		if (found)
+		{
 			for (count = 0; count < MAX_CTRL_REMAPS; count++)
+			{
 				ctrl_remaps[count] = read_ctrl_remaps[count];
+			}
+		}
 
 	}
 }
@@ -750,7 +754,7 @@ void sdl_rcfile_read(void) {
  ***************************************************************************/
 
 void mapping_game_read(void) {
-	char line[256], key[64], value[192],filenameGame[192], fileLoaded[64];
+	char line[256], key[64], value[192],filenameGame[192];
 	int count, index, line_count, found;
 	struct ctrlremap read_ctrl_remaps[MAX_CTRL_REMAPS];
 	FILE *fp;
@@ -906,8 +910,13 @@ void mapping_game_read(void) {
 	 * will always be replaced until either the rcfile is deleted or the user deletes
 	 * the ctrl_remaps manually */
 	if (found)
+	{
+		fprintf(stderr, "Guarda el remapeo\n");
 		for (count = 0; count < MAX_CTRL_REMAPS; count++)
+		{
 			ctrl_remaps[count] = read_ctrl_remaps[count];
+		}
+	}
 	
 }
 
@@ -918,7 +927,7 @@ void mapping_game_read(void) {
  ***************************************************************************/
 
 void mapping_game_write(void) {
-	char key[64], value[192], filenameGame[192], fileLoaded[64];
+	char key[64], value[192], filenameGame[192];
 	int count, found;
 	FILE *fp;
 

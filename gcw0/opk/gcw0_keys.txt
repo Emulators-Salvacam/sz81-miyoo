@@ -1,0 +1,41 @@
+MENU Button - Enter the hardware menu (on the tab 4/4 you can map the GCW0 keys)
+
+SELECT - Enter the virtual keyboard
+
+L + R   - Exit the emulator
+START+X - Exit the emulator
+
+START+B - Load state
+START+A - Save state
+
+START+Y - Load File (Read programs to the emulator)
+
+Default mapping in the emulator:
+L     - 1
+R  	  - 2
+START - 4
+LEFT  - 5
+DOWN  - 6
+UP    - 7
+RIGHT - 8
+B 	  - 9
+A 	  - 0
+Y 	  - Y
+X 	  - NEWLINE
+This mapping can be completely changed by pressing Menu and navigating to menu screen 4/4.
+Use START or A to select options in the menu.
+Allows you to save mapping only for one game, with the Save_game option in the mapping options.
+
+On Virtual Keyboard:
+
+Dpad - Moves the green cursor over the virtual keyboard
+A - Press the key selected by the green cursor / activate the option selected in the icon menu.
+B - RUBOUT (SHIFT+0)
+X - Press the SHIFT key
+Y - SPACE
+START - NEWLINE
+R - move backwards (SHIFT+5)
+L - Move forward (SHIFT+8)
+SELECT - Exits Virtual Keyboard
+
+To activate Chroma 81 you must select 56k RAM
