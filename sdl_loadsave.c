@@ -25,6 +25,23 @@
 
 extern MACHINE machine;
 extern ZX81 zx81;
+extern struct sdl_com_line_ext{
+	int nxtlin;
+	int load_hook;
+	int save_hook;
+	int rsz81mem;
+	int wsz81mem;
+	int bigscreen;
+	int fullscreen;
+	int networking;
+	int scale;
+	int xres;
+	int yres;
+	int bdis;
+	int edis;
+	char filename[256];
+} sdl_com_line;
+
 
 /* for shared memory */
 extern BYTE *sz81mem;

@@ -39,6 +39,25 @@
 int hsize = ZX_VID_X_WIDTH, vsize = ZX_VID_X_HEIGHT;
 unsigned char *vptr;
 
+int keyboard_buffer[MAX_KEYCODES];
+
+struct {
+	int nxtlin;
+	int load_hook;
+	int save_hook;
+	int rsz81mem;
+	int wsz81mem;
+	int bigscreen;
+	int fullscreen;
+	int networking;
+	int scale;
+	int xres;
+	int yres;
+	int bdis;
+	int edis;
+	char filename[256];
+} sdl_com_line;
+
 /* Function prototypes */
 
 /***************************************************************************

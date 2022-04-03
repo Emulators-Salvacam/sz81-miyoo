@@ -7,17 +7,21 @@ OBJECTS=$(patsubst %.c, %.o, $(SOURCES))
 VERSION=$(shell cat VERSION)
 
 export PACKAGE_DATA_DIR=./data
-export TOOLCHAIN=mipsel-linux-uclibc
+export TOOLCHAIN=miyoo2
 
-DEVPREFIX=/opt/miyoo
-CC=$(DEVPREFIX)/usr/bin/arm-linux-gcc
+DEVPREFIX=/opt/miyoo2/usr
+CC=$(DEVPREFIX)/bin/arm-linux-gcc
+
 
 SYSROOT := $(shell $(CC) --print-sysroot)
 SDL_CONFIG = $(SYSROOT)/usr/bin/sdl-config
 
+
+
+
 CFLAGS=-Ofast -Wall -I$(DEVPREFIX)/include `$(SDL_CONFIG) --cflags` \
 	-DPLATFORM_DINGUX_A320 -D_DZ80_EXCLUDE_SCRIPT -DPLATFORM_MIYOO -DPLATFORM_GP2X -DVERSION=\"$(VERSION)\" -DPACKAGE_DATA_DIR=\"$(PACKAGE_DATA_DIR)\" \
-	-DOSS_SOUND_SUPPORT -DSZ81 -DENABLE_EMULATION_SPEED_ADJUST
+	-DOSS_SOUND_SUPPORT -DSZ81
 LINK=$(CC)
 LDFLAGS=-L$(DEVPREFIX)/lib 
 LIBS=`$(SDL_CONFIG) --libs` -Lsndrender -lsndrender -lrt

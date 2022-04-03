@@ -170,6 +170,8 @@ int keycodes[] = {
 	SDLK_EURO, SDLK_UNDO, SDLK_LAST, CURSOR_REMAP, CURSOR_N, 
 	CURSOR_S, CURSOR_W, CURSOR_E, CURSOR_HIT};
 
+extern int keyboard_buffer[MAX_KEYCODES];
+
 /* Function prototypes */
 void manage_cursor_input(void);
 void manage_all_input(void);

@@ -23,6 +23,7 @@
 
 /* Variables */
 
+extern int keyboard_buffer[MAX_KEYCODES];
 
 /* Function prototypes */
 
