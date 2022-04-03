@@ -26,6 +26,48 @@ BYTE *memory;
 extern BYTE *sz81mem;
 extern int rwsz81mem;
 
+extern struct sdl_emulator_ext{
+    int state;      /* FALSE=video output/keyboard input disabled, TRUE=all active */
+    int paused;     /* Via Pause key: TRUE=emulation on-hold, keyboard input disabled */
+    int xoffset;
+    int yoffset;
+    SDL_TimerID timer_id;
+    int m1not;
+    int speed;      /* 5ms=400%, 10ms=200%, 20ms=100%, 30ms=66%, 40ms=50% */
+    int frameskip;          /* 0 to MAX_FRAMESKIP */
+    int *model;     /* Points to z81's zx80: 0=ZX81, 1=ZX80 */
+    #if defined(PLATFORM_MIYOO)
+    int *fullscr;       /* 0=NO, 1=YES */
+    #endif
+    int ramsize;            /* 1, 2, 3, 4, 16, 32, 48 or 56K */
+    int invert;     /* This should really be in video but it's easier to put it here */
+    int autoload;           /* Set to TRUE when auto-loading or forced-loading */
+    int networking;         /* enable calls to WIZ chip emulation */
+    int bdis;
+    int edis;
+} sdl_emulator;
+
+extern struct {
+        int state;
+        int volume;
+        int device;             /* See DEVICE* defines in sdl_sound.h */
+        int stereo;
+        int ay_unreal;
+        Uint16 buffer[SOUND_BUFFER_SIZE];
+        int buffer_start;
+        int buffer_end;
+} sdl_sound;
+
+extern struct {
+        int state;
+        unsigned char data[8 * 1024];
+} sdl_zx81rom;
+
+extern struct {
+        int state;
+        unsigned char data[4 * 1024];
+} sdl_aszmicrom;
+
 /* odd place to have this, but the display does work in an odd way :-) */
 unsigned char scrnbmp_new[ZX_VID_FULLWIDTH*ZX_VID_FULLHEIGHT/8];  /* written */
 unsigned char scrnbmp[ZX_VID_FULLWIDTH*ZX_VID_FULLHEIGHT/8];      /* displayed */

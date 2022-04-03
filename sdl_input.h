@@ -91,17 +91,6 @@
 #endif
 
 /* Variables */
-SDL_Joystick *joystick;
-int joystick_dead_zone;
-int show_input_id;
-int current_input_id;
-int runopts_emulator_speed;
-int runopts_emulator_model;
-int runopts_emulator_ramsize;
-int runopts_emulator_m1not;
-int runopts_sound_device;
-int runopts_sound_stereo;
-int runopts_sound_ay_unreal;
 
 struct ctrlremap {
 	int components;		/* An OR'd combination of COMP_ IDs */
@@ -139,5 +128,4 @@ int keysym_to_keycode(char *keysym);
 char *keycode_to_keysym(int keycode);
 int key_to_keymap(int keycode);
 int ZX_key_to_id(int zxkey);
-
 

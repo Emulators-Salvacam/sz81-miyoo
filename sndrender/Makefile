@@ -15,10 +15,10 @@ OBJECTS=$(patsubst %.cpp, %.o, $(SOURCES))
 
     ifeq ($(TOOLCHAIN),miyoo2)
 		# comment for destkop, only for Miyoo
-		CC = /opt/miyoo2/usr/bin/arm-buildroot-linux-musleabi-gcc
-		CC_AS = /opt/miyoo2/usr/bin/arm-buildroot-linux-musleabi-gcc
-		CXX = /opt/miyoo2/usr/bin/arm-buildroot-linux-musleabi-g++
-		AR = /opt/miyoo2/usr/bin/arm-buildroot-linux-musleabi-ar
+		CC = /opt/miyoo2/usr/bin/arm-linux-gcc
+		CC_AS = /opt/miyoo2/usr/bin/arm-linux-gcc
+		CXX = /opt/miyoo2/usr/bin/arm-linux-g++
+		AR = /opt/miyoo2/usr/bin/arm-linux-ar
 		# comment for destkop, only for Miyoo
     endif
 

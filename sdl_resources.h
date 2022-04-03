@@ -16,7 +16,6 @@
  */
 
 /* Defines */
-#define MAX_FONTS 4
 #define MAX_DIALOG_ROWS 19
 
 /* Local resources */
@@ -131,13 +130,6 @@ struct colourtable {
 };
 struct colourtable colours;
 
-struct bmpfont {
-	SDL_Surface *original;
-	SDL_Surface *scaled[MAX_FONTS];
-	Uint32 fg_colour[MAX_FONTS];
-	Uint32 requested[MAX_FONTS];
-};
-struct bmpfont zx80font, zx81font, zx82font;	
 
 struct {
 	SDL_Surface *original;

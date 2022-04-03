@@ -28,6 +28,101 @@ unsigned char vga_graphmemory[800 * 600];
 
 extern ZX81 zx81;
 
+extern struct sdl_emulator_ext{
+    int state;      /* FALSE=video output/keyboard input disabled, TRUE=all active */
+    int paused;     /* Via Pause key: TRUE=emulation on-hold, keyboard input disabled */
+    int xoffset;
+    int yoffset;
+    SDL_TimerID timer_id;
+    int m1not;
+    int speed;      /* 5ms=400%, 10ms=200%, 20ms=100%, 30ms=66%, 40ms=50% */
+    int frameskip;          /* 0 to MAX_FRAMESKIP */
+    int *model;     /* Points to z81's zx80: 0=ZX81, 1=ZX80 */
+    #if defined(PLATFORM_MIYOO)
+    int *fullscr;       /* 0=NO, 1=YES */
+    #endif
+    int ramsize;            /* 1, 2, 3, 4, 16, 32, 48 or 56K */
+    int invert;     /* This should really be in video but it's easier to put it here */
+    int autoload;           /* Set to TRUE when auto-loading or forced-loading */
+    int networking;         /* enable calls to WIZ chip emulation */
+    int bdis;
+    int edis;
+} sdl_emulator;
+
+extern struct keyrepeat_ext {
+	int delay;
+	int interval;
+} sdl_key_repeat;
+
+
+extern struct {
+	int state;
+	int volume;
+	int device;		/* See DEVICE* defines in sdl_sound.h */
+	int stereo;
+	int ay_unreal;
+	Uint16 buffer[SOUND_BUFFER_SIZE];
+	int buffer_start;
+	int buffer_end;
+} sdl_sound;
+
+extern struct {
+	int state;
+	unsigned char data[8 * 1024];
+} sdl_zx81rom;
+
+extern struct {
+	int state;
+	unsigned char data[4 * 1024];
+} sdl_aszmicrom;
+
+extern struct {
+  int state;
+  int xoffset;
+  int yoffset;
+  char dir[256];      /* The directory that files are loaded from and saved to */
+  char *dirlist;      /* A list containing compatible entries from the directory */
+  int dirlist_sizeof;   /* The size of each element within the list */
+  int dirlist_count;    /* The count of files within the list */
+  int dirlist_top;    /* The GUI list top as an index into the list */
+  int dirlist_selected; /* The selected item as an index into the list */
+  char loaded[256];   /* The fullpath of the most recently loaded/saved file */
+  int method;       /* The loading method to be implemented for certain methods */
+  int sbpgscrunit;
+} load_file_dialog;
+
+extern struct {
+  int state;
+  int xoffset;
+  int yoffset;
+  int slots[9];   /* The slots currently saved to (existing state files) */
+  int mode;     /* Are we loading or saving */
+} save_state_dialog;
+
+extern SDL_Joystick *joystick;
+extern int joystick_dead_zone;
+extern struct hotspot hotspots[MAX_HOTSPOTS];
+
+extern int show_input_id;
+extern int current_input_id;
+extern int runopts_emulator_speed;
+extern int runopts_emulator_model;
+extern int runopts_emulator_ramsize;
+extern int runopts_emulator_m1not;
+extern int runopts_sound_device;
+extern int runopts_sound_stereo;
+extern int runopts_sound_ay_unreal;
+extern struct bmpfont zx80font, zx81font, zx82font;  
+
+extern struct hotspot_ext {
+	int gid;						/* Group id for easy management */
+	int flags;						/* An OR'd combination of HS_PROP_ properties */
+	int hit_x, hit_y, hit_w, hit_h;	/* Hit box */
+	int hl_x, hl_y, hl_w, hl_h;		/* Highlight box (if all UNDEFINED then use hitbox */
+	int remap_id;					/* The main destination control id (could be UNDEFINED) */
+} hotspot;
+
+
 /* \x1 means that a value needs to be placed here.
  * \x2 means to invert the colours.
  * \x80 to \x95 are Sinclair graphics characters.

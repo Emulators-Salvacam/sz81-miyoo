@@ -86,6 +86,86 @@ int sound_ay_unreal=0;
 
 /* sound_vsync and sound_ay are in common.c */
 
+extern struct sdl_emulator_ext{
+    int state;      /* FALSE=video output/keyboard input disabled, TRUE=all active */
+    int paused;     /* Via Pause key: TRUE=emulation on-hold, keyboard input disabled */
+    int xoffset;
+    int yoffset;
+    SDL_TimerID timer_id;
+    int m1not;
+    int speed;      /* 5ms=400%, 10ms=200%, 20ms=100%, 30ms=66%, 40ms=50% */
+    int frameskip;          /* 0 to MAX_FRAMESKIP */
+    int *model;     /* Points to z81's zx80: 0=ZX81, 1=ZX80 */
+    #if defined(PLATFORM_MIYOO)
+    int *fullscr;       /* 0=NO, 1=YES */
+    #endif
+    int ramsize;            /* 1, 2, 3, 4, 16, 32, 48 or 56K */
+    int invert;     /* This should really be in video but it's easier to put it here */
+    int autoload;           /* Set to TRUE when auto-loading or forced-loading */
+    int networking;         /* enable calls to WIZ chip emulation */
+    int bdis;
+    int edis;
+} sdl_emulator;
+
+
+extern struct {
+  int state;
+  int volume;
+  int device;   /* See DEVICE* defines in sdl_sound.h */
+  int stereo;
+  int ay_unreal;
+  Uint16 buffer[SOUND_BUFFER_SIZE];
+  int buffer_start;
+  int buffer_end;
+} sdl_sound;
+
+extern struct {
+  int state;
+  unsigned char data[8 * 1024];
+} sdl_zx81rom;
+
+extern struct {
+  int state;
+  unsigned char data[4 * 1024];
+} sdl_aszmicrom;
+
+extern struct {
+  int state;
+  int xoffset;
+  int yoffset;
+  char dir[256];      /* The directory that files are loaded from and saved to */
+  char *dirlist;      /* A list containing compatible entries from the directory */
+  int dirlist_sizeof;   /* The size of each element within the list */
+  int dirlist_count;    /* The count of files within the list */
+  int dirlist_top;    /* The GUI list top as an index into the list */
+  int dirlist_selected; /* The selected item as an index into the list */
+  char loaded[256];   /* The fullpath of the most recently loaded/saved file */
+  int method;       /* The loading method to be implemented for certain methods */
+  int sbpgscrunit;
+} load_file_dialog;
+
+extern struct {
+  int state;
+  int xoffset;
+  int yoffset;
+  int slots[9];   /* The slots currently saved to (existing state files) */
+  int mode;     /* Are we loading or saving */
+} save_state_dialog;
+
+extern SDL_Joystick *joystick;
+extern int joystick_dead_zone;
+extern struct hotspot hotspots[MAX_HOTSPOTS];
+
+extern int show_input_id;
+extern int current_input_id;
+extern int runopts_emulator_speed;
+extern int runopts_emulator_model;
+extern int runopts_emulator_ramsize;
+extern int runopts_emulator_m1not;
+extern int runopts_sound_device;
+extern int runopts_sound_stereo;
+extern int runopts_sound_ay_unreal;
+extern struct bmpfont zx80font, zx81font, zx82font;  
 
 /* XXX don't know the clock rate for the QS sound board :-(
  * but this sounds pretty plausible, judging from the rather nice
@@ -746,49 +826,50 @@ int f;
 
 void sound_frame(void)
 {
-unsigned char *ptr;
-int f;
-int r;
+  unsigned char *ptr;
+  int f;
+  int r;
 
-if(!sound_enabled) return;
+  if(!sound_enabled) return;
 
-if (sound_ay && sound_ay_unreal) {
-     snd_end_frame(tstates);
-     snd_count();
-     r = snd_fill_buf(sndplaybuf, sdl_sound.volume);
-#ifdef SIMPLE_RECORD
-     fwrite(sndplaybuf,r*2,1,sndhandle);
-#endif
-     sdl_sound_frame((Uint16 *)sndplaybuf,r);
-     snd_start_frame();
-     return;
-}
+  if (sound_ay && sound_ay_unreal) {
+       snd_end_frame(tstates);
+       snd_count();
+       r = snd_fill_buf(sndplaybuf, sdl_sound.volume);
+  #ifdef SIMPLE_RECORD
+       fwrite(sndplaybuf,r*2,1,sndhandle);
+  #endif
+       sdl_sound_frame((Uint16 *)sndplaybuf,r);
+       snd_start_frame();
+       return;
+  }
 
-if(sound_vsync)
+  if (sound_vsync)
   {
-  ptr=sound_buf+(sound_stereo?sound_fillpos*2:sound_fillpos);
-  for(f=sound_fillpos;f<sound_framesiz;f++)
+    ptr = sound_buf + (sound_stereo ? sound_fillpos * 2 : sound_fillpos);
+    for (f = sound_fillpos; f < sound_framesiz; f++)
     {
-    BEEPER_OLDVAL_ADJUST;
-    *ptr++=sound_oldval;
-    if(sound_stereo)
-      *ptr++=sound_oldval;
+      BEEPER_OLDVAL_ADJUST;
+      *ptr++ = sound_oldval;
+      if (sound_stereo)
+        *ptr++ = sound_oldval;
     }
   }
-else
- /* must be AY then, so `zero' buffer ready for it */
- memset(sound_buf,128,sound_framesiz*(sound_stereo+1));
+  else{
+    /* must be AY then, so `zero' buffer ready for it */
+    memset(sound_buf, 128, sound_framesiz * (sound_stereo + 1));
 
- if (sound_ay) sound_ay_overlay();
+    if (sound_ay) sound_ay_overlay();
 
- osssound_frame(sound_buf,sound_framesiz*(sound_stereo+1));
+    osssound_frame(sound_buf, sound_framesiz * (sound_stereo + 1));
 
- sound_oldpos=-1;
- sound_fillpos=0;
- sound_ptr=sound_buf;
+    sound_oldpos = -1;
+    sound_fillpos = 0;
+    sound_ptr = sound_buf;
 
- ays_states[0].ay_change_count=0;
- ays_states[1].ay_change_count=0;
+    ays_states[0].ay_change_count = 0;
+    ays_states[1].ay_change_count = 0;
+  }
 }
 
 

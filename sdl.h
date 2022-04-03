@@ -34,6 +34,14 @@
 /* Defines */
 #define MAX_KEYCODES 358	/* SDL stops at 322 and then I extend them */
 
+#if defined(PLATFORM_DINGUX_A320)
+   #define MAX_HOTSPOTS 239 
+#else
+   #define MAX_HOTSPOTS 199
+#endif
+
+#define MAX_FONTS 4
+
 /* Interrupt types */
 #define INTERRUPT_EMULATOR_RESET 3
 #define INTERRUPT_EMULATOR_EXIT 4
@@ -76,58 +84,24 @@
 /* Variables */
 extern int keyboard_buffer[MAX_KEYCODES];
 
-struct {
-	int state;		/* FALSE=video output/keyboard input disabled, TRUE=all active */
-	int paused;		/* Via Pause key: TRUE=emulation on-hold, keyboard input disabled */
-	int xoffset;
-	int yoffset;
-	SDL_TimerID timer_id;
-	int m1not;
-	int speed;		/* 5ms=400%, 10ms=200%, 20ms=100%, 30ms=66%, 40ms=50% */
-	int frameskip;	        /* 0 to MAX_FRAMESKIP */
-	int *model;		/* Points to z81's zx80: 0=ZX81, 1=ZX80 */
-	#if defined(PLATFORM_MIYOO)
-	int *fullscr;		/* 0=NO, 1=YES */
-	#endif
-	int ramsize;	        /* 1, 2, 3, 4, 16, 32, 48 or 56K */
-	int invert;		/* This should really be in video but it's easier to put it here */
-	int autoload;	        /* Set to TRUE when auto-loading or forced-loading */
-	int networking;         /* enable calls to WIZ chip emulation */
-	int bdis;
-	int edis;
-} sdl_emulator;
-
-struct {
-	int state;
-	int volume;
-	int device;		/* See DEVICE* defines in sdl_sound.h */
-	int stereo;
-	int ay_unreal;
-	Uint16 buffer[SOUND_BUFFER_SIZE];
-	int buffer_start;
-	int buffer_end;
-} sdl_sound;
-
-struct {
-	int state;
-	unsigned char data[4 * 1024];
-} sdl_zx80rom;
-
-struct {
-	int state;
-	unsigned char data[8 * 1024];
-} sdl_zx81rom;
-
-struct {
-	int state;
-	unsigned char data[4 * 1024];
-} sdl_aszmicrom;
-
 struct keyrepeat {
 	int delay;
 	int interval;
 };
-struct keyrepeat sdl_key_repeat;
+struct hotspot {
+	int gid;						/* Group id for easy management */
+	int flags;						/* An OR'd combination of HS_PROP_ properties */
+	int hit_x, hit_y, hit_w, hit_h;	/* Hit box */
+	int hl_x, hl_y, hl_w, hl_h;		/* Highlight box (if all UNDEFINED then use hitbox */
+	int remap_id;					/* The main destination control id (could be UNDEFINED) */
+};
+
+struct bmpfont {
+	SDL_Surface *original;
+	SDL_Surface *scaled[MAX_FONTS];
+	Uint32 fg_colour[MAX_FONTS];
+	Uint32 requested[MAX_FONTS];
+};
 
 /* Function prototypes */
 int sdl_init(void);

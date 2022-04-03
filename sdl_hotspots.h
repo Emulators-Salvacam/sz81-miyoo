@@ -16,11 +16,6 @@
  */
 
 /* Defines */
-#if defined(PLATFORM_DINGUX_A320)
-   #define MAX_HOTSPOTS 239 
-#else
-   #define MAX_HOTSPOTS 199
-#endif
 
 /* Hotspot group IDs */
 #define HS_GRP_EMU 1
@@ -250,14 +245,7 @@
 									 * gid and is visible then it can process pressed or released
 									 * events, but this property enables additional motion events */
 /* Variables */
-struct hotspot {
-	int gid;						/* Group id for easy management */
-	int flags;						/* An OR'd combination of HS_PROP_ properties */
-	int hit_x, hit_y, hit_w, hit_h;	/* Hit box */
-	int hl_x, hl_y, hl_w, hl_h;		/* Highlight box (if all UNDEFINED then use hitbox */
-	int remap_id;					/* The main destination control id (could be UNDEFINED) */
-};
-struct hotspot hotspots[MAX_HOTSPOTS];
+
 
 /* Function prototypes */
 void hotspots_vkeyb_shift_init(void);
@@ -265,5 +253,3 @@ void hotspots_resize(int gid);
 void hotspots_update(void);
 void hotspots_render(void);
 int get_selected_hotspot(int gid);
-
-

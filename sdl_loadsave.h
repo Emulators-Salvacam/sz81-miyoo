@@ -41,28 +41,7 @@
 #define SSTATE_MODE_LOAD 1
 
 /* Variables */
-struct {
-	int state;
-	int xoffset;
-	int yoffset;
-	char dir[256];			/* The directory that files are loaded from and saved to */
-	char *dirlist;			/* A list containing compatible entries from the directory */
-	int dirlist_sizeof;		/* The size of each element within the list */
-	int dirlist_count;		/* The count of files within the list */
-	int dirlist_top;		/* The GUI list top as an index into the list */
-	int dirlist_selected;	/* The selected item as an index into the list */
-	char loaded[256];		/* The fullpath of the most recently loaded/saved file */
-	int method;				/* The loading method to be implemented for certain methods */
-	int sbpgscrunit;
-} load_file_dialog;
 
-struct {
-	int state;
-	int xoffset;
-	int yoffset;
-	int slots[9];		/* The slots currently saved to (existing state files) */
-	int mode;			/* Are we loading or saving */
-} save_state_dialog;
 
 /* Function prototypes */
 void load_file_dialog_dirlist_populate(int refresh);
@@ -73,6 +52,5 @@ void file_dialog_cd(char *dir, char *direntry);
 void dirlist_populate(char *dir, char **dirlist, int *dirlist_sizeof,
 	int *dirlist_count, int filetypes);
 int get_filename_next_highest(char *dir, char *format);
-
 
 

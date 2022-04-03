@@ -58,6 +58,98 @@ struct {
 	char filename[256];
 } sdl_com_line;
 
+struct {
+	int state;		/* FALSE=video output/keyboard input disabled, TRUE=all active */
+	int paused;		/* Via Pause key: TRUE=emulation on-hold, keyboard input disabled */
+	int xoffset;
+	int yoffset;
+	SDL_TimerID timer_id;
+	int m1not;
+	int speed;		/* 5ms=400%, 10ms=200%, 20ms=100%, 30ms=66%, 40ms=50% */
+	int frameskip;	        /* 0 to MAX_FRAMESKIP */
+	int *model;		/* Points to z81's zx80: 0=ZX81, 1=ZX80 */
+	#if defined(PLATFORM_MIYOO)
+	int *fullscr;		/* 0=NO, 1=YES */
+	#endif
+	int ramsize;	        /* 1, 2, 3, 4, 16, 32, 48 or 56K */
+	int invert;		/* This should really be in video but it's easier to put it here */
+	int autoload;	        /* Set to TRUE when auto-loading or forced-loading */
+	int networking;         /* enable calls to WIZ chip emulation */
+	int bdis;
+	int edis;
+} sdl_emulator;
+
+struct {
+	int state;
+	unsigned char data[4 * 1024];
+} sdl_zx80rom;
+
+struct keyrepeat sdl_key_repeat;
+
+struct {
+	int state;
+	int volume;
+	int device;		/* See DEVICE* defines in sdl_sound.h */
+	int stereo;
+	int ay_unreal;
+	Uint16 buffer[SOUND_BUFFER_SIZE];
+	int buffer_start;
+	int buffer_end;
+} sdl_sound;
+
+struct {
+	int state;
+	unsigned char data[8 * 1024];
+} sdl_zx81rom;
+
+struct {
+	int state;
+	unsigned char data[4 * 1024];
+} sdl_aszmicrom;
+
+struct {
+	int state;
+	int xoffset;
+	int yoffset;
+	char dir[256];			/* The directory that files are loaded from and saved to */
+	char *dirlist;			/* A list containing compatible entries from the directory */
+	int dirlist_sizeof;		/* The size of each element within the list */
+	int dirlist_count;		/* The count of files within the list */
+	int dirlist_top;		/* The GUI list top as an index into the list */
+	int dirlist_selected;	/* The selected item as an index into the list */
+	char loaded[256];		/* The fullpath of the most recently loaded/saved file */
+	int method;				/* The loading method to be implemented for certain methods */
+	int sbpgscrunit;
+} load_file_dialog;
+
+struct {
+	int state;
+	int xoffset;
+	int yoffset;
+	int slots[9];		/* The slots currently saved to (existing state files) */
+	int mode;			/* Are we loading or saving */
+} save_state_dialog;
+
+
+SDL_Joystick *joystick;
+int joystick_dead_zone;
+
+
+int show_input_id;
+int current_input_id;
+int runopts_emulator_speed;
+int runopts_emulator_model;
+int runopts_emulator_ramsize;
+int runopts_emulator_m1not;
+int runopts_sound_device;
+int runopts_sound_stereo;
+int runopts_sound_ay_unreal;
+
+struct hotspot hotspots[MAX_HOTSPOTS];
+
+
+struct bmpfont zx80font, zx81font, zx82font;	
+
 /* Function prototypes */
 
 /***************************************************************************

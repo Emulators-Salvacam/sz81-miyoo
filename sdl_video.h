@@ -57,5 +57,3 @@ void set_joy_cfg_text(int textid);
 void save_screenshot(void);
 
 
-
-
