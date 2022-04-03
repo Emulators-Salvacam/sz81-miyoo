@@ -56,6 +56,21 @@
 #define GP2X_BTN_JOY 0x12
 
 /* Dingoo button IDs */
+#if defined(PLATFORM_TRIMUI)
+#define DINGOO_UP    SDLK_UP 
+#define DINGOO_DOWN  SDLK_DOWN 
+#define DINGOO_LEFT   SDLK_LEFT 
+#define DINGOO_RIGHT  SDLK_RIGHT
+#define DINGOO_A      SDLK_LALT
+#define DINGOO_B      SDLK_LCTRL
+#define DINGOO_X      SDLK_LSHIFT
+#define DINGOO_Y      SDLK_LALT
+#define DINGOO_L      SDLK_TAB
+#define DINGOO_R      SDLK_BACKSPACE
+#define DINGOO_SELECT SDLK_RCTRL
+#define DINGOO_START  SDLK_RETURN
+#define DINGOO_POWER  SDLK_ESCAPE
+#else
 #define DINGOO_UP    SDLK_UP 
 #define DINGOO_DOWN  SDLK_DOWN 
 #define DINGOO_LEFT   SDLK_LEFT 
@@ -69,6 +84,8 @@
 #define DINGOO_SELECT SDLK_ESCAPE
 #define DINGOO_START  SDLK_RETURN
 #define DINGOO_POWER  SDLK_RCTRL
+#endif
+
 
 /* Variables */
 /* This records the last runtime options component viewed i.e. the page,
