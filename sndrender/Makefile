@@ -11,11 +11,18 @@ OBJECTS=$(patsubst %.cpp, %.o, $(SOURCES))
 	#AR = /opt/miyoo/usr/bin/arm-linux-ar
 	# comment for destkop, only for Miyoo
 
+	# comment for destkop, only for Miyoo
+	CC = /opt/trimui-toolchain/usr/bin/arm-linux-gcc
+	CC_AS = /opt/trimui-toolchain/usr/bin/arm-linux-gcc
+	CXX = /opt/trimui-toolchain/usr/bin/arm-linux-g++
+	AR = /opt/trimui-toolchain/usr/bin/arm-linux-ar
+	# comment for destkop, only for Miyoo
+
 	# comment for destkop, only for GCW0
-	CC = /opt/gcw0-toolchain/usr/bin/mipsel-linux-gcc
-	CC_AS = /opt/gcw0-toolchain/usr/bin/mipsel-linux-gcc
-	CXX = /opt/gcw0-toolchain/usr/bin/mipsel-linux-g++
-	AR = /opt/gcw0-toolchain/usr/bin/mipsel-linux-ar
+	#CC = /opt/gcw0-toolchain/usr/bin/mipsel-linux-gcc
+	#CC_AS = /opt/gcw0-toolchain/usr/bin/mipsel-linux-gcc
+	#CXX = /opt/gcw0-toolchain/usr/bin/mipsel-linux-g++
+	#AR = /opt/gcw0-toolchain/usr/bin/mipsel-linux-ar
 	# comment for destkop, only for GCW0
 
 %.o: %.cpp
