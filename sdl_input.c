@@ -61,7 +61,7 @@
 #define DINGOO_DOWN  SDLK_DOWN 
 #define DINGOO_LEFT   SDLK_LEFT 
 #define DINGOO_RIGHT  SDLK_RIGHT
-#define DINGOO_A      SDLK_LALT
+#define DINGOO_A      SDLK_SPACE
 #define DINGOO_B      SDLK_LCTRL
 #define DINGOO_X      SDLK_LSHIFT
 #define DINGOO_Y      SDLK_LALT
