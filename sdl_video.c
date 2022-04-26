@@ -55,10 +55,10 @@ char *runtime_options_text0[24] = {
 	#if defined (PLATFORM_MIYOO)
 	"",
 	" MENU: Ok Start|A/Exit Select|B",
-	" GAME: Keyboard   > [ Select]",
-	"  Load State > [ Start + B ]",
-	"  Save State > [ Start + A ]",
-	"  Load File  > [ Start + Y ]",
+	" GAME: Keyboard   > Select",
+	"  Load State > Start+B | L + B",
+	"  Save State > Start+A | L + A",
+	"  Load File  > Start + Y",
 #else
 	"",
 	"",
