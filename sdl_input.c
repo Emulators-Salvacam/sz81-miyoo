@@ -2465,6 +2465,10 @@ void manage_all_input(void) {
 			if (state == SDL_PRESSED){
 				if (keystate[DINGOO_R]) {
 					emulator_exit();
+				} else if (keystate[DINGOO_A]) {
+					toggle_sstate_state(SSTATE_MODE_SAVE);
+				} else if (keystate[DINGOO_B]) {
+				toggle_sstate_state(SSTATE_MODE_LOAD);
 				}
 			}
 		}
