@@ -54,6 +54,10 @@ int sdl_init(void) {
 		key_map_status=STATUS_KEY_MAP_NULL;
 	#endif
 
+	#if defined(PLATFORM_MIYOO)
+		video.xres = 320; video.yres = 240; video.scale = 1;
+		video.fullscreen = SDL_FULLSCREEN;
+	#else
 	/* Set-up a default video resolution depending on platform */
 	#if defined(PLATFORM_GP2X) || defined(PLATFORM_DINGUX_A320) && !defined(DEBUG_DINGUX_A320)
 		video.xres = 320; video.yres = 240; video.scale = 1;
@@ -67,6 +71,7 @@ int sdl_init(void) {
 	#else
 		video.xres = 640; video.yres = 480; video.scale = 2;
 		video.fullscreen = FALSE;
+	#endif
 	#endif
 
 	/* All SDL pointers are initialised to NULL here since we could

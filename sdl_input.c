@@ -56,6 +56,21 @@
 #define GP2X_BTN_JOY 0x12
 
 /* Dingoo button IDs */
+#if defined(PLATFORM_TRIMUI)
+#define DINGOO_UP    SDLK_UP 
+#define DINGOO_DOWN  SDLK_DOWN 
+#define DINGOO_LEFT   SDLK_LEFT 
+#define DINGOO_RIGHT  SDLK_RIGHT
+#define DINGOO_A      SDLK_SPACE
+#define DINGOO_B      SDLK_LCTRL
+#define DINGOO_X      SDLK_LSHIFT
+#define DINGOO_Y      SDLK_LALT
+#define DINGOO_L      SDLK_TAB
+#define DINGOO_R      SDLK_BACKSPACE
+#define DINGOO_SELECT SDLK_RCTRL
+#define DINGOO_START  SDLK_RETURN
+#define DINGOO_POWER  SDLK_ESCAPE
+#else
 #define DINGOO_UP    SDLK_UP 
 #define DINGOO_DOWN  SDLK_DOWN 
 #define DINGOO_LEFT   SDLK_LEFT 
@@ -69,6 +84,8 @@
 #define DINGOO_SELECT SDLK_ESCAPE
 #define DINGOO_START  SDLK_RETURN
 #define DINGOO_POWER  SDLK_RCTRL
+#endif
+
 
 /* Variables */
 /* This records the last runtime options component viewed i.e. the page,
@@ -995,7 +1012,7 @@ int keyboard_update(void) {
 	int hs_vkeyb_ctb_selected;
 	int hs_runopts_selected;
 	int axis_end = 0;
-/*	SDLMod modstate; inused */ 
+	SDLMod modstate;
 	#ifdef SDL_DEBUG_TIMING
 		static Uint32 lasttime = 0;
 		static int Hz = 0;
@@ -1596,10 +1613,19 @@ void manage_cursor_input(void) {
 						hs_currently_selected == HS_RUNOPTS0_ZX81) {
 						hotspots[hs_currently_selected + 8].flags |= HS_PROP_SELECTED;
 					} else if (hs_currently_selected == HS_RUNOPTS0_NEXT) {
+					#if defined(PLATFORM_MIYOO)
+						hotspots[hs_currently_selected - 4].flags |= HS_PROP_SELECTED;
+					} else if (hs_currently_selected == HS_RUNOPTS0_EXIT) {
 						hotspots[hs_currently_selected - 3].flags |= HS_PROP_SELECTED;
 					} else {
 						hotspots[hs_currently_selected - 2].flags |= HS_PROP_SELECTED;
 					}
+					#else
+						hotspots[hs_currently_selected - 3].flags |= HS_PROP_SELECTED;
+					} else {
+						hotspots[hs_currently_selected - 2].flags |= HS_PROP_SELECTED;
+					}
+					#endif
 					#ifndef ENABLE_EMULATION_SPEED_ADJUST
 						hs_currently_selected = get_selected_hotspot(HS_GRP_RUNOPTS0 << runtime_options_which());
 						if (hs_currently_selected == HS_RUNOPTS0_SPEED_DN ||
@@ -1681,7 +1707,12 @@ void manage_cursor_input(void) {
 							(hs_currently_selected == HS_RUNOPTS3_KEY_4) ||
 							(hs_currently_selected == HS_RUNOPTS3_KEY_5) ||
 							(hs_currently_selected == HS_RUNOPTS3_KEY_6) ) {
+						
+						#ifdef PLATFORM_MIYOO
+						hotspots[HS_RUNOPTS3_JOY_CFG_DOWN].flags |= HS_PROP_SELECTED;
+						#else
 						hotspots[HS_RUNOPTS3_JOY_CFG_SELECT].flags |= HS_PROP_SELECTED;
+						#endif
 					} else if ((hs_currently_selected == HS_RUNOPTS3_KEY_7) ||
 							(hs_currently_selected == HS_RUNOPTS3_KEY_8) ||
 							(hs_currently_selected == HS_RUNOPTS3_KEY_9) ||
@@ -1788,7 +1819,11 @@ void manage_cursor_input(void) {
 				} else if (get_active_component() == COMP_RUNOPTS0) {
 					key_repeat_manager(KRM_FUNC_REPEAT, &event, COMP_RUNOPTS0 * CURSOR_S);
 					hotspots[hs_currently_selected].flags &= ~HS_PROP_SELECTED;
-					if (hs_currently_selected == HS_RUNOPTS0_SAVE) {
+					if (hs_currently_selected == HS_RUNOPTS0_SAVE
+					 #if defined(PLATFORM_MIYOO)
+					 || hs_currently_selected == HS_RUNOPTS0_CLOSE
+					 #endif
+					 ) {
 						hotspots[HS_RUNOPTS0_ZX80].flags |= HS_PROP_SELECTED;
 					} else if (hs_currently_selected == HS_RUNOPTS0_EXIT ||
 						hs_currently_selected == HS_RUNOPTS0_NEXT) {
@@ -1908,7 +1943,11 @@ void manage_cursor_input(void) {
 						(hs_currently_selected == HS_RUNOPTS3_JOY_CFG_A)) {
 						hotspots[HS_RUNOPTS3_JOY_CFG_B].flags |= HS_PROP_SELECTED;
 					} else if (hs_currently_selected == HS_RUNOPTS3_JOY_CFG_DOWN){
+						#ifdef PLATFORM_MIYOO
+						hotspots[HS_RUNOPTS3_KEY_1].flags |= HS_PROP_SELECTED;
+						#else
 						hotspots[HS_RUNOPTS3_JOY_CFG_SELECT].flags |= HS_PROP_SELECTED;
+						#endif
 					} else if (hs_currently_selected == HS_RUNOPTS3_JOY_CFG_B){
 						hotspots[HS_RUNOPTS3_JOY_CFG_START].flags |= HS_PROP_SELECTED;
 					} else if (hs_currently_selected == HS_RUNOPTS3_JOY_CFG_SELECT){
@@ -2022,8 +2061,18 @@ void manage_cursor_input(void) {
 						hs_currently_selected == HS_RUNOPTS0_FRAMESKIP_DN ||
 						hs_currently_selected == HS_RUNOPTS0_SPEED_DN) {
 						hotspots[hs_currently_selected + 1].flags |= HS_PROP_SELECTED;
-					} else if (hs_currently_selected == HS_RUNOPTS0_SAVE) {
+					} else if (
+					 #if defined(PLATFORM_MIYOO)
+					 	hs_currently_selected == HS_RUNOPTS0_CLOSE
+					 #else
+						hs_currently_selected == HS_RUNOPTS0_SAVE
+					 #endif
+						) {
+					 #if defined(PLATFORM_MIYOO)
+						hotspots[hs_currently_selected + 3].flags |= HS_PROP_SELECTED;
+					 #else
 						hotspots[hs_currently_selected + 2].flags |= HS_PROP_SELECTED;
+					 #endif
 					} else {
 						hotspots[hs_currently_selected - 1].flags |= HS_PROP_SELECTED;
 					}
@@ -2078,12 +2127,16 @@ void manage_cursor_input(void) {
 					} else if(hs_currently_selected == HS_RUNOPTS3_BACK){
 						hotspots[HS_RUNOPTS3_EXIT].flags |= HS_PROP_SELECTED;
 
+					#ifndef PLATFORM_MIYOO
 					}else if(hs_currently_selected == HS_RUNOPTS3_JOY_CFG_SELECT){
 						hotspots[HS_RUNOPTS3_JOY_CFG_START].flags |= HS_PROP_SELECTED;
-
+					#endif
 					}else if(hs_currently_selected == HS_RUNOPTS3_JOY_CFG_START){
+						#if defined(PLATFORM_MIYOO)
+						hotspots[HS_RUNOPTS3_JOY_CFG_START].flags |= HS_PROP_SELECTED;
+						#else
 						hotspots[HS_RUNOPTS3_JOY_CFG_SELECT].flags |= HS_PROP_SELECTED;
-
+						#endif
 					}else if(hs_currently_selected == HS_RUNOPTS3_JOY_CFG_B){
 						hotspots[HS_RUNOPTS3_JOY_CFG_DOWN].flags |= HS_PROP_SELECTED;
 
@@ -2129,9 +2182,11 @@ void manage_cursor_input(void) {
 					} else if (hs_currently_selected == HS_RUNOPTS3_JOY_CFG_RIGHT) {
 						hotspots[HS_RUNOPTS3_JOY_CFG_DOWN].flags |= HS_PROP_SELECTED;
 					} else if (hs_currently_selected == HS_RUNOPTS3_JOY_CFG_SELECT) {
-						hotspots[HS_RUNOPTS3_JOY_CFG_RIGHT].flags |= HS_PROP_SELECTED;
+						hotspots[HS_RUNOPTS3_JOY_CFG_RIGHT].flags |= HS_PROP_SELECTED;						
+					#ifndef PLATFORM_MIYOO
 					} else if (hs_currently_selected == HS_RUNOPTS3_JOY_CFG_START) {
 						hotspots[HS_RUNOPTS3_JOY_CFG_SELECT].flags |= HS_PROP_SELECTED;
+					#endif
 					} else if (hs_currently_selected == HS_RUNOPTS3_JOY_CFG_A) {
 						hotspots[HS_RUNOPTS3_JOY_CFG_START].flags |= HS_PROP_SELECTED;
 					} else if (hs_currently_selected == HS_RUNOPTS3_JOY_CFG_B) {
@@ -2208,8 +2263,12 @@ void manage_cursor_input(void) {
 						hs_currently_selected == HS_RUNOPTS0_FRAMESKIP_UP ||
 						hs_currently_selected == HS_RUNOPTS0_SPEED_UP) {
 						hotspots[hs_currently_selected - 1].flags |= HS_PROP_SELECTED;
-					} else if (hs_currently_selected == HS_RUNOPTS0_NEXT) {
+					} else if (hs_currently_selected == HS_RUNOPTS0_NEXT) {					
+						#if defined(PLATFORM_MIYOO)
+						hotspots[hs_currently_selected - 3].flags |= HS_PROP_SELECTED;
+						#else
 						hotspots[hs_currently_selected - 2].flags |= HS_PROP_SELECTED;
+						#endif
 					} else {
 						hotspots[hs_currently_selected + 1].flags |= HS_PROP_SELECTED;
 					}
@@ -2269,11 +2328,16 @@ void manage_cursor_input(void) {
 
 					}else if(hs_currently_selected == HS_RUNOPTS3_JOY_CFG_DOWN){
 						hotspots[HS_RUNOPTS3_JOY_CFG_B].flags |= HS_PROP_SELECTED;
+					#ifndef PLATFORM_MIYOO
 					}else if(hs_currently_selected == HS_RUNOPTS3_JOY_CFG_SELECT){
 						hotspots[HS_RUNOPTS3_JOY_CFG_START].flags |= HS_PROP_SELECTED;
-
+					#endif
 					}else if(hs_currently_selected == HS_RUNOPTS3_JOY_CFG_START){
+						#ifdef PLATFORM_MIYOO
+						hotspots[HS_RUNOPTS3_JOY_CFG_START].flags |= HS_PROP_SELECTED;
+						#else
 						hotspots[HS_RUNOPTS3_JOY_CFG_SELECT].flags |= HS_PROP_SELECTED;
+						#endif
 					}else if(hs_currently_selected == HS_RUNOPTS3_JOY_CFG_LEFT){
 						hotspots[HS_RUNOPTS3_JOY_CFG_RIGHT].flags |= HS_PROP_SELECTED;
 					}else if(hs_currently_selected == HS_RUNOPTS3_JOY_CFG_RIGHT){
@@ -2312,8 +2376,10 @@ void manage_cursor_input(void) {
 						hotspots[HS_RUNOPTS3_JOY_CFG_B].flags |= HS_PROP_SELECTED;
 					} else if (hs_currently_selected == HS_RUNOPTS3_JOY_CFG_LEFT) {
 						hotspots[HS_RUNOPTS3_JOY_CFG_UP].flags |= HS_PROP_SELECTED;
+					#ifndef PLATFORM_MIYOO
 					} else if (hs_currently_selected == HS_RUNOPTS3_JOY_CFG_RIGHT) {
 						hotspots[HS_RUNOPTS3_JOY_CFG_SELECT].flags |= HS_PROP_SELECTED;
+					#endif						
 					} else if (hs_currently_selected == HS_RUNOPTS3_JOY_CFG_SELECT) {
 						hotspots[HS_RUNOPTS3_JOY_CFG_START].flags |= HS_PROP_SELECTED;
 					} else if (hs_currently_selected == HS_RUNOPTS3_JOY_CFG_START) {
@@ -2366,6 +2432,10 @@ void manage_all_input(void) {
 		/* HOtkeys for Dingoo A320 */
 		Uint8 *keystate = SDL_GetKeyState(NULL);
 		if ( keystate[DINGOO_SELECT] ){
+
+			#if defined(PLATFORM_MIYOO)
+			toggle_vkeyb_state();
+			#else
 			if (state == SDL_PRESSED){
 				if (keystate[DINGOO_X]) {
 					emulator_exit();
@@ -2384,7 +2454,8 @@ void manage_all_input(void) {
 						toggle_sstate_state(SSTATE_MODE_LOAD);
 					}
 				}
-			}
+			}			
+			#endif
 		}
 		#endif
 
@@ -2394,6 +2465,10 @@ void manage_all_input(void) {
 			if (state == SDL_PRESSED){
 				if (keystate[DINGOO_R]) {
 					emulator_exit();
+				} else if (keystate[DINGOO_A]) {
+					toggle_sstate_state(SSTATE_MODE_SAVE);
+				} else if (keystate[DINGOO_B]) {
+				toggle_sstate_state(SSTATE_MODE_LOAD);
 				}
 			}
 		}
@@ -2401,9 +2476,41 @@ void manage_all_input(void) {
 		if ( keystate[DINGOO_START] ) {
 			if (state == SDL_PRESSED) {
 				if (keystate[DINGOO_X] ) {
-					toggle_vkeyb_state();
+					emulator_exit();
 				} else if (keystate[DINGOO_Y] ) {
-					toggle_runopts_state();
+					toggle_ldfile_state();
+				}else if (keystate[DINGOO_A]) {
+					toggle_sstate_state(SSTATE_MODE_SAVE);
+				}else if (keystate[DINGOO_B]) {
+					toggle_sstate_state(SSTATE_MODE_LOAD);
+				#ifdef OSS_SOUND_SUPPORT
+				}else if (keystate[DINGOO_L]) {
+					if (sdl_sound.volume > 0) {
+						sdl_sound.volume -= 2;
+						if (sdl_sound.state && 
+							(sdl_sound.device == DEVICE_QUICKSILVA ||
+							sdl_sound.device == DEVICE_ZONX)) 
+							sound_ay_setvol();						
+
+						strcpy(notification.title, "Sound");
+						sprintf(notification.text, "Volume:%i", sdl_sound.volume);
+						notification.timeout = NOTIFICATION_TIMEOUT_750;
+						notification_show(NOTIFICATION_SHOW, &notification);
+					}
+				}else if (keystate[DINGOO_R]) {					
+					if (sdl_sound.volume < 128) {
+						sdl_sound.volume += 2;
+						if (sdl_sound.state && 
+							(sdl_sound.device == DEVICE_QUICKSILVA ||
+							sdl_sound.device == DEVICE_ZONX)) 
+							sound_ay_setvol();
+
+						strcpy(notification.title, "Sound");
+						sprintf(notification.text, "Volume:%i", sdl_sound.volume);
+						notification.timeout = NOTIFICATION_TIMEOUT_750;
+						notification_show(NOTIFICATION_SHOW, &notification);
+					}
+				#endif
 				}
 			}
 		} else if ( keystate[DINGOO_POWER] ) {
@@ -2497,6 +2604,10 @@ void manage_all_input(void) {
 			if (state == SDL_PRESSED) {
 				save_screenshot();
 			}
+		} else if (id == SDLK_LCTRL) {
+			if (get_active_component() & COMP_RUNOPTS_ALL) {
+				toggle_runopts_state();
+			}
 		} else if (id == SDLK_ESCAPE) {
 			/* Exit the currently active component */
 			if (state == SDL_PRESSED) {
@@ -2561,6 +2672,10 @@ void manage_all_input(void) {
 			if (runtime_options[2].state) {
 				/* Yes Full Screen */
 				sdl_emulator.fullscr = FULL_SCREEN_YES;
+			}
+		} else if (id == SDLK_END) {
+			if (runtime_options[0].state) {
+				emulator_exit();
 			}
 		#endif
 		}

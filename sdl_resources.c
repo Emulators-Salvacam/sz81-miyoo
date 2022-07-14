@@ -109,9 +109,9 @@ void local_data_dir_init(void) {
 	/* Create local data directory structure whilst ignoring errors */
 
       #if defined(INDIVIDUAL_SETTINGS)
-	for (count = 0; count < 6; count++) {
+	for (count = 0; count < 7; count++) {
       #else
-	for (count = 0; count < 5; count++) {
+	for (count = 0; count < 6; count++) {
       #endif
 		#if defined(PLATFORM_GP2X) || defined(__amigaos4__) || defined(_WIN32) || defined(PLATFORM_DINGUX_A320)
 			strcpy(foldername, LOCAL_DATA_DIR);
@@ -132,9 +132,12 @@ void local_data_dir_init(void) {
 		} else if (count == 4) {
 			strcatdelimiter(foldername);
 			strcat(foldername, LOCAL_PROGRM_DIR);
+		} else if (count == 5) {
+			strcatdelimiter(foldername);
+			strcat(foldername, LOCAL_KEYMAP_DIR);
 		}
 		#if defined(INDIVIDUAL_SETTINGS)
-		else if (count == 5){
+		else if (count == 6){
 			strcatdelimiter(foldername);
 			strcat(foldername, LOCAL_INDIVIDUAL_SET);
 		}
@@ -719,7 +722,7 @@ void sdl_rcfile_read(void) {
  ***************************************************************************/
 
 void mapping_game_read(void) {
-	char line[256], key[64], value[192],filenameGame[192], fileLoaded[64];
+	char line[256], key[64], value[192],filenameGame[192];
 	int count, index, line_count, found;
 	struct ctrlremap read_ctrl_remaps[MAX_CTRL_REMAPS];
 	FILE *fp;
@@ -881,7 +884,7 @@ void mapping_game_read(void) {
  ***************************************************************************/
 
 void mapping_game_write(void) {
-	char key[64], value[192], filenameGame[192], fileLoaded[64];
+	char key[64], value[192], filenameGame[192];
 	int count, found;
 	FILE *fp;
 

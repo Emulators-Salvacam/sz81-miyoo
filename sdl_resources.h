@@ -37,10 +37,10 @@
 #define LOCAL_SAVSTA_DIR "savsta"
 #define LOCAL_SCNSHT_DIR "scnsht"
 #define LOCAL_PROGRM_DIR "progrm"
-#if defined(PLATFORM_MIYOO)
+
 #define LOCAL_KEYMAP_DIR "keymap"
 #define LOCAL_KEYMAP_EXT ".kbd"
-#endif
+
 #if defined(INDIVIDUAL_SETTINGS)
 #define LOCAL_INDIVIDUAL_SET "indset"
 #endif
