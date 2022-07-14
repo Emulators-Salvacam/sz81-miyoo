@@ -782,6 +782,7 @@ unsigned int out(int h,int l,int a)
  */
 int ts=1;	/* additional cycles */
 
+#ifndef DISABLED_CHROMA
 if (h==0x7f && l==0xef) { /* chroma */
   chromamode = a&0x30;
   if (chromamode) {
@@ -796,6 +797,7 @@ if (h==0x7f && l==0xef) { /* chroma */
   sdl_set_redraw_video();
   return ts;
 }
+#endif
 
 if(sound_ay && sound_ay_type==AY_TYPE_ZONX)
   {
