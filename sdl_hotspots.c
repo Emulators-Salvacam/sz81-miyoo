@@ -280,7 +280,7 @@ void sdl_hotspots_init(void) {
 	hotspots[HS_RUNOPTS3_BACK].remap_id = SDLK_PAGEUP;
 	hotspots[HS_RUNOPTS3_SAVE].remap_id = SDLK_ACCEPT;
     #if defined(PLATFORM_MIYOO)
-	hotspots[HS_RUNOPTS3_SAVE_GAME].remap_id = SDLK_F6;
+	hotspots[HS_RUNOPTS3_SAVE_GAME].remap_id = SDLK_z;
 	#endif
 	hotspots[HS_RUNOPTS3_EXIT].remap_id = SDLK_F2;
 
@@ -348,7 +348,7 @@ void sdl_hotspots_init(void) {
 	hotspots[HS_RUNOPTS3_BACK].remap_id = SDLK_PAGEUP;
 	hotspots[HS_RUNOPTS3_SAVE].remap_id = SDLK_ACCEPT;
     #if defined(PLATFORM_MIYOO)
-	hotspots[HS_RUNOPTS3_SAVE_GAME].remap_id = SDLK_F6;
+	hotspots[HS_RUNOPTS3_SAVE_GAME].remap_id = SDLK_z;
 	#endif
 	hotspots[HS_RUNOPTS3_EXIT].remap_id = SDLK_F2;
 	#endif
