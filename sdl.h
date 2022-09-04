@@ -74,9 +74,9 @@
 #endif
 
 /* Variables */
-int keyboard_buffer[MAX_KEYCODES];
+extern int keyboard_buffer[MAX_KEYCODES];
 
-struct {
+typedef struct {
 	int nxtlin;
 	int load_hook;
 	int save_hook;
@@ -91,30 +91,32 @@ struct {
 	int bdis;
 	int edis;
 	char filename[256];
-} sdl_com_line;
+} sdl_com_line_;
 
-struct {
+typedef struct {
 	int state;		/* FALSE=video output/keyboard input disabled, TRUE=all active */
 	int paused;		/* Via Pause key: TRUE=emulation on-hold, keyboard input disabled */
 	int xoffset;
 	int yoffset;
 	SDL_TimerID timer_id;
 	int m1not;
+	int wrx;
+	int chrgen;
 	int speed;		/* 5ms=400%, 10ms=200%, 20ms=100%, 30ms=66%, 40ms=50% */
 	int frameskip;	        /* 0 to MAX_FRAMESKIP */
 	int *model;		/* Points to z81's zx80: 0=ZX81, 1=ZX80 */
 	#if defined(PLATFORM_MIYOO)
 	int *fullscr;		/* 0=NO, 1=YES */
 	#endif
-	int ramsize;	        /* 1, 2, 3, 4, 16, 32, 48 or 56K */
+	int ramsize;	        /* 1, 2, 3, 4, 16, 32, 48 or 56 */
 	int invert;		/* This should really be in video but it's easier to put it here */
 	int autoload;	        /* Set to TRUE when auto-loading or forced-loading */
 	int networking;         /* enable calls to WIZ chip emulation */
 	int bdis;
 	int edis;
-} sdl_emulator;
+} sdl_emulator_;
 
-struct {
+typedef struct {
 	int state;
 	int volume;
 	int device;		/* See DEVICE* defines in sdl_sound.h */
@@ -123,28 +125,35 @@ struct {
 	Uint16 buffer[SOUND_BUFFER_SIZE];
 	int buffer_start;
 	int buffer_end;
-} sdl_sound;
+} sdl_sound_;
 
-struct {
+typedef struct {
+	int state;
+	unsigned char data[64 * 1024];
+} sdl_zx80rom_;
+
+typedef struct {
+	int state;
+	unsigned char data[64 * 1024];
+} sdl_zx81rom_;
+
+typedef struct {
 	int state;
 	unsigned char data[4 * 1024];
-} sdl_zx80rom;
+} sdl_aszmicrom_;
 
-struct {
-	int state;
-	unsigned char data[8 * 1024];
-} sdl_zx81rom;
-
-struct {
-	int state;
-	unsigned char data[4 * 1024];
-} sdl_aszmicrom;
-
-struct keyrepeat {
+typedef struct keyrepeat {
 	int delay;
 	int interval;
-};
-struct keyrepeat sdl_key_repeat;
+} keyrepeat_;
+
+extern sdl_com_line_ sdl_com_line;
+extern sdl_emulator_ sdl_emulator;
+extern sdl_sound_ sdl_sound;
+extern sdl_zx80rom_ sdl_zx80rom;
+extern sdl_zx81rom_ sdl_zx81rom;
+extern sdl_aszmicrom_ sdl_aszmicrom;
+extern keyrepeat_ sdl_key_repeat;
 
 /* Function prototypes */
 int sdl_init(void);

@@ -28,6 +28,13 @@ unsigned char vga_graphmemory[800 * 600];
 
 extern ZX81 zx81;
 
+char *runtime_options_text0[24];
+char *runtime_options_text1[24];
+char *runtime_options_text2[24];
+char *runtime_options_text3[24];
+
+video_ video;
+
 /* \x1 means that a value needs to be placed here.
  * \x2 means to invert the colours.
  * \x80 to \x95 are Sinclair graphics characters.
@@ -52,23 +59,14 @@ char *runtime_options_text0[24] = {
 #else
 	"",
 #endif
-	#if defined (PLATFORM_MIYOO)
 	"",
-	" MENU: Ok Start|A/Exit Select|B",
-	" GAME: Keyboard   > Select",
-	"  Load State > Start+B | L + B",
-	"  Save State > Start+A | L + A",
-	"  Load File  > Start + Y",
-#else
+	"WRX:",
+	"  (\x1 \x1) No    (\x1 \x1) Yes",
+	"UDG:",
+	"  (\x1 \x1) No    (\x1 \x1) Yes",
 	"",
-	"",
-	"",
-	"",
-	"",
-	"",
-#endif
 	"\x1 ",
-	"",
+	"",	
 	#if defined (PLATFORM_MIYOO)
 	"Close Emu  Save   Exit  Next\x90\x2>\x2\x85"	
 	#else
@@ -365,6 +363,26 @@ void sdl_set_redraw_video() {
 
 int cvtChroma(unsigned char c) {
 	int crgb=0;
+#ifdef ZXMORE
+	switch (c) {
+	  case 0x00 : crgb=SDL_MapRGB(video.screen->format, 0x00,0x00,0x00); break;
+	  case 0x01 : crgb=SDL_MapRGB(video.screen->format, 0xbf,0xbf,0xdf); break;
+	  case 0x02 : crgb=SDL_MapRGB(video.screen->format, 0xdf,0xbf,0xbf); break;
+	  case 0x03 : crgb=SDL_MapRGB(video.screen->format, 0xdf,0xbf,0xdf); break;
+	  case 0x04 : crgb=SDL_MapRGB(video.screen->format, 0xbf,0xdf,0xbf); break;
+	  case 0x05 : crgb=SDL_MapRGB(video.screen->format, 0xbf,0xdf,0xdf); break;
+	  case 0x06 : crgb=SDL_MapRGB(video.screen->format, 0xdf,0xdf,0xbf); break;
+	  case 0x07 : crgb=SDL_MapRGB(video.screen->format, 0xdf,0xdf,0xdf); break;
+	  case 0x08 : crgb=SDL_MapRGB(video.screen->format, 0xbf,0xbf,0xbf); break;
+	  case 0x09 : crgb=SDL_MapRGB(video.screen->format, 0xbf,0xbf,0xff); break;
+	  case 0x0a : crgb=SDL_MapRGB(video.screen->format, 0xff,0xbf,0xbf); break;
+	  case 0x0b : crgb=SDL_MapRGB(video.screen->format, 0xff,0xbf,0xff); break;
+	  case 0x0c : crgb=SDL_MapRGB(video.screen->format, 0xbf,0xff,0xbf); break;
+	  case 0x0d : crgb=SDL_MapRGB(video.screen->format, 0xbf,0xff,0xff); break;
+	  case 0x0e : crgb=SDL_MapRGB(video.screen->format, 0xff,0xff,0xbf); break;
+	  case 0x0f : crgb=SDL_MapRGB(video.screen->format, 0xff,0xff,0xff); break;
+	}
+#else
 	switch (c) {
 	  case 0x00 : crgb=SDL_MapRGB(video.screen->format, 0x00,0x00,0x00); break;
 	  case 0x01 : crgb=SDL_MapRGB(video.screen->format, 0x00,0x00,0x7f); break;
@@ -383,6 +401,7 @@ int cvtChroma(unsigned char c) {
 	  case 0x0e : crgb=SDL_MapRGB(video.screen->format, 0xff,0xff,0x00); break;
 	  case 0x0f : crgb=SDL_MapRGB(video.screen->format, 0xff,0xff,0xff); break;
 	}
+#endif
 	return crgb;
 }
 
@@ -906,8 +925,8 @@ void sdl_video_update(void) {
 							sprintf(text, "%2i", runopts_emulator_ramsize);
 						} else if (count >= 5 && count <= 8) {
 							if (count == 5 || count == 7) strcpy(text, "O");
-							if ((count <= 6 && !sdl_emulator.m1not) || 
-								(count >= 7 && sdl_emulator.m1not)) {
+							if ((count <= 6 && !runopts_emulator_m1not) || 
+								(count >= 7 && runopts_emulator_m1not)) {
 								/* Invert the colours */
 								invertcolours = !invertcolours;
 							}
@@ -916,13 +935,41 @@ void sdl_video_update(void) {
 					#ifdef ENABLE_EMULATION_SPEED_ADJUST
 						} else if (count == 10) {
 							sprintf(text, "%4i", 2000 / runopts_emulator_speed);
-						} else if (count == 11) {
+						} else if (count == 19) {
 					#else
-						} else if (count == 10) {
+						} else if (count == 18) {
 					#endif
 							if (runopts_is_a_reset_scheduled())
 								strcpy(text, "* A reset is scheduled on save *");
 						}
+// WRX and UDG
+					#ifdef ENABLE_EMULATION_SPEED_ADJUST
+						if (count >= 11 && count<=18) {
+							if (count >= 11 && count <= 12 && runopts_emulator_wrx != HIRESWRX)
+								invertcolours = !invertcolours;
+							if (count >= 13 && count <= 14 && runopts_emulator_wrx == HIRESWRX)
+								invertcolours = !invertcolours;
+							if (count >= 15 && count <= 16 && runopts_emulator_chrgen!=CHRGENCHR16 )
+								invertcolours = !invertcolours;
+							if (count >= 17 && count <=18 && runopts_emulator_chrgen==CHRGENCHR16 )
+								invertcolours = !invertcolours;
+							if (count==11 || count==13 || count==15 || count==17)
+								strcpy(text, "O");
+						}
+					#else
+						if (count >= 10 && count<=17) {
+							if (count >= 10 && count <= 11 && runopts_emulator_wrx != HIRESWRX)
+								invertcolours = !invertcolours;
+							if (count >= 12 && count <= 13 && runopts_emulator_wrx == HIRESWRX)
+								invertcolours = !invertcolours;
+							if (count >= 14 && count <= 15 && runopts_emulator_chrgen!=CHRGENCHR16 )
+								invertcolours = !invertcolours;
+							if (count >= 16 && count <=17 && runopts_emulator_chrgen==CHRGENCHR16 )
+								invertcolours = !invertcolours;
+							if (count==10 || count==12 || count==14 || count==16)
+								strcpy(text, "O");
+						}
+					#endif
 					} else if (runtime_options[1].state) {
 						/* The colour inversion here is conditional and so there are
 						 * two \x1's embedded within the text. The first \x1 will
@@ -1853,6 +1900,8 @@ void save_screenshot(void) {
 	nextnum = get_filename_next_highest(fullpath, "scnsht%4d");
 	sprintf(filename, "scnsht%04i.bmp", nextnum);
 	strcat(fullpath, filename);
+
+	fprintf(stderr,"screenshot filename: %s\n", fullpath);
 
 	if (SDL_SaveBMP(video.screen, fullpath) < 0) {
 		fprintf(stderr, "%s: Cannot save screenshot: %s\n", __func__,

@@ -17,6 +17,28 @@
 
 /* Includes */
 #include "sdl_engine.h"
+#include "zx81.h"
+
+/* Variables */
+SDL_Joystick *joystick;
+int joystick_dead_zone;
+int show_input_id;
+int current_input_id;
+int runopts_emulator_speed;
+int runopts_emulator_model;
+int runopts_emulator_ramsize;
+int runopts_emulator_m1not;
+int runopts_emulator_wrx;
+int runopts_emulator_chrgen;
+int runopts_sound_device;
+int runopts_sound_stereo;
+int runopts_sound_ay_unreal;
+
+ctrlremap_ ctrl_remaps[MAX_CTRL_REMAPS];
+ctrl_remapper_ ctrl_remapper;
+joy_cfg_ joy_cfg;
+
+extern ZX81 zx81;
 
 /* Defines */
 #define MAX_KEYSYMS (138 + 6)
@@ -983,6 +1005,7 @@ void sdl_keyboard_init(void) {
 	#ifdef SDL_DEBUG_EVENTS
 		printf("%s: ctrl_remaps index=%i\n", __func__, index);
 	#endif
+
 }
 
 /***************************************************************************
@@ -1311,12 +1334,11 @@ int keyboard_update(void) {
 				/* Manage DEVICE_CURSOR input */
 				manage_cursor_input();
 
-				#ifndef PLATFORM_DINGUX_A320 /* removes a bug in 'R' Virtual Keyboard */
+				#ifndef PLATFORM_DINGUX_A320 /* removes a bug in 'R' Virtual Keyboard */				
 				/* Manage sz81 input */
 				if (device == DEVICE_KEYBOARD) {
 					found = FALSE;
 					modstate = SDL_GetModState();
-
 					if (id == SDLK_r && (modstate & (KMOD_ALT | KMOD_MODE))) {
 						/* Cycle screen resolutions on supported platforms */
 						if (state == SDL_PRESSED) {
@@ -1539,7 +1561,7 @@ void manage_cursor_input(void) {
 						hotspots[hs_currently_selected].hit_w / 2;
 					virtualevent.button.y = hotspots[hs_currently_selected].hit_y +
 						hotspots[hs_currently_selected].hit_h / 2;
-#if defined(DEBUG_DINGUX_A320)
+						#if defined(DEBUG_DINGUX_A320)
 					if(hs_currently_selected==HS_VKEYB_NEWLINE){
 						printf("OK :%d\n",hs_currently_selected);
 //						virtualevent.type = SDL_MOUSEBUTTONUP;
@@ -1616,9 +1638,9 @@ void manage_cursor_input(void) {
 					hotspots[hs_currently_selected].flags &= ~HS_PROP_SELECTED;
 					if (hs_currently_selected == HS_RUNOPTS0_ZX80 ||
 						hs_currently_selected == HS_RUNOPTS0_ZX81) {
-						hotspots[hs_currently_selected + 10].flags |= HS_PROP_SELECTED;
+						hotspots[hs_currently_selected + 14].flags |= HS_PROP_SELECTED;
 					} else if (hs_currently_selected == HS_RUNOPTS0_NEXT) {
-					#if defined(PLATFORM_MIYOO)
+						#if defined(PLATFORM_MIYOO)
 						hotspots[hs_currently_selected - 4].flags |= HS_PROP_SELECTED;
 					} else if (hs_currently_selected == HS_RUNOPTS0_EXIT) {
 						hotspots[hs_currently_selected - 3].flags |= HS_PROP_SELECTED;
@@ -1634,6 +1656,14 @@ void manage_cursor_input(void) {
 					/*
 					if (hs_currently_selected == HS_RUNOPTS0_M1NOT_NO ||
 						hs_currently_selected == HS_RUNOPTS0_M1NOT_YES) {
+						hotspots[hs_currently_selected + 8].flags |= HS_PROP_SELECTED;
+					}
+					if (hs_currently_selected == HS_RUNOPTS0_WRX_NO ||
+						hs_currently_selected == HS_RUNOPTS0_WRX_YES) {
+						hotspots[hs_currently_selected + 8].flags |= HS_PROP_SELECTED;
+					}
+					if (hs_currently_selected == HS_RUNOPTS0_UDG_NO ||
+						hs_currently_selected == HS_RUNOPTS0_UDG_YES) {
 						hotspots[hs_currently_selected + 8].flags |= HS_PROP_SELECTED;
 					} else if (hs_currently_selected == HS_RUNOPTS0_NEXT) {
 						hotspots[hs_currently_selected - 3].flags |= HS_PROP_SELECTED;
@@ -1756,12 +1786,10 @@ void manage_cursor_input(void) {
 						hotspots[HS_RUNOPTS3_JOY_CFG_DOWN].flags |= HS_PROP_SELECTED;
 					} else if (hs_currently_selected == HS_RUNOPTS3_SAVE) {
 						hotspots[HS_RUNOPTS3_JOY_CFG_START].flags |= HS_PROP_SELECTED;
-
 					#if defined(PLATFORM_MIYOO)
 					}else if (hs_currently_selected == HS_RUNOPTS3_SAVE_GAME) {
 						hotspots[HS_RUNOPTS3_KEY_X].flags |= HS_PROP_SELECTED;
 					#endif
-
 					} else if (hs_currently_selected == HS_RUNOPTS3_EXIT) {
 						hotspots[HS_RUNOPTS3_JOY_CFG_X].flags |= HS_PROP_SELECTED;
 					} else if (hs_currently_selected == HS_RUNOPTS3_JOY_CFG_DOWN ||
@@ -1882,8 +1910,7 @@ void manage_cursor_input(void) {
 					} else if (hs_currently_selected >= HS_RUNOPTS2_FGC_R_DN && 
 						hs_currently_selected <= HS_RUNOPTS2_BGC_B_UP) {
 						hotspots[hs_currently_selected + 4].flags |= HS_PROP_SELECTED;
-
-					#if defined(PLATFORM_MIYOO)
+						#if defined(PLATFORM_MIYOO)
 					}else if (hs_currently_selected == HS_RUNOPTS2_FGC_B_DN) {
 						hotspots[HS_RUNOPTS2_FULLS_YES].flags |= HS_PROP_SELECTED;
 					}else if (hs_currently_selected == HS_RUNOPTS2_FGC_B_UP) {
@@ -1895,12 +1922,10 @@ void manage_cursor_input(void) {
 					}else if (hs_currently_selected == HS_RUNOPTS2_FULLS_NO) {
 						hotspots[HS_RUNOPTS2_SAVE].flags |= HS_PROP_SELECTED;
 					#endif
-
 					}
 				} else if (get_active_component() == COMP_RUNOPTS3) {
 					key_repeat_manager(KRM_FUNC_REPEAT, &event, COMP_RUNOPTS3 * CURSOR_S);
 					hotspots[hs_currently_selected].flags &= ~HS_PROP_SELECTED;
-
 					/* dingoo key remap - down*/
 					#if defined(PLATFORM_DINGUX_A320)
 					if (hs_currently_selected == HS_RUNOPTS3_BACK ||
@@ -1994,18 +2019,11 @@ void manage_cursor_input(void) {
 					} else if (hs_currently_selected == HS_RUNOPTS3_JOY_CFG_A ||
 						hs_currently_selected == HS_RUNOPTS3_JOY_CFG_B) {
 						hotspots[HS_RUNOPTS3_JOY_CFG_X].flags |= HS_PROP_SELECTED;
-
 					} else if (hs_currently_selected == HS_RUNOPTS3_JOY_CFG_DOWN) {
 						hotspots[HS_RUNOPTS3_BACK].flags |= HS_PROP_SELECTED;
-
 					} else if (hs_currently_selected == HS_RUNOPTS3_JOY_CFG_SELECT ||
 						hs_currently_selected == HS_RUNOPTS3_JOY_CFG_START) {
 						hotspots[HS_RUNOPTS3_SAVE].flags |= HS_PROP_SELECTED;
-
-					// } else if (hs_currently_selected == HS_RUNOPTS3_JOY_CFG_SELECT ||
-					// 	hs_currently_selected == HS_RUNOPTS3_JOY_CFG_START) {
-					// 	hotspots[HS_RUNOPTS3_SAVE_GAME].flags |= HS_PROP_SELECTED;
-
 					} else if (hs_currently_selected == HS_RUNOPTS3_JOY_CFG_X) {
 						hotspots[HS_RUNOPTS3_EXIT].flags |= HS_PROP_SELECTED;
 					}
@@ -2074,6 +2092,8 @@ void manage_cursor_input(void) {
 					if (hs_currently_selected == HS_RUNOPTS0_ZX80 ||
 						hs_currently_selected == HS_RUNOPTS0_RAM_DN ||
 						hs_currently_selected == HS_RUNOPTS0_M1NOT_NO ||
+						hs_currently_selected == HS_RUNOPTS0_WRX_NO ||
+						hs_currently_selected == HS_RUNOPTS0_UDG_NO ||
 						hs_currently_selected == HS_RUNOPTS0_FRAMESKIP_DN ||
 						hs_currently_selected == HS_RUNOPTS0_SPEED_DN) {
 						hotspots[hs_currently_selected + 1].flags |= HS_PROP_SELECTED;
@@ -2198,11 +2218,11 @@ void manage_cursor_input(void) {
 					} else if (hs_currently_selected == HS_RUNOPTS3_JOY_CFG_RIGHT) {
 						hotspots[HS_RUNOPTS3_JOY_CFG_DOWN].flags |= HS_PROP_SELECTED;
 					} else if (hs_currently_selected == HS_RUNOPTS3_JOY_CFG_SELECT) {
-						hotspots[HS_RUNOPTS3_JOY_CFG_RIGHT].flags |= HS_PROP_SELECTED;						
-					#ifndef PLATFORM_MIYOO
+						hotspots[HS_RUNOPTS3_JOY_CFG_RIGHT].flags |= HS_PROP_SELECTED;
+						#ifndef PLATFORM_MIYOO
 					} else if (hs_currently_selected == HS_RUNOPTS3_JOY_CFG_START) {
 						hotspots[HS_RUNOPTS3_JOY_CFG_SELECT].flags |= HS_PROP_SELECTED;
-					#endif
+						#endif
 					} else if (hs_currently_selected == HS_RUNOPTS3_JOY_CFG_A) {
 						hotspots[HS_RUNOPTS3_JOY_CFG_START].flags |= HS_PROP_SELECTED;
 					} else if (hs_currently_selected == HS_RUNOPTS3_JOY_CFG_B) {
@@ -2277,6 +2297,8 @@ void manage_cursor_input(void) {
 					if (hs_currently_selected == HS_RUNOPTS0_ZX81 ||
 						hs_currently_selected == HS_RUNOPTS0_RAM_UP ||
 						hs_currently_selected == HS_RUNOPTS0_M1NOT_YES ||
+						hs_currently_selected == HS_RUNOPTS0_WRX_YES ||
+						hs_currently_selected == HS_RUNOPTS0_UDG_YES ||
 						hs_currently_selected == HS_RUNOPTS0_FRAMESKIP_UP ||
 						hs_currently_selected == HS_RUNOPTS0_SPEED_UP) {
 						hotspots[hs_currently_selected - 1].flags |= HS_PROP_SELECTED;
@@ -2304,7 +2326,7 @@ void manage_cursor_input(void) {
 					hotspots[hs_currently_selected].flags &= ~HS_PROP_SELECTED;
 					if (hs_currently_selected == HS_RUNOPTS2_VOLUME_UP || 
 						hs_currently_selected == HS_RUNOPTS2_KRDELAY_UP ||
-						hs_currently_selected == HS_RUNOPTS2_KRINTERVAL_UP 						
+						hs_currently_selected == HS_RUNOPTS2_KRINTERVAL_UP					
 						#if defined(PLATFORM_MIYOO)
 						|| hs_currently_selected == HS_RUNOPTS2_FULLS_NO
 						#endif
@@ -2322,7 +2344,6 @@ void manage_cursor_input(void) {
 				} else if (get_active_component() == COMP_RUNOPTS3) {
 					key_repeat_manager(KRM_FUNC_REPEAT, &event, COMP_RUNOPTS3 * CURSOR_E);
 					hotspots[hs_currently_selected].flags &= ~HS_PROP_SELECTED;
-
 					/* dingoo key remap - right*/
 					#if defined(PLATFORM_DINGUX_A320)
 					if(hs_currently_selected >= HS_RUNOPTS3_KEY_1 &&
@@ -2383,7 +2404,7 @@ void manage_cursor_input(void) {
 					#else
 					if (hs_currently_selected == HS_RUNOPTS3_JDEADZ_UP) {
 						hotspots[HS_RUNOPTS3_JDEADZ_DN].flags |= HS_PROP_SELECTED;
-					} else 	if (hs_currently_selected == HS_RUNOPTS3_JOY_CFG_RTRIG) {
+					} else if (hs_currently_selected == HS_RUNOPTS3_JOY_CFG_RTRIG) {
 						hotspots[HS_RUNOPTS3_JOY_CFG_LTRIG].flags |= HS_PROP_SELECTED;
 					} else if (hs_currently_selected == HS_RUNOPTS3_JOY_CFG_UP ||
 						hs_currently_selected == HS_RUNOPTS3_JOY_CFG_DOWN) {
@@ -2392,11 +2413,11 @@ void manage_cursor_input(void) {
 						hs_currently_selected == HS_RUNOPTS3_JOY_CFG_X) {
 						hotspots[HS_RUNOPTS3_JOY_CFG_B].flags |= HS_PROP_SELECTED;
 					} else if (hs_currently_selected == HS_RUNOPTS3_JOY_CFG_LEFT) {
-						hotspots[HS_RUNOPTS3_JOY_CFG_UP].flags |= HS_PROP_SELECTED;
+						hotspots[HS_RUNOPTS3_JOY_CFG_UP].flags |= HS_PROP_SELECTED;						
 					#ifndef PLATFORM_MIYOO
 					} else if (hs_currently_selected == HS_RUNOPTS3_JOY_CFG_RIGHT) {
 						hotspots[HS_RUNOPTS3_JOY_CFG_SELECT].flags |= HS_PROP_SELECTED;
-					#endif						
+					#endif
 					} else if (hs_currently_selected == HS_RUNOPTS3_JOY_CFG_SELECT) {
 						hotspots[HS_RUNOPTS3_JOY_CFG_START].flags |= HS_PROP_SELECTED;
 					} else if (hs_currently_selected == HS_RUNOPTS3_JOY_CFG_START) {
@@ -2559,7 +2580,7 @@ void manage_all_input(void) {
 			/* Toggle save state dialog in load mode */
 			if (state == SDL_PRESSED) {
 				toggle_sstate_state(SSTATE_MODE_LOAD);
-			}
+			}			
 		} else if (id == SDLK_F6) {
 			/* Save mapping for game */
 			write_mapping_game();
@@ -2678,7 +2699,7 @@ void manage_all_input(void) {
 					key_repeat_manager(KRM_FUNC_RELEASE, NULL, 0);
 				}
 			#endif
-		#if defined(PLATFORM_MIYOO)
+						#if defined(PLATFORM_MIYOO)
 		} else if (id == SDLK_x) {
 			if (runtime_options[2].state) {
 				/* No Full Screen */
@@ -2901,13 +2922,9 @@ void manage_runopts_input(void) {
 				if (state == SDL_PRESSED) {
 					key_repeat_manager(KRM_FUNC_REPEAT, &event, COMP_RUNOPTS0 * id);
 					if (id == SDLK_INSERT) {
-						if (runopts_emulator_ramsize == 56) {
-							runopts_emulator_ramsize = 48;
-						} else if (runopts_emulator_ramsize == 48) {
+						if (runopts_emulator_ramsize == 48) {
 							runopts_emulator_ramsize = 32;
 						} else if (runopts_emulator_ramsize == 32) {
-							runopts_emulator_ramsize = 24;
-						} else if (runopts_emulator_ramsize == 24) {
 							runopts_emulator_ramsize = 16;
 						} else if (runopts_emulator_ramsize == 16) {
 							runopts_emulator_ramsize = 4;
@@ -2921,13 +2938,9 @@ void manage_runopts_input(void) {
 						} else if (runopts_emulator_ramsize == 4) {
 							runopts_emulator_ramsize = 16;
 						} else if (runopts_emulator_ramsize == 16) {
-							runopts_emulator_ramsize = 24;
-						} else if (runopts_emulator_ramsize == 24) {
 							runopts_emulator_ramsize = 32;
 						} else if (runopts_emulator_ramsize == 32) {
 							runopts_emulator_ramsize = 48;
-						} else if (runopts_emulator_ramsize == 48) {
-							runopts_emulator_ramsize = 56;
 						}
 					}
 				} else if (state == SDL_RELEASED) {
@@ -2991,9 +3004,9 @@ void manage_runopts_input(void) {
 			if (runtime_options[0].state) {
 					if (state == SDL_PRESSED) {
 						if (id == SDLK_3) {
-							sdl_emulator.m1not = 0;
+							runopts_emulator_m1not = 0;
 						} else {
-							sdl_emulator.m1not = 1;
+							runopts_emulator_m1not = 1;
 						}
 					}
 			} else if (runtime_options[1].state) {
@@ -3020,7 +3033,15 @@ void manage_runopts_input(void) {
 				}
 			}
 		} else if (id == SDLK_5 || id == SDLK_6) {
-			if (runtime_options[1].state) {
+			if (runtime_options[0].state) {
+				if (state == SDL_PRESSED) {
+					if (id == SDLK_5) {
+						runopts_emulator_wrx=HIRESDISABLED;
+					} else {
+						runopts_emulator_wrx=HIRESWRX;
+					}
+				}
+			} else if (runtime_options[1].state) {
 				#ifdef OSS_SOUND_SUPPORT
 					if (state == SDL_PRESSED) {
 						if (id == SDLK_5) {
@@ -3045,7 +3066,15 @@ void manage_runopts_input(void) {
 				}
 			}
 		} else if (id == SDLK_7 || id == SDLK_8) {
-			if (runtime_options[2].state) {
+			if (runtime_options[0].state) {
+				if (state == SDL_PRESSED) {
+					if (id == SDLK_7) {
+						runopts_emulator_chrgen=CHRGENSINCLAIR;
+					} else {
+						runopts_emulator_chrgen=CHRGENCHR16;
+					}
+				}
+			} else if (runtime_options[2].state) {
 				/* Background colour red < and > */
 				if (state == SDL_PRESSED) {
 					key_repeat_manager(KRM_FUNC_REPEAT, &event, COMP_RUNOPTS2 * id);
@@ -3482,7 +3511,6 @@ void manage_sstate_input(void) {
 	}
 }
 
-
 /***************************************************************************
  * Save Mapping for game in use                                            *
  ***************************************************************************/
@@ -3499,8 +3527,6 @@ void write_mapping_game(void) {
 	mapping_game_write();
 	//fprintf(stderr,"Miyoo llamar a guardar mapeo\n");
 }
-
-
 
 /***************************************************************************
  * Toggle Save State Dialog State                                          *
@@ -3556,7 +3582,10 @@ int runopts_is_a_reset_scheduled(void) {
 	int retval = FALSE;
 
 	if (runopts_emulator_model != *sdl_emulator.model || 
-		runopts_emulator_ramsize != sdl_emulator.ramsize) {
+		runopts_emulator_ramsize != sdl_emulator.ramsize ||
+		runopts_emulator_m1not != sdl_emulator.m1not) {
+//		runopts_emulator_wrx != sdl_emulator.wrx ||
+//		runopts_emulator_chrgen != sdl_emulator.chrgen ) {
 		retval = TRUE;
 #ifdef OSS_SOUND_SUPPORT
 	} else if (runopts_sound_device != sdl_sound.device) {
@@ -3606,7 +3635,6 @@ void runopts_transit(int state) {
 	if (state == TRANSIT_OUT) {
 		if (last_state != TRANSIT_SAVE) {
 			/* Restore the original contents of these variables */
-			sdl_emulator.m1not = runopts_emulator_m1not;
 			sdl_emulator.frameskip = runopts_emulator_frameskip;
 			sdl_key_repeat.delay = runopts_key_repeat.delay;
 			sdl_key_repeat.interval = runopts_key_repeat.interval;
@@ -3623,6 +3651,8 @@ void runopts_transit(int state) {
 		runopts_emulator_model = *sdl_emulator.model;
 		runopts_emulator_ramsize = sdl_emulator.ramsize;
 		runopts_emulator_m1not = sdl_emulator.m1not;
+		runopts_emulator_wrx = sdl_emulator.wrx;
+		runopts_emulator_chrgen = sdl_emulator.chrgen;
 		runopts_emulator_frameskip = sdl_emulator.frameskip;
 		runopts_sound_device = sdl_sound.device;
 		runopts_sound_stereo = sdl_sound.stereo;
@@ -3659,6 +3689,24 @@ void runopts_transit(int state) {
 			/* The component executive monitors this variable and
 			 * manages emulator and component reinitialisation */
 			sdl_emulator.ramsize = runopts_emulator_ramsize;
+		}
+		/* Update M1NOT */
+		if (runopts_emulator_m1not != sdl_emulator.m1not) {
+			/* The component executive monitors this variable and
+			 * manages emulator and component reinitialisation */
+			sdl_emulator.m1not = runopts_emulator_m1not;
+		}
+		/* Update WRX */
+		if (runopts_emulator_wrx != sdl_emulator.wrx) {
+			/* The component executive monitors this variable and
+			 * manages emulator and component reinitialisation */
+			sdl_emulator.wrx = runopts_emulator_wrx;
+		}
+		/* Update character generator */
+		if (runopts_emulator_chrgen != sdl_emulator.chrgen) {
+			/* The component executive monitors this variable and
+			 * manages emulator and component reinitialisation */
+			sdl_emulator.chrgen = runopts_emulator_chrgen;
 		}
 		#ifdef OSS_SOUND_SUPPORT
 			/* Update the sound device */
@@ -4065,6 +4113,7 @@ char *keycode_to_keysym(int keycode) {
 
 	return nullstring;
 }
+
 #if defined(PLATFORM_DINGUX_A320)
 int key_to_keymap(int keycode) {
 	int keymap=0;

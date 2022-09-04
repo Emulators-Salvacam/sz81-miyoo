@@ -1,5 +1,5 @@
 # You won't need to alter these
-TARGET=sz81_236
+TARGET=sz81_2312
 SOURCES=sdl_main.c common.c sound.c zx81config.c w5100.c sdl_engine.c sdl_hotspots.c \
 	sdl_input.c sdl_loadsave.c sdl_resources.c sdl_sound.c sdl_video.c \
 	z80/z80.c z80/z80_ops.c zx81.c dissz80.c tables.c noscript.c
@@ -36,7 +36,7 @@ $(TARGET): $(OBJECTS) sndrender/libsndrender.a
 	$(LINK) $(LDFLAGS) $(OBJECTS) $(LIBS) -o $@
 	#miyoo/build-$(TARGET)
 	rm -f ./gcw0/opk/*.opk
-	cp sz81_236 ./gcw0/opk
+	cp sz81_2312 ./gcw0/opk
 	mksquashfs ./gcw0/opk/* ./gcw0/opk/sz81.opk -all-root -no-xattrs -noappend -no-exports
 
 

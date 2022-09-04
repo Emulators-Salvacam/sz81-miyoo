@@ -18,6 +18,16 @@
 /* Includes */
 #include "sdl_engine.h"
 
+SDL_Surface *wm_icon;
+
+dialog_ dialog;
+rcfile_ rcfile;
+colourtable_ colours;
+bmpfont_ zx80font, zx81font, zx82font;	
+sz81icons_ sz81icons;
+vkeyb_ vkeyb;
+control_bar_ control_bar;
+
 /* Defines */
 /* Icon bitmap offsets that must be multiplied by video.scale */
 #define ICON_EXIT_X 0
@@ -142,8 +152,12 @@ void local_data_dir_init(void) {
 		} else if (count == 5) {
 			strcatdelimiter(foldername);
 			strcat(foldername, LOCAL_KEYMAP_DIR);
-		}		
+		}
+#ifndef Win32
 		mkdir(foldername, 0755);
+#else
+		mkdir(foldername);
+#endif
 	}
 }
 
@@ -157,6 +171,7 @@ void sdl_rcfile_read(void) {
 	struct keyrepeat read_key_repeat;
 	struct colourtable read_colours;
 	int read_emulator_m1not, read_emulator_speed, read_emulator_frameskip, read_emulator_model;
+	int read_emulator_wrx, read_emulator_chrgen;
 	#if defined(PLATFORM_MIYOO)
 	int read_emulator_fullscreen;
 	#endif
@@ -199,6 +214,8 @@ void sdl_rcfile_read(void) {
 	read_key_repeat.delay = UNDEFINED;
 	read_key_repeat.interval = UNDEFINED;
 	read_emulator_m1not = UNDEFINED;
+	read_emulator_wrx = UNDEFINED;
+	read_emulator_chrgen = UNDEFINED;
 	read_emulator_speed = UNDEFINED;
 	read_emulator_frameskip = UNDEFINED;
 	read_emulator_model = UNDEFINED;
@@ -281,6 +298,14 @@ void sdl_rcfile_read(void) {
 			strcpy(key, "emulator.m1not=");
 			if (!strncmp(line, key, strlen(key))) {
 				sscanf(&line[strlen(key)], "%i", &read_emulator_m1not);
+			}
+			strcpy(key, "emulator.wrx=");
+			if (!strncmp(line, key, strlen(key))) {
+				sscanf(&line[strlen(key)], "%i", &read_emulator_wrx);
+			}
+			strcpy(key, "emulator.chrgen=");
+			if (!strncmp(line, key, strlen(key))) {
+				sscanf(&line[strlen(key)], "%i", &read_emulator_chrgen);
 			}
 			strcpy(key, "emulator.speed=");
 			if (!strncmp(line, key, strlen(key))) {
@@ -543,6 +568,8 @@ void sdl_rcfile_read(void) {
 		printf("read_key_repeat.delay=%i\n", read_key_repeat.delay);
 		printf("read_key_repeat.interval=%i\n", read_key_repeat.interval);
 		printf("read_emulator_m1not=%i\n", read_emulator_m1not);
+		printf("read_emulator_wrx=%i\n", read_emulator_wrx);
+		printf("read_emulator_chrgen=%i\n", read_emulator_chrgen);
 		printf("read_emulator_speed=%i\n", read_emulator_speed);
 		printf("read_emulator_frameskip=%i\n", read_emulator_frameskip);
 		printf("read_emulator_model=%i\n", read_emulator_model);
@@ -626,6 +653,8 @@ void sdl_rcfile_read(void) {
 		}
 
 		if (read_emulator_m1not != UNDEFINED) sdl_emulator.m1not = read_emulator_m1not;
+		if (read_emulator_wrx != UNDEFINED) sdl_emulator.wrx = read_emulator_wrx;
+		if (read_emulator_chrgen != UNDEFINED) sdl_emulator.chrgen = read_emulator_chrgen;
 
 		#ifdef ENABLE_EMULATION_SPEED_ADJUST
 			/* Emulation speed (it's vetted) */
@@ -1093,6 +1122,8 @@ void rcfile_write(void) {
 	fprintf(fp, "key_repeat.interval=%i\n", sdl_key_repeat.interval);
 
 	fprintf(fp, "emulator.m1not=%i\n", sdl_emulator.m1not);
+	fprintf(fp, "emulator.wrx=%i\n", sdl_emulator.wrx);
+	fprintf(fp, "emulator.chrgen=%i\n", sdl_emulator.chrgen);
 
 	/* sdl_emulator.speed */
 	strcpy(key, "emulator.speed"); strcpy(value, "");
@@ -1770,16 +1801,13 @@ int sdl_zxroms_init(void) {
 				fprintf(stderr, "%s: Cannot read from %s\n", __func__, filename);
 				if (count < 2) retval = TRUE;
 			} else {
-				/* Read in the data */
+				/* Read in the data, max. 64k */
 				if (count == 0) {
-					fread(sdl_zx80rom.data, 1, 4 * 1024, fp);
-					sdl_zx80rom.state = TRUE;
+					sdl_zx80rom.state = fread(sdl_zx80rom.data, 1, 64 * 1024, fp);
 				} else if (count == 1) {
-					fread(sdl_zx81rom.data, 1, 8 * 1024, fp);
-					sdl_zx81rom.state = TRUE;
+					sdl_zx81rom.state = fread(sdl_zx81rom.data, 1, 64 * 1024, fp);
 				} else if (count == 2) {
-					fread(sdl_aszmicrom.data, 1, 4 * 1024, fp);
-					sdl_aszmicrom.state = TRUE;
+					sdl_aszmicrom.state = fread(sdl_aszmicrom.data, 1, 4 * 1024, fp);
 				}
 				fclose(fp);
 			}

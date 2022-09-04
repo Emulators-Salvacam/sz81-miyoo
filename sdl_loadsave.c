@@ -22,9 +22,19 @@
 #include "z80/z80_macros.h"
 #include "zx81config.h"
 #include "zx81.h"
+#include "common.h"
+
+load_file_dialog_ load_file_dialog;
+save_state_dialog_ save_state_dialog;
 
 extern MACHINE machine;
 extern ZX81 zx81;
+
+#ifdef ZXMORE
+extern unsigned int zxmoffset;
+#else
+#define zxmoffset 0
+#endif
 
 /* for shared memory */
 extern BYTE *sz81mem;
@@ -135,8 +145,13 @@ int save_state_dialog_slots_populate(void) {
 	if ((dirstream = opendir(foldername)) == NULL) {
 		/* The path doesn't yet exist so attempt to create everything
 		 * from parentname and onwards */
+#ifndef Win32
 		mkdir(parentname, 0755);
 		mkdir(foldername, 0755);
+#else
+		mkdir(parentname);
+		mkdir(foldername);
+#endif
 		/* Attempt to open the newly created folder */
 		dirstream = opendir(foldername);
 	}
@@ -211,7 +226,7 @@ int sdl_save_file(int parameter, int method) {
 		if (scp) {
 			addr = 0;
 			slen = 1;
-			sscanf(scp+1,"%d,%d",&addr,&slen);
+			sscanf(scp+1,"%i,%i",&addr,&slen);
 			strcpy(scp,"");
 		}
 		/* Add a file extension if one hasn't already been affixed */
@@ -379,12 +394,12 @@ printf("Creating file %s...\n",fullpath);
 			} else {
 				/* Write up to and including E_LINE */
 				if (*sdl_emulator.model == MODEL_ZX80) {
-					fwrite(mem + 0x4000, 1, (mem[0x400b] << 8 | mem[0x400a]) - 0x4000, fp);
+					fwrite(mem + 0x4000 + zxmoffset, 1, (mem[0x400b+zxmoffset] << 8 | mem[0x400a+zxmoffset]) - 0x4000, fp);
 				} else if (*sdl_emulator.model == MODEL_ZX81) {
 					if (scp)
-						fwrite(mem + addr, 1, slen, fp);
+						fwrite(mem + addr + zxmoffset, 1, slen, fp);
 					else
-						fwrite(mem + 0x4009, 1, (mem[0x4015] << 8 | mem[0x4014]) - 0x4009, fp);
+						fwrite(mem + 0x4009 + zxmoffset, 1, (mem[0x4015+zxmoffset] << 8 | mem[0x4014+zxmoffset]) - 0x4009, fp);
 				}
 				/* Copy fullpath across to the load file dialog as
 				 * then we have a record of what was last saved */
@@ -440,6 +455,9 @@ int sdl_load_file(int parameter, int method) {
 	char *scp = NULL;
 	char *fsp = NULL;
 	int addr;
+#ifdef ZXMORE
+	int flash=0;
+#endif
 
 	/* If requested, read and set the preset method instead */
 	if (method == LOAD_FILE_METHOD_DETECT) {
@@ -552,7 +570,13 @@ int sdl_load_file(int parameter, int method) {
 				scp = strrchr(filename,';');
 				if (scp) {
 					addr = 0;
-					sscanf(scp+1,"%d",&addr);
+#ifdef ZXMORE
+					if (scp[1]=='#') {
+						flash = 1;
+						sscanf(scp+2,"%i",&addr);
+					} else
+#endif
+						sscanf(scp+1,"%i",&addr);
 					strcpy(scp,"");
 				}
 				/* Add a file extension if one hasn't already been affixed */
@@ -581,12 +605,13 @@ int sdl_load_file(int parameter, int method) {
 
 /* auto-change directory */
 
+/* Comment for Bug in file browser if I open a file from file browser
 			if (!strlen(load_file_dialog.loaded)) if (strrchr(fullpath,'/')) {
 				strcpy(load_file_dialog.dir,fullpath);
 				fsp = strrchr(load_file_dialog.dir,'/');
 				if (fsp) strcpy(fsp,"");
 			}
-
+*/
 			printf("Opening file %s...\n",fullpath);
 
 			/* Attempt to open the file */
@@ -691,10 +716,13 @@ int sdl_load_file(int parameter, int method) {
 								mem[SP + 2] = 0x22;
 							}
 						} else if (*sdl_emulator.model == MODEL_ZX81 && !scp) {
+#ifdef ZXMORE
+							PC = 0x0676;
+#else
 							/* Registers (common values) */
 							A = 0x0b; F = 0x00; B = 0x00; C = 0x02;
 							D = 0x40; E = 0x9b; H = 0x40; L = 0x99;
-							PC = zx81.machine==MACHINELAMBDA ? 0x0203 : 0x0207;
+							PC = zx81.machine==MACHINELAMBDA ? 0x0221 : 0x0207;
 							IX = 0x0281; IY = 0x4000; I = 0x1e; R7 = 0xdd;
 							A_ = 0xf8; F_ = 0xa9; B_ = 0x00; C_ = 0x00;
 							D_ = 0x00; E_ = 0x2b; H_ = 0x00; L_ = 0x00;
@@ -710,9 +738,15 @@ int sdl_load_file(int parameter, int method) {
 							mem[SP + 1] = 0x06;
 							mem[SP + 2] = 0x00;
 							mem[SP + 3] = 0x3e;
+#if 0							
+//							SP = mem[0x4004] + (mem[0x4005]<<8) - 4;
+							SP = 0xc000 - 4;
+							mem[SP + 0] = 0x85;
+							mem[SP + 1] = 0x07;
+#endif
 							/* Now override if RAM configuration changes things
 							 * (there's a possibility these changes are unimportant) */
-							if (sdl_emulator.ramsize >= 4) {
+							if (sdl_emulator.ramsize >= 4 && 0) {
 								D = 0x43; H = 0x43;
 								A_ = 0xec; B_ = 0x81; C_ = 0x02;
 								R = 0xa9;
@@ -727,6 +761,7 @@ int sdl_load_file(int parameter, int method) {
 							mem[0x4006] = 0x00;			/* MODE */
 							mem[0x4007] = 0xfe;			/* PPC lo */
 							mem[0x4008] = 0xff;			/* PPC hi */
+#endif
 						}
 					}
 
@@ -737,12 +772,19 @@ int sdl_load_file(int parameter, int method) {
 						ramsize = sdl_emulator.ramsize;
 					}
 					if (*sdl_emulator.model == MODEL_ZX80) {
-						fread(mem + 0x4000, 1, ramsize * 1024, fp);
+						fread(mem + 0x4000 + zxmoffset, 1, ramsize * 1024, fp);
 					} else if (*sdl_emulator.model == MODEL_ZX81) {
-						if (scp)
+						if (scp) {
+#ifdef ZXMORE
+							if (flash)
+								fread(mem + addr + zxmoffset - 0x80000, 1, ramsize * 1024, fp);
+							else
+								fread(mem + addr + zxmoffset, 1, ramsize * 1024, fp);
+#else
 							fread(mem + addr, 1, ramsize * 1024, fp);
-						else {
-							fread(mem + 0x4009, 1, ramsize * 1024 - 9, fp);
+#endif
+						} else {
+							fread(mem + 0x4009 + zxmoffset, 1, ramsize * 1024 - 9, fp);
 							if (!sdl_com_line.nxtlin) mem[0x4029] = mem[0x402a] = 0;
 							if (sdl_com_line.wsz81mem==TRUE) memcpy(sz81mem, mem+0x4000, 0x4000);
 						}
@@ -944,7 +986,7 @@ void file_dialog_cd(char *dir, char *direntry) {
 
 void dirlist_populate(char *dir, char **dirlist, int *dirlist_sizeof,
 	int *dirlist_count, int filetypes) {
-	char cwd[256], swap[256], *realloclist;
+	char cwd[256], *swap=NULL, *realloclist;
 	int parentfound = FALSE, offset = 0;
 	int count, found, swapped;
 	struct dirent *direntry;
@@ -977,8 +1019,10 @@ void dirlist_populate(char *dir, char **dirlist, int *dirlist_sizeof,
 		while ((direntry = readdir(dirstream))) {
 
 			/* Store the size of the list element once */
-			if (*dirlist_sizeof == 0)
+			if (*dirlist_sizeof == 0) {
 				*dirlist_sizeof = sizeof(direntry->d_name) + 2;
+				swap = malloc(*dirlist_sizeof);
+			}
 
 			/* Get directory entry status information */
 			if (stat(direntry->d_name, &filestatus)) {
@@ -1085,14 +1129,17 @@ void dirlist_populate(char *dir, char **dirlist, int *dirlist_sizeof,
 				*dirlist + *dirlist_sizeof * (count + 1)) > 0) {
 				swapped = TRUE;
 				strcpy(swap, *dirlist + *dirlist_sizeof * (count + 1));
-				strcpy(*dirlist + *dirlist_sizeof * (count + 1),
-					*dirlist + *dirlist_sizeof * count);
+				memmove(*dirlist + *dirlist_sizeof * (count + 1),
+					*dirlist + *dirlist_sizeof * count,
+					strlen(*dirlist + *dirlist_sizeof * count) + 1);
 				strcpy(*dirlist + *dirlist_sizeof * count, swap);
 			}
 		}
 	}
 	while (swapped);
 
+	if (swap) free(swap);
+	
 	/* Restore the current working directory */
 	chdir(cwd);
 }
@@ -1144,7 +1191,7 @@ char *strtoupper(char *original) {
  *  On exit: returns a pointer to the translated string */
 
 char *strzx81_to_ascii(int memaddr) {
-	static unsigned char zx81table[17] = {'\"', '_', '$', ':', '?', '(',
+	static unsigned char zx81table[17] = {'\"', '#', '$', ':', '?', '(',
 		')', '>', '<', '=', '+', '-', '*', '/', ';', ',', '.'};
 	static char translated[256];
 	unsigned char sinchar;

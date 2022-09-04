@@ -19,7 +19,7 @@
 #if defined(PLATFORM_DINGUX_A320)
    #define MAX_HOTSPOTS 239 
 #else
-   #define MAX_HOTSPOTS 199
+#define MAX_HOTSPOTS 199
 #endif
 
 /* Hotspot group IDs */
@@ -72,16 +72,22 @@
 #define HS_RUNOPTS0_FRAMESKIP_UP 69
 #define HS_RUNOPTS0_SPEED_DN 70
 #define HS_RUNOPTS0_SPEED_UP 71
+#define HS_RUNOPTS0_WRX_NO 72
+#define HS_RUNOPTS0_WRX_YES 73
+#define HS_RUNOPTS0_UDG_NO 74
+#define HS_RUNOPTS0_UDG_YES 75
+
 #if defined(PLATFORM_MIYOO)
-#define HS_RUNOPTS0_CLOSE 72
-#define HS_RUNOPTS0_SAVE 73
-#define HS_RUNOPTS0_EXIT 74
-#define HS_RUNOPTS0_NEXT 75
+#define HS_RUNOPTS0_CLOSE 76
+#define HS_RUNOPTS0_SAVE 77
+#define HS_RUNOPTS0_EXIT 78
+#define HS_RUNOPTS0_NEXT 79
 #else
-#define HS_RUNOPTS0_SAVE 72
-#define HS_RUNOPTS0_EXIT 73
-#define HS_RUNOPTS0_NEXT 74
+#define HS_RUNOPTS0_SAVE 76
+#define HS_RUNOPTS0_EXIT 77
+#define HS_RUNOPTS0_NEXT 78
 #endif
+
 #define HS_RUNOPTS1_RUNOPTS1 83
 #define HS_RUNOPTS1_DEVICE_NONE 84
 #define HS_RUNOPTS1_DEVICE_AY 85
@@ -120,6 +126,7 @@
 #define HS_RUNOPTS2_EXIT 123
 #define HS_RUNOPTS2_NEXT 124
 #else
+
 #define HS_RUNOPTS2_BACK 119
 #define HS_RUNOPTS2_SAVE 120
 #define HS_RUNOPTS2_EXIT 121
@@ -194,7 +201,6 @@
    #define HS_RUNOPTS3_KEY_DOT 237
    #define HS_RUNOPTS3_KEY_SPACE 238
 #endif
-
 #define HS_LDFILE_LDFILE 149
 #define HS_LDFILE_LIST00 150
 #define HS_LDFILE_LIST01 151
@@ -250,14 +256,15 @@
 									 * gid and is visible then it can process pressed or released
 									 * events, but this property enables additional motion events */
 /* Variables */
-struct hotspot {
+typedef struct hotspot {
 	int gid;						/* Group id for easy management */
 	int flags;						/* An OR'd combination of HS_PROP_ properties */
 	int hit_x, hit_y, hit_w, hit_h;	/* Hit box */
 	int hl_x, hl_y, hl_w, hl_h;		/* Highlight box (if all UNDEFINED then use hitbox */
 	int remap_id;					/* The main destination control id (could be UNDEFINED) */
-};
-struct hotspot hotspots[MAX_HOTSPOTS];
+} hotspot_;
+
+extern hotspot_ hotspots[MAX_HOTSPOTS];
 
 /* Function prototypes */
 void hotspots_vkeyb_shift_init(void);

@@ -26,12 +26,12 @@
 #define JOY_CFG_TEXT_CANCELLED 3
 
 /* Variables */
-char *runtime_options_text0[24];
-char *runtime_options_text1[24];
-char *runtime_options_text2[24];
-char *runtime_options_text3[24];
+extern char *runtime_options_text0[24];
+extern char *runtime_options_text1[24];
+extern char *runtime_options_text2[24];
+extern char *runtime_options_text3[24];
 
-struct video_options {
+typedef struct video_options {
 	SDL_Surface *screen;
 	int bigscreen;
 	int fullscreen;		        /* 0 or SDL_FULLSCREEN */
@@ -39,7 +39,9 @@ struct video_options {
 	int xres;
 	int yres;
 	int redraw;			/* TRUE to redraw entire screen */
-} video;
+} video_;
+
+extern video_ video;
 
 #if defined(PLATFORM_MIYOO)
 SDL_Surface *offscreen;

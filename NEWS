@@ -1,3 +1,39 @@
+2022-04-02
+* 2.3.12 unofficial version (by Erik Olofsen)
+* bug fix for sdl_loadsave.c (Thanks to Barry Nelson)
+
+2021-03-20
+* 2.3.11 unofficial version (by Erik Olofsen)
+* "multiple definition" building issue solved
+* Improved Vdrive emulation
+
+2019-04-22
+* 2.3.10 unofficial version (by Erik Olofsen)
+* Much improved WIZnet W5100 emulation
+* Added support for AMD 9511 APU (see am9511/am9511.cpp for credits)
+* Includes manual (with help from Tim Swenson)
+* A few bug fixes
+
+2018-07-28
+* 2.3.9 unofficial version (by Erik Olofsen)
+* A few bug fixes with selecting options
+* Added some ZXpand support - see README-2.3
+* Added some ZXNU with VDRIVE support - see README-2.3
+
+2017-11-28
+* 2.3.8 unofficial version (by Barry Nelson and Erik Olofsen)
+* Added support to select WRX on or off
+* Added support to select UDG character generator on or off
+* Added support to compile on Mac OS X
+* Added support of hexadecimal notation with LOAD and SAVE addresses
+
+2016-11-12
+* 2.3.7 unofficial version (by Erik Olofsen)
+* ZXmore support
+* 50 notes music interface support
+* Some SP012 support
+* LOAD and STORE for H4TH
+
 2015-12-14
 * 2.3.6 unofficial version (by Erik Olofsen)
 * some compatibility changes to the W5100 emulation

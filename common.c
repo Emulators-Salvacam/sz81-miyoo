@@ -41,11 +41,13 @@
 extern void sdl_set_redraw_video();
 #endif
 
+#ifndef Win32
 #include <unistd.h>
 #include <sys/types.h>
 #include <sys/mman.h>
 #include <sys/stat.h>
 #include <fcntl.h>
+#endif
 
 #include "common.h"
 #include "sound.h"
@@ -56,12 +58,19 @@ extern void sdl_set_redraw_video();
 
 extern ZX81 zx81;
 
-unsigned char mem[65536],*helpscrn;
+#ifdef ZXMORE
+unsigned char mem[0x100000];
+#else
+unsigned char mem[0x20000]; /* allows for shadow RAM */
+#endif
+unsigned char *helpscrn;
 unsigned char keyports[9]={0xff,0xff,0xff,0xff, 0xff,0xff,0xff,0xff, 0xff};
 
 #define SHMSIZ 0x4000
 BYTE *sz81mem;
 int rwsz81mem, fdsz81mem;
+
+extern int zxmmod;
 
 /* this two work on a per-k basis, so we can support 1k etc. properly */
 unsigned char *memptr[64];
@@ -155,12 +164,16 @@ signal_int_flag=1;
 #endif
 
 
-#ifndef SZ81	/* Added by Thunor */
+#ifdef ZXMORE
 char *libdir(char *file)
 {
 static char buf[1024];
 
+#ifdef ZXMORE
+#define LIBDIR PACKAGE_DATA_DIR
+#else
 #define LIBDIR ""
+#endif
 if(strlen(LIBDIR)+strlen(file)+2>sizeof(buf))
   strcpy(buf,file);	/* we know file is a short constant */
 else
@@ -168,7 +181,6 @@ else
 return(buf);
 }
 #endif
-
 
 #ifndef SZ81	/* Added by Thunor */
 void autoload_setup(char *filename)
@@ -244,19 +256,39 @@ setitimer(ITIMER_REAL,&itv,NULL);
 }
 #endif
 
+void loadrombank(int offset)
+{
+  memcpy(mem,sdl_zx81rom.data+offset,8192);
+}
 
 void loadrom(void)
 {
+#ifdef ZXMORE
+FILE *in;
+char *fname=libdir("ZXM-DATA.BIN");
+
+if((in=fopen(fname,"rb"))!=NULL)
+  {
+    fread(mem,1,0x80000,in);
+  }
+ else
+   {
+     fprintf(stderr,"couldn't load ROM file %s.\n", fname);
+     exit(1);
+   }
+return;
+#endif
+
 #ifdef SZ81	/* Added by Thunor */
 /* sz81 has already preloaded the ROMs so now this function
  * is simply copying the data into the ROM area afresh */
 if(zx80)
   {
-  memcpy(mem,sdl_zx80rom.data,4096);
+  memcpy(mem,sdl_zx80rom.data,sdl_zx80rom.state);
   }
 else
   {
-  memcpy(mem,sdl_zx81rom.data,8192);
+  memcpy(mem,sdl_zx81rom.data,sdl_zx81rom.state);
   }
 
 /* fill first 16k with extra copies of it */
@@ -533,9 +565,70 @@ if(load_hook)
   }
 }
 
+void zx80hacks()
+{
+#ifndef ZXPAND
+#ifndef ZXNU
+#ifndef VDRIVE
+
+/* patch save routine */
+if(save_hook)
+  {
+  mem[0x1b6]=0xed; mem[0x1b7]=0xfd;
+  mem[0x1b8]=0xc3; mem[0x1b9]=0x83; mem[0x1ba]=0x02;
+  }
+
+/* patch load routine */
+if(load_hook)
+  {
+  mem[0x206]=0xed; mem[0x207]=0xfc;
+  mem[0x208]=0xc3; mem[0x209]=0x83; mem[0x20a]=0x02;
+  }
+#endif
+#endif
+#endif
+}
+
+#ifdef ZXMORE
 
 void zx81hacks()
 {
+  BYTE *memory;
+  int i;
+
+  memory = mem + 0x60000;
+
+  for (i=1; i<=6; i++) {
+
+/* patch save routine */
+if(save_hook)
+  {
+  memory[0x2fc]=0xed; memory[0x2fd]=0xfd;
+  memory[0x2fe]=0xc3; memory[0x2ff]=0x07; memory[0x300]=0x02;
+  }
+
+/* patch load routine */
+if(load_hook)
+  {
+  memory[0x347]=0xeb;
+  memory[0x348]=0xed; memory[0x349]=0xfc;
+  memory[0x34a]=0xc3; memory[0x34b]=0x07; memory[0x34c]=0x02;
+  }
+
+  memory -= 0x10000;
+  }
+
+  /* The ZXmore has a ZX80 in the first page of memory */
+  zx80hacks();
+}
+
+#else
+
+void zx81hacks()
+{
+#ifndef ZXPAND
+#ifndef ZXNU
+
 /* patch save routine */
 if(save_hook)
   {
@@ -550,25 +643,11 @@ if(load_hook)
   mem[0x348]=0xed; mem[0x349]=0xfc;
   mem[0x34a]=0xc3; mem[0x34b]=0x07; mem[0x34c]=0x02;
   }
+#endif
+#endif
 }
 
-
-void zx80hacks()
-{
-/* patch save routine */
-if(save_hook)
-  {
-  mem[0x1b6]=0xed; mem[0x1b7]=0xfd;
-  mem[0x1b8]=0xc3; mem[0x1b9]=0x83; mem[0x1ba]=0x02;
-  }
-
-/* patch load routine */
-if(load_hook)
-  {
-  mem[0x206]=0xed; mem[0x207]=0xfc;
-  mem[0x208]=0xc3; mem[0x209]=0x83; mem[0x20a]=0x02;
-  }
-}
+#endif
 
 
 void initmem()
@@ -578,6 +657,10 @@ int ramsize;
 int count;
 
 loadrom();
+
+#ifdef ZXMORE
+ memset(mem+0x80000,0xaa,0x80000); /* "clear" RAM */
+#endif
 
 #ifdef SZ81NO	/* Added by Thunor */ /* Would not give shadow ROMs... */
 if(zx80)
@@ -703,6 +786,7 @@ if(zx81.machine==MACHINELAMBDA)
 
 /* initialise shared memory */
 
+#ifndef Win32
  if (rwsz81mem==1) {
 	 fdsz81mem = shm_open("/sz81mem", O_RDONLY, S_IRUSR | S_IWUSR);
 	 if (fdsz81mem < 0) {
@@ -723,16 +807,31 @@ if(zx81.machine==MACHINELAMBDA)
 		 if (sz81mem == MAP_FAILED) { perror("map"); exit(1); }
 	}
 }
+#endif
 
 }
 
 void exitmem()
 {
+#ifndef Win32
 	if (rwsz81mem) {
 		if (munmap(sz81mem, SHMSIZ) < 0) perror("munmap");
 		if (close(fdsz81mem < 0)) perror("close");
 		if (rwsz81mem==2) { if (shm_unlink("/sz81mem") < 0) perror("shm_unlink"); }
 	}
+#endif
+#ifdef ZXMORE
+	if (zxmmod) {
+		FILE *out;
+		char *fname=libdir("ZXM-DATA.BIN");
+
+		if((out=fopen(fname,"wb"))!=NULL)
+			{
+				fwrite(mem,0x80000,1,out);
+				fclose(out);
+			}
+	}
+#endif
 }
 
 #ifndef SZ81	/* Added by Thunor */

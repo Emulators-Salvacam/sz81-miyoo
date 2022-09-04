@@ -1,7 +1,7 @@
 [Desktop Entry]
 Name=SZ81
 Comment=ZX80/81 emulator
-Exec=sz81_236 %f
+Exec=sz81_2312 %f
 Icon=sz81
 Terminal=false
 Type=Application

@@ -16,7 +16,7 @@
  */
 
 /* Defines */
-#define MAX_CTRL_REMAPS 65
+#define MAX_CTRL_REMAPS 64
 #define MAX_JOY_AXES 20
 
 #define DEVICE_KEYBOARD 1
@@ -89,21 +89,22 @@
 	#define STATUS_KEY_MAP_DINGOO 1
 	#define STATUS_KEY_MAP_ZX 2
 #endif
-
 /* Variables */
-SDL_Joystick *joystick;
-int joystick_dead_zone;
-int show_input_id;
-int current_input_id;
-int runopts_emulator_speed;
-int runopts_emulator_model;
-int runopts_emulator_ramsize;
-int runopts_emulator_m1not;
-int runopts_sound_device;
-int runopts_sound_stereo;
-int runopts_sound_ay_unreal;
+extern SDL_Joystick *joystick;
+extern int joystick_dead_zone;
+extern int show_input_id;
+extern int current_input_id;
+extern int runopts_emulator_speed;
+extern int runopts_emulator_model;
+extern int runopts_emulator_ramsize;
+extern int runopts_emulator_m1not;
+extern int runopts_emulator_wrx;
+extern int runopts_emulator_chrgen;
+extern int runopts_sound_device;
+extern int runopts_sound_stereo;
+extern int runopts_sound_ay_unreal;
 
-struct ctrlremap {
+typedef struct ctrlremap {
 	int components;		/* An OR'd combination of COMP_ IDs */
 	int protected;		/* TRUE to prevent this from being runtime modified */
 	int device;			/* The source device e.g. DEVICE_JOYSTICK */
@@ -111,21 +112,26 @@ struct ctrlremap {
 	int remap_device;	/* The destination device e.g. DEVICE_KEYBOARD */
 	int remap_id;		/* The main destination control id */
 	int remap_mod_id;	/* An additional modifier destination control id */
-};
-struct ctrlremap ctrl_remaps[MAX_CTRL_REMAPS];
+} ctrlremap_;
+
 #if defined(PLATFORM_DINGUX_A320)
 int dingoo_selected_key, ZX_selected_key, key_map_status;
 #endif
-struct {
+
+typedef struct {
 	int state;
 	int master_interval;
 	int interval;
-} ctrl_remapper;
+} ctrl_remapper_;
 
-struct {
+typedef struct {
 	int state;
 	char text[2][33];
-} joy_cfg;
+} joy_cfg_;
+
+extern ctrlremap_ ctrl_remaps[MAX_CTRL_REMAPS];
+extern ctrl_remapper_ ctrl_remapper;
+extern joy_cfg_ joy_cfg;
 
 /* Function prototypes */
 void toggle_emulator_paused(int force);
@@ -137,7 +143,7 @@ void key_repeat_manager(int funcid, SDL_Event *event, int eventid);
 void keyboard_buffer_reset(int shift_reset, int exclude1, int exclude2);
 int keysym_to_keycode(char *keysym);
 char *keycode_to_keysym(int keycode);
+
 int key_to_keymap(int keycode);
 int ZX_key_to_id(int zxkey);
-
 

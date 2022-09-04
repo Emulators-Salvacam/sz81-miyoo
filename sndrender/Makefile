@@ -1,21 +1,21 @@
-CCFLAGS=-Ofast -Wall
-CXXFLAGS=-Ofast -Wall -DUSE_SND_EXTERNAL_BUFFER
+CCFLAGS=-O3 -Wall
+CXXFLAGS=-O3 -Wall -DUSE_SND_EXTERNAL_BUFFER
 
 SOURCES = sndrender.cpp sndcounter.cpp sndbuffer.cpp sndchip.cpp sndinterface.cpp
 OBJECTS=$(patsubst %.cpp, %.o, $(SOURCES))
 
 	# comment for destkop, only for Miyoo
-	#CC = /opt/miyoo/usr/bin/arm-linux-gcc
-	#CC_AS = /opt/miyoo/usr/bin/arm-linux-gcc
-	#CXX = /opt/miyoo/usr/bin/arm-linux-g++
-	#AR = /opt/miyoo/usr/bin/arm-linux-ar
+	CC = /opt/miyoo/usr/bin/arm-linux-gcc
+	CC_AS = /opt/miyoo/usr/bin/arm-linux-gcc
+	CXX = /opt/miyoo/usr/bin/arm-linux-g++
+	AR = /opt/miyoo/usr/bin/arm-linux-ar
 	# comment for destkop, only for Miyoo
 
 	# comment for destkop, only for GCW0
-	CC = /opt/gcw0-toolchain/usr/bin/mipsel-linux-gcc
-	CC_AS = /opt/gcw0-toolchain/usr/bin/mipsel-linux-gcc
-	CXX = /opt/gcw0-toolchain/usr/bin/mipsel-linux-g++
-	AR = /opt/gcw0-toolchain/usr/bin/mipsel-linux-ar
+	#CC = /opt/gcw0-toolchain/usr/bin/mipsel-linux-gcc
+	#CC_AS = /opt/gcw0-toolchain/usr/bin/mipsel-linux-gcc
+	#CXX = /opt/gcw0-toolchain/usr/bin/mipsel-linux-g++
+	#AR = /opt/gcw0-toolchain/usr/bin/mipsel-linux-ar
 	# comment for destkop, only for GCW0
 
 %.o: %.cpp
