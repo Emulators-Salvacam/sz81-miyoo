@@ -2547,8 +2547,12 @@ void manage_all_input(void) {
 
 		#if defined(PLATFORM_MIYOO)
 		} else if (id == SDLK_z) {
-			/* Save mapping for game */
-			write_mapping_game();
+			if (state == SDL_PRESSED) {
+				if (get_active_component() == COMP_RUNOPTS3) {
+					/* Save mapping for game */
+					write_mapping_game();
+				}
+			}
 		#endif
 
 		} else if (id == SDLK_F8) {
