@@ -2545,8 +2545,12 @@ void manage_all_input(void) {
 				toggle_sstate_state(SSTATE_MODE_LOAD);
 			}
 		} else if (id == SDLK_F6) {
-			/* Save mapping for game */
-			write_mapping_game();
+			if (state == SDL_PRESSED) {
+				if (get_active_component() == COMP_RUNOPTS3) {
+					/* Save mapping for game */
+					write_mapping_game();
+				}
+			}
 		} else if (id == SDLK_F8) {
 			/* Toggle invert screen */
 			if (state == SDL_PRESSED) {
