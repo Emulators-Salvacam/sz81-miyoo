@@ -2461,6 +2461,17 @@ void manage_all_input(void) {
 
 		#if defined(PLATFORM_MIYOO)
 
+		if (keystate[DINGOO_R]){
+			if (state == SDL_PRESSED){
+				if (keystate[DINGOO_Y]) {
+					sdl_emulator.fullscr = sdl_emulator.fullscr == FULL_SCREEN_YES ? FULL_SCREEN_NO : FULL_SCREEN_YES;
+					if (sdl_emulator.fullscr == FULL_SCREEN_NO) {
+						sdl_video_setmode();
+					}
+				}
+			}
+		}
+
 		if (keystate[DINGOO_L]){		
 			if (state == SDL_PRESSED){
 				if (keystate[DINGOO_R]) {
@@ -2675,6 +2686,7 @@ void manage_all_input(void) {
 			if (runtime_options[2].state) {
 				/* No Full Screen */
 				sdl_emulator.fullscr = FULL_SCREEN_NO;
+				sdl_video_setmode();
 			}
 		} else if (id == SDLK_y) {
 			if (runtime_options[2].state) {
