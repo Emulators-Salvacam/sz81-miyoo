@@ -39,7 +39,7 @@ char *runtime_options_text0[24] = {
 	"",
 	"  (\x1 \x1) ZX80  (\x1 \x1) ZX81",
 	"",
-	"RAM Size \x90\x2<\x2\x85 \x1  K \x90\x2>\x2\x85",
+	"RAM Size \x90\x2<\x2\x85 \x1  K \x90\x2>\x2\x85 >=48 Chroma",
 	"",
 	"M1NOT:",
 	"",
@@ -56,6 +56,7 @@ char *runtime_options_text0[24] = {
 	"",
 	" MENU: Ok Start|A/Exit Select|B",
 	" GAME: Keyboard   > Select",
+	"  Change fullscreen  > R + Y",
 	"  Load State > Start+B | L + B",
 	"  Save State > Start+A | L + A",
 	"  Load File  > Start + Y",
@@ -66,8 +67,8 @@ char *runtime_options_text0[24] = {
 	"",
 	"",
 	"",
-#endif
 	"\x1 ",
+#endif
 	"",
 	#if defined (PLATFORM_MIYOO)
 	"Close Emu  Save   Exit  Next\x90\x2>\x2\x85"	
@@ -139,7 +140,7 @@ char *runtime_options_text2[24] = {
 #if defined(PLATFORM_MIYOO)
 char *runtime_options_text3[24] = {
 	#if defined(PLATFORM_GCW0)
-	"\x2 GCW-Zero button mapper        4/4 \x2",
+	"\x2 GCW-Zero button mapper     4/4 \x2",
 	"",
 	"   \x87\x83\x83\x83\x83""GCW-Zero BUTTONS\x83\x83\x83\x83\x2\x84\x2",
   	#else
