@@ -2477,6 +2477,17 @@ void manage_all_input(void) {
 		#endif
 
 		#if defined(PLATFORM_MIYOO)
+		
+		if (keystate[DINGOO_R]){
+			if (state == SDL_PRESSED){
+				if (keystate[DINGOO_Y]) {
+					sdl_emulator.fullscr = sdl_emulator.fullscr == FULL_SCREEN_YES ? FULL_SCREEN_NO : FULL_SCREEN_YES;
+					if (sdl_emulator.fullscr == FULL_SCREEN_NO) {
+						sdl_video_setmode();
+					}
+				}
+			}
+		}
 
 		if (keystate[DINGOO_L]){		
 			if (state == SDL_PRESSED){
@@ -2560,9 +2571,15 @@ void manage_all_input(void) {
 			if (state == SDL_PRESSED) {
 				toggle_sstate_state(SSTATE_MODE_LOAD);
 			}
-		} else if (id == SDLK_F6) {
-			/* Save mapping for game */
-			write_mapping_game();
+		#if defined(PLATFORM_MIYOO)
+		} else if (id == SDLK_z) {
+			if (state == SDL_PRESSED) {
+				if (get_active_component() == COMP_RUNOPTS3) {
+					/* Save mapping for game */
+					write_mapping_game();
+				}
+			}
+		#endif
 		} else if (id == SDLK_F8) {
 			/* Toggle invert screen */
 			if (state == SDL_PRESSED) {
@@ -2683,6 +2700,7 @@ void manage_all_input(void) {
 			if (runtime_options[2].state) {
 				/* No Full Screen */
 				sdl_emulator.fullscr = FULL_SCREEN_NO;
+				sdl_video_setmode();
 			}
 		} else if (id == SDLK_y) {
 			if (runtime_options[2].state) {

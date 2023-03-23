@@ -1727,7 +1727,11 @@ int control_bar_init(void) {
 	/* Set-up the control bar's screen offset */
 	control_bar.xoffset = (video.xres - control_bar.scaled->w) / 2;
 	if (control_bar.xoffset < 0) control_bar.xoffset = 0;
+	#if defined(PLATFORM_MIYOO)
+	control_bar.yoffset = (sdl_emulator.yoffset - 19 * video.scale) + 45;
+	#else
 	control_bar.yoffset = sdl_emulator.yoffset - 19 * video.scale;
+	#endif
 	if (control_bar.yoffset < 0) control_bar.yoffset = 0;
 
 	return FALSE;
