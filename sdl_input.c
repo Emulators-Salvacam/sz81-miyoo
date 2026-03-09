@@ -2468,7 +2468,10 @@ void manage_all_input(void) {
 				} else if (keystate[DINGOO_A]) {
 					toggle_sstate_state(SSTATE_MODE_SAVE);
 				} else if (keystate[DINGOO_B]) {
-				toggle_sstate_state(SSTATE_MODE_LOAD);
+					toggle_sstate_state(SSTATE_MODE_LOAD);
+				} else if (keystate[DINGOO_Y]) {
+					sdl_emulator.invert = !sdl_emulator.invert;
+					refresh_screen = 1;
 				}
 			}
 		}
@@ -2482,7 +2485,10 @@ void manage_all_input(void) {
 				}else if (keystate[DINGOO_A]) {
 					toggle_sstate_state(SSTATE_MODE_SAVE);
 				}else if (keystate[DINGOO_B]) {
-					toggle_sstate_state(SSTATE_MODE_LOAD);
+					toggle_sstate_state(SSTATE_MODE_LOAD); 
+				}else if (keystate[DINGOO_Y]) {
+					sdl_emulator.invert = !sdl_emulator.invert;
+					refresh_screen = 1;
 				#ifdef OSS_SOUND_SUPPORT
 				}else if (keystate[DINGOO_L]) {
 					if (sdl_sound.volume > 0) {

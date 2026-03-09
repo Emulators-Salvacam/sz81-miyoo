@@ -54,6 +54,7 @@ char *runtime_options_text0[24] = {
 	"  Load File  > Start + Y",
 	"  Keyboard   > Select",
 	"",
+	"Invert color > Start+Y | L + Y",
 #else
 	"",
 	"",
@@ -64,8 +65,8 @@ char *runtime_options_text0[24] = {
 	"",
 	"",
 	"",
-#endif
 	"",
+#endif
 	"\x1 ",
 	"",	
 #if defined (PLATFORM_MIYOO)
